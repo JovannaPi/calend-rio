@@ -4,12 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calend.rio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗓️</text></svg>">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+
   <header class="app-header">
-    <h1>📅 Calend.rio</h1>
-    <p class="subtitle">Suas provas e atividades, organizadas.</p>
+    <div class="brand">
+      <span class="brand-icon">🗓️</span>
+      <div>
+        <h1 id="calendarName" class="brand-title" contenteditable="true" spellcheck="false">Meu Calend.rio</h1>
+        <p class="subtitle">provas, atividades e trabalhos, num só lugar ✨</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="shareBtn" class="share-btn">
+        <span>🔗</span> Compartilhar
+      </button>
+    </div>
   </header>
 
   <main class="app-main">
@@ -28,22 +46,22 @@
     <aside class="side-panel">
       <div class="side-header">
         <h2 id="selectedDateLabel">Selecione um dia</h2>
-        <button id="addEventBtn" class="primary-btn">+ Nova atividade</button>
+        <button id="addEventBtn" class="primary-btn">+ Nova</button>
       </div>
 
       <div id="filters" class="filters">
-        <label><input type="checkbox" class="type-filter" value="prova" checked> Prova</label>
-        <label><input type="checkbox" class="type-filter" value="atividade" checked> Atividade</label>
-        <label><input type="checkbox" class="type-filter" value="trabalho" checked> Trabalho</label>
-        <label><input type="checkbox" class="type-filter" value="outro" checked> Outro</label>
+        <label class="chip chip-prova"><input type="checkbox" class="type-filter" value="prova" checked><span>📝 Prova</span></label>
+        <label class="chip chip-atividade"><input type="checkbox" class="type-filter" value="atividade" checked><span>📌 Atividade</span></label>
+        <label class="chip chip-trabalho"><input type="checkbox" class="type-filter" value="trabalho" checked><span>👥 Trabalho</span></label>
+        <label class="chip chip-outro"><input type="checkbox" class="type-filter" value="outro" checked><span>✨ Outro</span></label>
       </div>
 
       <div id="eventList" class="event-list">
-        <p class="empty-hint">Clique em um dia no calendário para ver os detalhes, ou veja os próximos eventos abaixo.</p>
+        <p class="empty-hint">Clique em um dia no calendário para ver os detalhes 👆</p>
       </div>
 
       <div class="upcoming">
-        <h3>Próximos eventos</h3>
+        <h3>🚀 Próximos eventos</h3>
         <div id="upcomingList"></div>
       </div>
     </aside>
@@ -61,10 +79,10 @@
         <div class="form-row">
           <label>Tipo
             <select id="eventType">
-              <option value="prova">Prova</option>
-              <option value="atividade">Atividade</option>
-              <option value="trabalho">Trabalho</option>
-              <option value="outro">Outro</option>
+              <option value="prova">📝 Prova</option>
+              <option value="atividade">📌 Atividade</option>
+              <option value="trabalho">👥 Trabalho</option>
+              <option value="outro">✨ Outro</option>
             </select>
           </label>
           <label>Data
@@ -95,6 +113,20 @@
       </form>
     </div>
   </div>
+
+  <div id="shareModal" class="modal hidden">
+    <div class="modal-content share-content">
+      <button id="closeShareModal" class="close-btn" aria-label="Fechar">×</button>
+      <h2>🔗 Compartilhar calendário</h2>
+      <p class="share-desc">Qualquer pessoa com este link vê e edita os mesmos eventos, em tempo real.</p>
+      <div class="share-link-row">
+        <input type="text" id="shareLink" readonly>
+        <button id="copyLinkBtn" class="primary-btn">Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
 
   <script src="app.js"></script>
 </body>

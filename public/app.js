@@ -1,20 +1,21 @@
-const STORAGE_KEY = "calendrio-events";
-
 const TYPE_COLORS = {
-  prova: "#d63031",
-  atividade: "#0984e3",
-  trabalho: "#00b894",
-  outro: "#6c5ce7",
+  prova: "#ef476f",
+  atividade: "#4d8cff",
+  trabalho: "#06b6a4",
+  outro: "#a78bfa",
 };
 
 const TYPE_LABELS = {
-  prova: "Prova",
-  atividade: "Atividade",
-  trabalho: "Trabalho",
-  outro: "Outro",
+  prova: "📝 Prova",
+  atividade: "📌 Atividade",
+  trabalho: "👥 Trabalho",
+  outro: "✨ Outro",
 };
 
-let events = loadEvents();
+const POLL_INTERVAL_MS = 4000;
+
+let events = [];
+let calendarId = null;
 let currentDate = new Date();
 let selectedDateStr = null;
 
@@ -23,23 +24,63 @@ const calendarGrid = document.getElementById("calendarGrid");
 const eventList = document.getElementById("eventList");
 const selectedDateLabel = document.getElementById("selectedDateLabel");
 const upcomingList = document.getElementById("upcomingList");
+const calendarNameEl = document.getElementById("calendarName");
 
 const modal = document.getElementById("eventModal");
 const eventForm = document.getElementById("eventForm");
 const modalTitle = document.getElementById("modalTitle");
 const deleteBtn = document.getElementById("deleteEventBtn");
 
-function loadEvents() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+const shareModal = document.getElementById("shareModal");
+const shareLinkInput = document.getElementById("shareLink");
+const toast = document.getElementById("toast");
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.remove("hidden");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.add("hidden"), 2200);
 }
 
-function saveEvents() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+async function api(path, options) {
+  const res = await fetch(path, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+async function ensureCalendar() {
+  const params = new URLSearchParams(location.search);
+  let id = params.get("c");
+  if (!id) {
+    const created = await api("/api/calendars", { method: "POST", body: JSON.stringify({}) });
+    id = created.id;
+    params.set("c", id);
+    history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+  }
+  return id;
+}
+
+async function loadCalendar() {
+  const data = await api(`/api/calendars/${calendarId}`);
+  events = data.events;
+  if (data.name) {
+    calendarNameEl.textContent = data.name;
+    document.title = `${data.name} · Calend.rio`;
+  }
+  renderAll();
+}
+
+async function pollCalendar() {
+  try {
+    const data = await api(`/api/calendars/${calendarId}`);
+    events = data.events;
+    renderAll();
+  } catch {
+    // ignore transient network errors, will retry on next tick
+  }
 }
 
 function toDateStr(d) {
@@ -135,7 +176,7 @@ function renderEventList() {
   if (!selectedDateStr) {
     selectedDateLabel.textContent = "Selecione um dia";
     eventList.innerHTML =
-      '<p class="empty-hint">Clique em um dia no calendário para ver os detalhes.</p>';
+      '<p class="empty-hint">Clique em um dia no calendário para ver os detalhes 👆</p>';
     return;
   }
   const d = new Date(selectedDateStr + "T00:00:00");
@@ -148,7 +189,7 @@ function renderEventList() {
   const dayEvents = eventsForDate(selectedDateStr);
   if (dayEvents.length === 0) {
     eventList.innerHTML =
-      '<p class="empty-hint">Nenhuma atividade neste dia.</p>';
+      '<p class="empty-hint">Nenhuma atividade neste dia 🌤️</p>';
     return;
   }
 
@@ -202,7 +243,7 @@ function renderUpcoming() {
 
   upcomingList.innerHTML = "";
   if (upcoming.length === 0) {
-    upcomingList.innerHTML = '<p class="empty-hint">Nada por aqui ainda.</p>';
+    upcomingList.innerHTML = '<p class="empty-hint">Nada por aqui ainda 🌱</p>';
     return;
   }
   upcoming.forEach((ev) => {
@@ -245,11 +286,10 @@ function closeModal() {
   eventForm.reset();
 }
 
-eventForm.addEventListener("submit", (e) => {
+eventForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = document.getElementById("eventId").value;
-  const data = {
-    id: id || crypto.randomUUID(),
+  const payload = {
     title: document.getElementById("eventTitleInput").value.trim(),
     type: document.getElementById("eventType").value,
     date: document.getElementById("eventDate").value,
@@ -260,24 +300,39 @@ eventForm.addEventListener("submit", (e) => {
     description: document.getElementById("eventDescription").value.trim(),
   };
 
-  if (id) {
-    events = events.map((ev) => (ev.id === id ? data : ev));
-  } else {
-    events.push(data);
+  try {
+    if (id) {
+      const updated = await api(`/api/calendars/${calendarId}/events/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+      events = events.map((ev) => (ev.id === id ? updated : ev));
+    } else {
+      const created = await api(`/api/calendars/${calendarId}/events`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      events.push(created);
+    }
+    selectedDateStr = payload.date;
+    closeModal();
+    renderAll();
+  } catch {
+    showToast("Não foi possível salvar. Tente novamente.");
   }
-  saveEvents();
-  selectedDateStr = data.date;
-  closeModal();
-  renderAll();
 });
 
-deleteBtn.addEventListener("click", () => {
+deleteBtn.addEventListener("click", async () => {
   const id = document.getElementById("eventId").value;
   if (!id) return;
-  events = events.filter((ev) => ev.id !== id);
-  saveEvents();
-  closeModal();
-  renderAll();
+  try {
+    await api(`/api/calendars/${calendarId}/events/${id}`, { method: "DELETE" });
+    events = events.filter((ev) => ev.id !== id);
+    closeModal();
+    renderAll();
+  } catch {
+    showToast("Não foi possível excluir. Tente novamente.");
+  }
 });
 
 document.getElementById("addEventBtn").addEventListener("click", () => openModal(null));
@@ -299,5 +354,55 @@ document.querySelectorAll(".type-filter").forEach((cb) => {
   cb.addEventListener("change", renderAll);
 });
 
-selectedDateStr = toDateStr(new Date());
-renderAll();
+// Sharing
+document.getElementById("shareBtn").addEventListener("click", () => {
+  shareLinkInput.value = location.href;
+  shareModal.classList.remove("hidden");
+});
+document.getElementById("closeShareModal").addEventListener("click", () => {
+  shareModal.classList.add("hidden");
+});
+shareModal.addEventListener("click", (e) => {
+  if (e.target === shareModal) shareModal.classList.add("hidden");
+});
+document.getElementById("copyLinkBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(shareLinkInput.value);
+  } catch {
+    shareLinkInput.select();
+    document.execCommand("copy");
+  }
+  showToast("Link copiado! 🎉");
+});
+
+// Calendar name editing
+calendarNameEl.addEventListener("blur", async () => {
+  const name = calendarNameEl.textContent.trim() || "Meu Calend.rio";
+  calendarNameEl.textContent = name;
+  try {
+    await api(`/api/calendars/${calendarId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    });
+    document.title = `${name} · Calend.rio`;
+  } catch {
+    showToast("Não foi possível renomear.");
+  }
+});
+calendarNameEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    calendarNameEl.blur();
+  }
+});
+
+(async function init() {
+  selectedDateStr = toDateStr(new Date());
+  try {
+    calendarId = await ensureCalendar();
+    await loadCalendar();
+    setInterval(pollCalendar, POLL_INTERVAL_MS);
+  } catch {
+    showToast("Não foi possível conectar ao servidor.");
+  }
+})();
