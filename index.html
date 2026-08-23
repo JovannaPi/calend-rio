@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calend.rio</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>📅 Calend.rio</h1>
+    <p class="subtitle">Suas provas e atividades, organizadas.</p>
+  </header>
+
+  <main class="app-main">
+    <section class="calendar-panel">
+      <div class="calendar-nav">
+        <button id="prevMonth" class="nav-btn" aria-label="Mês anterior">‹</button>
+        <h2 id="monthLabel"></h2>
+        <button id="nextMonth" class="nav-btn" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="weekdays">
+        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="side-header">
+        <h2 id="selectedDateLabel">Selecione um dia</h2>
+        <button id="addEventBtn" class="primary-btn">+ Nova atividade</button>
+      </div>
+
+      <div id="filters" class="filters">
+        <label><input type="checkbox" class="type-filter" value="prova" checked> Prova</label>
+        <label><input type="checkbox" class="type-filter" value="atividade" checked> Atividade</label>
+        <label><input type="checkbox" class="type-filter" value="trabalho" checked> Trabalho</label>
+        <label><input type="checkbox" class="type-filter" value="outro" checked> Outro</label>
+      </div>
+
+      <div id="eventList" class="event-list">
+        <p class="empty-hint">Clique em um dia no calendário para ver os detalhes, ou veja os próximos eventos abaixo.</p>
+      </div>
+
+      <div class="upcoming">
+        <h3>Próximos eventos</h3>
+        <div id="upcomingList"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="eventModal" class="modal hidden">
+    <div class="modal-content">
+      <button id="closeModal" class="close-btn" aria-label="Fechar">×</button>
+      <h2 id="modalTitle">Nova atividade</h2>
+      <form id="eventForm">
+        <input type="hidden" id="eventId">
+        <label>Título
+          <input type="text" id="eventTitleInput" required placeholder="Ex: Prova de Cálculo I">
+        </label>
+        <div class="form-row">
+          <label>Tipo
+            <select id="eventType">
+              <option value="prova">Prova</option>
+              <option value="atividade">Atividade</option>
+              <option value="trabalho">Trabalho</option>
+              <option value="outro">Outro</option>
+            </select>
+          </label>
+          <label>Data
+            <input type="date" id="eventDate" required>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Hora
+            <input type="time" id="eventTime">
+          </label>
+          <label>Cor
+            <input type="color" id="eventColor" value="#6c5ce7">
+          </label>
+        </div>
+        <label>Tema / Disciplina
+          <input type="text" id="eventTheme" placeholder="Ex: Estruturas de Dados">
+        </label>
+        <label>Equipe / Grupo
+          <input type="text" id="eventTeam" placeholder="Ex: Grupo 3 - João, Maria, Ana">
+        </label>
+        <label>Descrição / Observações
+          <textarea id="eventDescription" rows="3" placeholder="Conteúdo cobrado, local, links, etc."></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="button" id="deleteEventBtn" class="danger-btn hidden">Excluir</button>
+          <button type="submit" class="primary-btn">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
