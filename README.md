@@ -29,8 +29,29 @@ Clique em **Compartilhar** e copie o link. Qualquer pessoa que abrir esse link e
 ## Stack
 
 - **Frontend:** HTML, CSS e JavaScript puros, sem build step.
-- **Backend:** Node.js + Express, servindo a API e os arquivos estáticos de `public/`.
-- **Dados:** armazenados em `data/calendars.json` (arquivo local). Para produção com múltiplos usuários simultâneos em maior escala, considere trocar por um banco de dados real (ex: Postgres/Supabase).
+- **Servidor:** Node.js + Express, servindo apenas os arquivos estáticos de `public/`.
+- **Dados:** [Firebase Firestore](https://firebase.google.com/docs/firestore), acessado direto do navegador (configuração em `public/firebase-config.js`). Os dados ficam salvos de forma permanente e sincronizam em tempo real entre todas as pessoas que abrirem o mesmo link.
+
+### Configurando o Firestore
+
+1. No [console do Firebase](https://console.firebase.google.com), abra o projeto e vá em **Build → Firestore Database → Create database**.
+2. Na aba **Regras**, use algo como:
+
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /calendars/{calendarId} {
+         allow read, write: if true;
+         match /events/{eventId} {
+           allow read, write: if true;
+         }
+       }
+     }
+   }
+   ```
+
+   Como o app não tem login (compartilhamento é só por link), as regras liberam leitura/escrita para qualquer pessoa com o link — é o mesmo modelo de "quem tem o link, edita".
 
 ## Deploy
 
@@ -38,4 +59,3 @@ Qualquer plataforma que rode Node.js funciona (Render, Railway, Fly.io, etc.):
 
 1. `npm install`
 2. `npm start` (ou configure o comando de start da plataforma para isso)
-3. Garanta que a pasta `data/` seja persistente entre deploys, senão os calendários são perdidos a cada novo deploy.

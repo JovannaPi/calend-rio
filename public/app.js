@@ -1,3 +1,15 @@
+import { db } from "./firebase-config.js";
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  setDoc,
+  getDoc,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
 const TYPE_COLORS = {
   prova: "#ef476f",
   atividade: "#4d8cff",
@@ -11,8 +23,6 @@ const TYPE_LABELS = {
   trabalho: "Trabalho",
   outro: "Outro",
 };
-
-const POLL_INTERVAL_MS = 4000;
 
 let events = [];
 let calendarId = null;
@@ -42,45 +52,51 @@ function showToast(msg) {
   showToast._t = setTimeout(() => toast.classList.add("hidden"), 2200);
 }
 
-async function api(path, options) {
-  const res = await fetch(path, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
-  return res.json();
+function shortId(len = 8) {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let id = "";
+  for (let i = 0; i < len; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+function calendarDocRef(id) {
+  return doc(db, "calendars", id);
+}
+
+function eventsCollectionRef(id) {
+  return collection(db, "calendars", id, "events");
 }
 
 async function ensureCalendar() {
   const params = new URLSearchParams(location.search);
   let id = params.get("c");
   if (!id) {
-    const created = await api("/api/calendars", { method: "POST", body: JSON.stringify({}) });
-    id = created.id;
+    id = shortId();
+    await setDoc(calendarDocRef(id), { name: "Meu Calendário", createdAt: Date.now() });
     params.set("c", id);
     history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
+  } else {
+    const snap = await getDoc(calendarDocRef(id));
+    if (!snap.exists()) {
+      await setDoc(calendarDocRef(id), { name: "Meu Calendário", createdAt: Date.now() });
+    }
   }
   return id;
 }
 
-async function loadCalendar() {
-  const data = await api(`/api/calendars/${calendarId}`);
-  events = data.events;
-  if (data.name) {
-    calendarNameEl.textContent = data.name;
-    document.title = `${data.name} · Calend.rio`;
-  }
-  renderAll();
-}
+function watchCalendar() {
+  onSnapshot(calendarDocRef(calendarId), (snap) => {
+    const data = snap.data();
+    if (data?.name) {
+      calendarNameEl.textContent = data.name;
+      document.title = `${data.name} · Calend.rio`;
+    }
+  });
 
-async function pollCalendar() {
-  try {
-    const data = await api(`/api/calendars/${calendarId}`);
-    events = data.events;
+  onSnapshot(eventsCollectionRef(calendarId), (snap) => {
+    events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     renderAll();
-  } catch {
-    // ignore transient network errors, will retry on next tick
-  }
+  });
 }
 
 function toDateStr(d) {
@@ -298,25 +314,19 @@ eventForm.addEventListener("submit", async (e) => {
     theme: document.getElementById("eventTheme").value.trim(),
     team: document.getElementById("eventTeam").value.trim(),
     description: document.getElementById("eventDescription").value.trim(),
+    updatedAt: Date.now(),
   };
+
+  if (!payload.title || !payload.date) return;
 
   try {
     if (id) {
-      const updated = await api(`/api/calendars/${calendarId}/events/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-      events = events.map((ev) => (ev.id === id ? updated : ev));
+      await updateDoc(doc(db, "calendars", calendarId, "events", id), payload);
     } else {
-      const created = await api(`/api/calendars/${calendarId}/events`, {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-      events.push(created);
+      await addDoc(eventsCollectionRef(calendarId), payload);
     }
     selectedDateStr = payload.date;
     closeModal();
-    renderAll();
   } catch {
     showToast("Não foi possível salvar. Tente novamente.");
   }
@@ -326,10 +336,8 @@ deleteBtn.addEventListener("click", async () => {
   const id = document.getElementById("eventId").value;
   if (!id) return;
   try {
-    await api(`/api/calendars/${calendarId}/events/${id}`, { method: "DELETE" });
-    events = events.filter((ev) => ev.id !== id);
+    await deleteDoc(doc(db, "calendars", calendarId, "events", id));
     closeModal();
-    renderAll();
   } catch {
     showToast("Não foi possível excluir. Tente novamente.");
   }
@@ -377,13 +385,10 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
 
 // Calendar name editing
 calendarNameEl.addEventListener("blur", async () => {
-  const name = calendarNameEl.textContent.trim() || "Meu Calend.rio";
+  const name = calendarNameEl.textContent.trim() || "Meu Calendário";
   calendarNameEl.textContent = name;
   try {
-    await api(`/api/calendars/${calendarId}`, {
-      method: "PATCH",
-      body: JSON.stringify({ name }),
-    });
+    await updateDoc(calendarDocRef(calendarId), { name });
     document.title = `${name} · Calend.rio`;
   } catch {
     showToast("Não foi possível renomear.");
@@ -400,9 +405,9 @@ calendarNameEl.addEventListener("keydown", (e) => {
   selectedDateStr = toDateStr(new Date());
   try {
     calendarId = await ensureCalendar();
-    await loadCalendar();
-    setInterval(pollCalendar, POLL_INTERVAL_MS);
+    watchCalendar();
+    renderAll();
   } catch {
-    showToast("Não foi possível conectar ao servidor.");
+    showToast("Não foi possível conectar ao Firebase.");
   }
 })();
