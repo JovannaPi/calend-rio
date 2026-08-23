@@ -6,10 +6,10 @@ const TYPE_COLORS = {
 };
 
 const TYPE_LABELS = {
-  prova: "📝 Prova",
-  atividade: "📌 Atividade",
-  trabalho: "👥 Trabalho",
-  outro: "✨ Outro",
+  prova: "Prova",
+  atividade: "Atividade",
+  trabalho: "Trabalho",
+  outro: "Outro",
 };
 
 const POLL_INTERVAL_MS = 4000;
@@ -176,7 +176,7 @@ function renderEventList() {
   if (!selectedDateStr) {
     selectedDateLabel.textContent = "Selecione um dia";
     eventList.innerHTML =
-      '<p class="empty-hint">Clique em um dia no calendário para ver os detalhes 👆</p>';
+      '<p class="empty-hint">Clique em um dia no calendário para ver os detalhes.</p>';
     return;
   }
   const d = new Date(selectedDateStr + "T00:00:00");
@@ -189,7 +189,7 @@ function renderEventList() {
   const dayEvents = eventsForDate(selectedDateStr);
   if (dayEvents.length === 0) {
     eventList.innerHTML =
-      '<p class="empty-hint">Nenhuma atividade neste dia 🌤️</p>';
+      '<p class="empty-hint">Nenhuma atividade neste dia.</p>';
     return;
   }
 
@@ -216,9 +216,9 @@ function buildEventCard(ev) {
   meta.appendChild(tag);
 
   const parts = [];
-  if (ev.time) parts.push(`⏰ ${ev.time}`);
-  if (ev.theme) parts.push(`📘 ${ev.theme}`);
-  if (ev.team) parts.push(`👥 ${ev.team}`);
+  if (ev.time) parts.push(ev.time);
+  if (ev.theme) parts.push(ev.theme);
+  if (ev.team) parts.push(ev.team);
   meta.appendChild(document.createTextNode(parts.join("  ·  ")));
   card.appendChild(meta);
 
@@ -243,7 +243,7 @@ function renderUpcoming() {
 
   upcomingList.innerHTML = "";
   if (upcoming.length === 0) {
-    upcomingList.innerHTML = '<p class="empty-hint">Nada por aqui ainda 🌱</p>';
+    upcomingList.innerHTML = '<p class="empty-hint">Nada por aqui ainda.</p>';
     return;
   }
   upcoming.forEach((ev) => {
@@ -372,7 +372,7 @@ document.getElementById("copyLinkBtn").addEventListener("click", async () => {
     shareLinkInput.select();
     document.execCommand("copy");
   }
-  showToast("Link copiado! 🎉");
+  showToast("Link copiado!");
 });
 
 // Calendar name editing

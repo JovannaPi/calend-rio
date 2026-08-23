@@ -55,6 +55,41 @@ body {
   50% { transform: translate(-30px, -20px) scale(1.05); }
 }
 
+.doodles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.doodle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: doodle-drift 9s ease-in-out infinite;
+}
+
+.doodle-ring {
+  border-radius: 50%;
+  background: transparent !important;
+  border: 3px solid currentColor;
+}
+
+.doodle-1 { top: 12%; left: 8%;  width: 14px; height: 14px; background: var(--c-atividade); animation-delay: 0s; }
+.doodle-2 { top: 22%; left: 42%; width: 10px; height: 10px; background: var(--c-trabalho); animation-delay: 1.2s; }
+.doodle-3 { top: 8%;  left: 68%; width: 22px; height: 22px; color: var(--accent-2); animation-delay: 2.1s; }
+.doodle-4 { top: 68%; left: 6%;  width: 16px; height: 16px; background: var(--accent-2); animation-delay: 0.6s; }
+.doodle-5 { top: 78%; left: 48%; width: 18px; height: 18px; color: var(--c-outro); animation-delay: 3s; }
+.doodle-6 { top: 34%; left: 88%; width: 12px; height: 12px; background: var(--c-prova); animation-delay: 1.8s; }
+.doodle-7 { top: 58%; left: 78%; width: 9px;  height: 9px;  background: var(--accent); animation-delay: 2.6s; }
+.doodle-8 { top: 88%; left: 82%; width: 20px; height: 20px; color: var(--c-atividade); animation-delay: 0.9s; }
+
+@keyframes doodle-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.35; }
+  50% { transform: translate(14px, -22px) rotate(20deg); opacity: 0.65; }
+}
+
 .app-header {
   display: flex;
   align-items: center;
@@ -68,8 +103,16 @@ body {
 
 .brand { display: flex; align-items: center; gap: 0.9rem; }
 .brand-icon {
-  font-size: 2.4rem;
-  filter: drop-shadow(0 4px 10px rgba(124, 92, 255, 0.35));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent-light), #ffe8f2);
+  color: var(--accent);
+  filter: drop-shadow(0 4px 10px rgba(124, 92, 255, 0.25));
+  flex-shrink: 0;
 }
 .brand-title {
   margin: 0;
@@ -90,6 +133,9 @@ body {
 .subtitle { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.95rem; }
 
 .share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: white;
   border: 1px solid var(--panel-border);
   color: var(--accent);
