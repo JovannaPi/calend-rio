@@ -102,18 +102,6 @@ body {
 }
 
 .brand { display: flex; align-items: center; gap: 0.9rem; }
-.brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent-light), #ffe8f2);
-  color: var(--accent);
-  filter: drop-shadow(0 4px 10px rgba(124, 92, 255, 0.25));
-  flex-shrink: 0;
-}
 .brand-title {
   margin: 0;
   font-family: "Fredoka", "Quicksand", sans-serif;
