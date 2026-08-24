@@ -1,6 +1,6 @@
-import { onAuth } from "./auth.js";
-import { listenLivros, listenConfig, listenAtividades } from "./db-livros.js";
-import { el } from "./util.js";
+import { onAuth } from "../core/auth.js";
+import { listenLivros, listenConfig, listenAtividades } from "../core/db.js";
+import { el } from "../core/util.js";
 
 const content = document.getElementById("statsContent");
 let livros = [];

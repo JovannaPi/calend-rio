@@ -1,4 +1,4 @@
-import { onAuth, getCurrentUser } from "./auth.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   listenConfig,
   listenLivros,
@@ -6,8 +6,8 @@ import {
   salvarCapitulo,
   atualizarLivro,
   registrarAtividade,
-} from "./db-livros.js";
-import { capituloLembrado, lembrarCapitulo, confetti, el } from "./util.js";
+} from "../core/db.js";
+import { capituloLembrado, lembrarCapitulo, confetti, el } from "../core/util.js";
 
 const EMOCOES = ["❤", "😭", "😲", "😡", "🤔", "😂", "😰", "🥰", "😤", "🤯"];
 

@@ -1,6 +1,6 @@
-import { onAuth, getCurrentUser } from "./auth.js";
-import { listenAtividades } from "./db-livros.js";
-import { el } from "./util.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
+import { listenAtividades } from "../core/db.js";
+import { el } from "../core/util.js";
 
 const bellBtn = document.getElementById("bellBtn");
 const bellCount = document.getElementById("bellCount");

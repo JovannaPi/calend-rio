@@ -1,6 +1,6 @@
-import { onAuth, getCurrentUser } from "./auth.js";
-import { listenConfig, listenLivros, listenPremiacao, salvarPremiacao } from "./db-livros.js";
-import { el } from "./util.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
+import { listenConfig, listenLivros, listenPremiacao, salvarPremiacao } from "../core/db.js";
+import { el } from "../core/util.js";
 
 const CATEGORIAS = [
   { key: "melhorPersonagem", label: "Melhor personagem", placeholder: "Nome do personagem..." },

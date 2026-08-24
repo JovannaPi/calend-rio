@@ -591,8 +591,15 @@ body {
 }
 
 .tab-panel { display: none; }
-.tab-panel.active { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
+.tab-panel.active { display: block; }
 .tab-panel.active.single-col { display: flex; flex-direction: column; gap: 1.25rem; max-width: 720px; margin: 0 auto; }
+.tab-panel.active.grid-container { display: grid; }
+#tab-calendario.tab-panel.active {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
 
 .panel-card {
   background: var(--panel-bg);
@@ -696,7 +703,8 @@ body {
 .chapter-discussion h4 { margin: 0 0 0.5rem; font-family: "Fredoka", sans-serif; font-size: 0.9rem; }
 
 @media (max-width: 900px) {
-  .tab-panel.active { grid-template-columns: 1fr; }
+  #tab-calendario.tab-panel.active { grid-template-columns: 1fr; }
+  .tab-panel.active.grid-container { grid-template-columns: 1fr; }
 }
 
 /* Rolês */

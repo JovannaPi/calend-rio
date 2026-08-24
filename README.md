@@ -36,8 +36,44 @@ Acesse `http://localhost:3000`. Na primeira vez, crie sua conta na aba **Cadastr
 - **Frontend:** HTML, CSS e JavaScript puros (módulos ES), sem build step.
 - **Servidor:** Node.js + Express, servindo apenas os arquivos estáticos de `public/`.
 - **Autenticação:** [Firebase Authentication](https://firebase.google.com/docs/auth) (e-mail/senha).
-- **Dados:** [Firebase Firestore](https://firebase.google.com/docs/firestore), acessado direto do navegador (configuração em `public/firebase-config.js`). Tudo sincroniza em tempo real entre as contas logadas.
+- **Dados:** [Firebase Firestore](https://firebase.google.com/docs/firestore), acessado direto do navegador (configuração em `public/js/core/firebase-config.js`). Tudo sincroniza em tempo real entre as contas logadas.
 - **Fotos:** [Cloudinary](https://cloudinary.com) (hospedagem gratuita de imagens) + um [Worker da Cloudflare](https://workers.cloudflare.com) que assina os uploads — porque o Firebase Storage passou a exigir o plano pago (Blaze) só pra habilitar. Ver seção abaixo.
+
+### Organização dos arquivos
+
+```
+public/
+  index.html          ← estrutura de todas as telas
+  style.css           ← todo o visual
+  main.js             ← ponto de entrada único (carrega tudo abaixo)
+  js/
+    core/              ← infraestrutura, compartilhada por todo o app
+      firebase-config.js
+      auth.js          ← login/cadastro/logout
+      auth-ui.js       ← liga os formulários de login às funções de auth.js
+      db.js            ← todas as funções que leem/escrevem no Firestore
+      upload.js        ← upload de foto (Cloudinary + Worker)
+      util.js          ← helpers pequenos (confete, lembrar capítulo, etc.)
+    features/          ← um arquivo por aba, cada um cuida só da sua parte
+      calendario.js
+      biblioteca.js
+      diario.js
+      secreto.js
+      memorias.js
+      estatisticas.js
+      premiacoes.js
+      filmes.js
+      roles.js
+      metas.js
+      relatorios.js
+      chat.js
+      notificacoes.js
+      config.js
+      sino.js
+      fundo-frases.js
+```
+
+Cada arquivo em `features/` só conversa com o Firestore através de `js/core/db.js` — se um dia mudar como os dados são salvos, é só mexer ali.
 
 ### Configurando o Firebase
 
@@ -129,9 +165,9 @@ O upload de foto (Rolês, Memórias, Config) precisa desses dois serviços gratu
 3. No Worker, edite a constante `ORIGEM_PERMITIDA` no topo do arquivo pra ser a URL onde o Calend.rio está publicado (ex: sua URL do Render).
 4. Em **Settings → Variables and Secrets** do Worker, adicione como **Secret**:
    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (do Cloudinary)
-   - `FIREBASE_WEB_API_KEY` — o mesmo `apiKey` que já está em `public/firebase-config.js`
+   - `FIREBASE_WEB_API_KEY` — o mesmo `apiKey` que já está em `public/js/core/firebase-config.js`
    - `FIREBASE_PROJECT_ID` — `calendario-3b725`
-5. Copie a URL do Worker publicado (algo como `https://calend-rio-fotos.SEU-SUBDOMINIO.workers.dev`) e cole na constante `URL_UPLOAD_FOTO` em `public/upload.js`.
+5. Copie a URL do Worker publicado (algo como `https://calend-rio-fotos.SEU-SUBDOMINIO.workers.dev`) e cole na constante `URL_UPLOAD_FOTO` em `public/js/core/upload.js`.
 
 ## Deploy
 

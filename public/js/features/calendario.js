@@ -1,5 +1,5 @@
-import { db } from "./firebase-config.js";
-import { onAuth } from "./auth.js";
+import { db } from "../core/firebase-config.js";
+import { onAuth } from "../core/auth.js";
 import {
   collection,
   doc,

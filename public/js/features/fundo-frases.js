@@ -1,5 +1,5 @@
-import { onAuth, getCurrentUser } from "./auth.js";
-import { listarTodosCapitulos } from "./db-livros.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
+import { listarTodosCapitulos } from "../core/db.js";
 
 const POSICOES = [
   "top:8%; left:6%; transform:rotate(-6deg);",

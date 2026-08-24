@@ -1,4 +1,4 @@
-import { onAuth, getCurrentUser } from "./auth.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   listenLivros,
   salvarLivro,
@@ -7,7 +7,7 @@ import {
   listenCapitulos,
   updateConfig,
   registrarAtividade,
-} from "./db-livros.js";
+} from "../core/db.js";
 
 const STATUS_LABELS = {
   planejado: "Planejado",

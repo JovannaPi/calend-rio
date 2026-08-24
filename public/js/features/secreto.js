@@ -1,4 +1,4 @@
-import { onAuth, getCurrentUser } from "./auth.js";
+import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   listenConfig,
   listenLivros,
@@ -7,8 +7,8 @@ import {
   registrarAtividade,
   listarComentarios,
   enviarComentario,
-} from "./db-livros.js";
-import { capituloLembrado, lembrarCapitulo, el } from "./util.js";
+} from "../core/db.js";
+import { capituloLembrado, lembrarCapitulo, el } from "../core/util.js";
 
 const content = document.getElementById("secretoContent");
 let config = {};

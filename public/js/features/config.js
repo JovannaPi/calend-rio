@@ -1,7 +1,7 @@
-import { onAuth } from "./auth.js";
-import { listenConfig, updateConfig, listenLivros, listarCapitulosUmaVez, listenPremiacao } from "./db-livros.js";
-import { enviarFoto } from "./upload.js";
-import { el } from "./util.js";
+import { onAuth } from "../core/auth.js";
+import { listenConfig, updateConfig, listenLivros, listarCapitulosUmaVez, listenPremiacao } from "../core/db.js";
+import { enviarFoto } from "../core/upload.js";
+import { el } from "../core/util.js";
 
 const content = document.getElementById("configContent");
 let config = {};

@@ -1,4 +1,4 @@
-import { onAuth } from "./auth.js";
+import { onAuth } from "../core/auth.js";
 import {
   listenLivros,
   listarTodosCapitulos,
@@ -7,9 +7,9 @@ import {
   listenFotosMemoria,
   adicionarFotoMemoria,
   removerFotoMemoria,
-} from "./db-livros.js";
-import { enviarFoto } from "./upload.js";
-import { el } from "./util.js";
+} from "../core/db.js";
+import { enviarFoto } from "../core/upload.js";
+import { el } from "../core/util.js";
 
 const content = document.getElementById("memoriasContent");
 const photoViewerModal = document.getElementById("photoViewerModal");
