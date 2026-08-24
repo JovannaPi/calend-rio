@@ -28,7 +28,6 @@
   padding: 0;
 }
 
-/* Regra absoluta de ocultação */
 .hidden,
 .modal.hidden,
 .toast.hidden {
@@ -48,7 +47,7 @@ body {
 }
 
 /* =========================================================
-   2. ELEMENTOS DECORATIVOS DE FUNDO (Isolados)
+   2. ELEMENTOS DECORATIVOS DE FUNDO
    ========================================================= */
 .blob, .doodles, .fundo-frases {
   position: fixed;
@@ -112,17 +111,17 @@ body {
 }
 
 /* =========================================================
-   3. CABEÇALHO & NOTIFICAÇÕES
+   3. CABEÇALHO ENXUTO E COMPACTO
    ========================================================= */
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.75rem 2rem 0.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  flex-wrap: wrap;
+  padding: 0.85rem 2rem;
+  width: 100%;
+  max-width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   position: relative;
   z-index: 10;
 }
@@ -131,61 +130,56 @@ body {
 .brand-title {
   margin: 0;
   font-family: "Fredoka", "Quicksand", sans-serif;
-  font-size: 1.9rem;
+  font-size: 1.6rem;
   font-weight: 600;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   outline: none;
-  cursor: text;
-  border-radius: 6px;
-  padding: 2px 6px;
-  margin-left: -6px;
 }
-.brand-title:hover, .brand-title:focus { background-color: rgba(124, 92, 255, 0.06); -webkit-background-clip: text; }
-.subtitle { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.95rem; }
+.subtitle { margin: 0; color: var(--muted); font-size: 0.85rem; }
 
 .header-actions {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .user-badge {
   font-weight: 700;
   color: var(--accent);
   background: var(--accent-light);
-  padding: 0.5rem 0.9rem;
+  padding: 0.4rem 0.85rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .share-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: white;
   border: 1px solid var(--panel-border);
   color: var(--accent);
   font-family: inherit;
   font-weight: 600;
-  padding: 0.6rem 1.1rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 999px;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease;
 }
-.share-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(124, 92, 255, 0.22); }
+.share-btn:hover { transform: translateY(-2px); }
 
 .bell-btn {
   position: relative;
   background: white;
   border: 1px solid var(--panel-border);
   color: var(--accent);
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.3rem;
+  height: 2.3rem;
   border-radius: 999px;
   cursor: pointer;
   display: flex;
@@ -201,17 +195,16 @@ body {
   color: white;
   font-size: 0.65rem;
   font-weight: 700;
-  min-width: 1.1rem;
-  height: 1.1rem;
+  min-width: 1rem;
+  height: 1rem;
   border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 3px;
 }
 .bell-panel {
   position: absolute;
-  top: 3.5rem;
+  top: 3.2rem;
   right: 0;
   width: 280px;
   max-height: 360px;
@@ -226,29 +219,52 @@ body {
 .bell-item:last-child { border-bottom: none; }
 
 /* =========================================================
-   4. NAVEGAÇÃO POR ABAS
+   4. ESTRUTURA GLOBAL: CONTEÚDO À ESQUERDA + SIDEBAR À DIREITA
    ========================================================= */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.25rem 2rem;
+  align-items: start;
+}
+
+.app-main {
+  width: 100%;
+  max-width: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sidebar Fixa na Direita */
 .tabs {
+  position: sticky;
+  top: 1.25rem;
   display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  max-width: 1200px;
-  margin: 0 auto 1rem;
-  padding: 0.5rem 2rem;
-  scrollbar-width: thin;
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
 }
 
 .tab-btn {
-  flex-shrink: 0;
+  width: 100%;
+  text-align: left;
   border: 1.5px solid var(--border);
   background: white;
   color: var(--muted);
   font-family: inherit;
   font-weight: 700;
   font-size: 0.85rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -260,28 +276,20 @@ body {
 }
 
 /* =========================================================
-   5. ESTRUTURA PRINCIPAL E PAINÉIS DA APLICAÇÃO
+   5. PAINÉIS DE CONTEÚDO EM TELA CHEIA
    ========================================================= */
-.dashboard { max-width: 1200px; margin: 0 auto; }
-
-.app-main {
-  max-width: 1200px;
-  margin: 1.25rem auto 2.5rem;
-  padding: 0 2rem;
-}
-
-/* Controle de exibição das abas */
 .tab-panel {
   display: none !important;
 }
 
 .tab-panel.active {
   display: block !important;
+  width: 100%;
 }
 
 .tab-panel.active.grid-container {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.25rem;
   width: 100%;
 }
@@ -290,15 +298,15 @@ body {
   display: flex !important;
   flex-direction: column;
   gap: 1.25rem;
-  max-width: 720px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 #tab-calendario.tab-panel.active {
   display: grid !important;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3.2fr 1fr;
   gap: 1.5rem;
   align-items: start;
+  width: 100%;
 }
 
 /* Cards com Glassmorphism */
@@ -324,7 +332,7 @@ body {
 }
 
 /* =========================================================
-   6. CALENDÁRIO
+   6. CALENDÁRIO EXPANDIDO
    ========================================================= */
 .calendar-nav {
   display: flex;
@@ -373,7 +381,7 @@ body {
 }
 
 .day-cell {
-  min-height: 88px;
+  min-height: 95px;
   border-radius: 12px;
   padding: 6px;
   border: 1px solid transparent;
@@ -418,7 +426,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .day-more { font-size: 0.65rem; color: var(--muted); font-weight: 600; }
 
 .side-header {
@@ -792,7 +799,7 @@ input:focus, select:focus, textarea:focus {
 .progress-inner { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 999px; transition: width 0.3s ease; }
 
 /* Memórias & Fotos */
-.memorias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.memorias-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
 .capsula-card { border-top: 4px solid var(--accent); }
 .capsula-header { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.75rem; }
 .capsula-body { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
@@ -822,12 +829,28 @@ input:focus, select:focus, textarea:focus {
    11. RESPONSIVIDADE
    ========================================================= */
 @media (max-width: 900px) {
-  .app-main, .tabs, .app-header { padding-left: 1.25rem; padding-right: 1.25rem; }
-  #tab-calendario.tab-panel.active { grid-template-columns: 1fr; }
-  .tab-panel.active.grid-container { grid-template-columns: 1fr; }
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .tab-btn {
+    width: auto;
+  }
+
+  #tab-calendario.tab-panel.active {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
   .memorias-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
 }
