@@ -33,7 +33,7 @@
 
   <!-- =========================================================
        1. AUTENTICAÇÃO (LOGIN / CADASTRO)
-     ========================================================= -->
+       ========================================================= -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
       <h1 class="brand-title">Meu Calendário</h1>
@@ -73,7 +73,7 @@
 
   <!-- =========================================================
        2. PAINEL PRINCIPAL (DASHBOARD SHELL)
-     ========================================================= -->
+       ========================================================= -->
   <div id="dashboard" class="dashboard hidden">
     
     <header class="app-header">
@@ -97,29 +97,60 @@
       </div>
     </header>
 
-    <!-- Navegação Global de Abas -->
-    <nav class="tabs" role="tablist" aria-label="Navegação Principal">
-      <button class="tab-btn active" data-tab="geral">Geral</button>
-      <button class="tab-btn" data-tab="calendario">Calendário</button>
-      <button class="tab-btn" data-tab="biblioteca">Clube do Livro</button>
-      <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
-      <button class="tab-btn" data-tab="diario">Diário</button>
-      <button class="tab-btn" data-tab="secreto">Secreto</button>
-      <button class="tab-btn" data-tab="memorias">Memórias</button>
-      <button class="tab-btn" data-tab="roles">Rolês</button>
-      <button class="tab-btn" data-tab="metas">Metas</button>
-      <button class="tab-btn" data-tab="stats">Estatísticas</button>
-      <button class="tab-btn" data-tab="premiacao">Premiações</button>
-      <button class="tab-btn" data-tab="relatorios">Relatórios</button>
-      <button class="tab-btn" data-tab="chat">Chat</button>
-      <button class="tab-btn" data-tab="notificacoes">Avisos</button>
-      <button class="tab-btn" data-tab="config">Config</button>
+    <!-- =========================================================
+         NAVEGAÇÃO REORGANIZADA (NÍVEL 1 E NÍVEL 2)
+         ========================================================= -->
+    
+    <!-- Nível 1: Grupos Principais -->
+    <nav class="main-tabs" role="tablist" aria-label="Grupos Principais">
+      <button class="main-tab-btn active" data-group="agenda">Agenda e Início</button>
+      <button class="main-tab-btn" data-group="midia">Mídia e Clube</button>
+      <button class="main-tab-btn" data-group="pessoal">Pessoal e Rolês</button>
+      <button class="main-tab-btn" data-group="progresso">Progresso e Metas</button>
+      <button class="main-tab-btn" data-group="comunidade">Social e Ajustes</button>
     </nav>
+
+    <!-- Nível 2: Sub-abas (Ocultam ou exibem dependendo do grupo selecionado) -->
+    <div class="sub-tabs-container">
+      
+      <nav id="sub-agenda" class="sub-tabs active" role="tablist">
+        <button class="tab-btn active" data-tab="geral">Geral</button>
+        <button class="tab-btn" data-tab="calendario">Calendário</button>
+        <button class="tab-btn" data-tab="notificacoes">Avisos</button>
+      </nav>
+
+      <nav id="sub-midia" class="sub-tabs hidden" role="tablist">
+        <button class="tab-btn" data-tab="biblioteca">Clube do Livro</button>
+        <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
+      </nav>
+
+      <nav id="sub-pessoal" class="sub-tabs hidden" role="tablist">
+        <button class="tab-btn" data-tab="diario">Diário</button>
+        <button class="tab-btn" data-tab="secreto">Secreto</button>
+        <button class="tab-btn" data-tab="memorias">Memórias</button>
+        <button class="tab-btn" data-tab="roles">Rolês</button>
+      </nav>
+
+      <nav id="sub-progresso" class="sub-tabs hidden" role="tablist">
+        <button class="tab-btn" data-tab="metas">Metas</button>
+        <button class="tab-btn" data-tab="stats">Estatísticas</button>
+        <button class="tab-btn" data-tab="premiacao">Premiações</button>
+        <button class="tab-btn" data-tab="relatorios">Relatórios</button>
+      </nav>
+
+      <nav id="sub-comunidade" class="sub-tabs hidden" role="tablist">
+        <button class="tab-btn" data-tab="chat">Chat</button>
+        <button class="tab-btn" data-tab="config">Configurações</button>
+      </nav>
+      
+    </div>
 
     <!-- Conteúdo das Abas -->
     <main class="app-main">
 
-      <!-- CATEGORIA: VISÃO GERAL & AGENDA -->
+      <!-- =========================================================
+           GRUPO: AGENDA E INÍCIO
+           ========================================================= -->
       <section id="tab-geral" class="tab-panel active grid-container">
         <div class="panel-card">
           <h2>Próximos eventos</h2>
@@ -176,7 +207,23 @@
         </aside>
       </section>
 
-      <!-- CATEGORIA: CLUBE DO LIVRO & MÍDIA -->
+      <section id="tab-notificacoes" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Nova notificação</h2>
+          <form id="notifForm" class="inline-form">
+            <input type="text" id="notifText" placeholder="Aviso..." required>
+            <button type="submit" class="primary-btn">Publicar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Avisos</h2>
+          <div id="notificationsList"></div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           GRUPO: MÍDIA E CLUBE
+           ========================================================= -->
       <section id="tab-biblioteca" class="tab-panel grid-container">
         <div class="panel-card full-width-card">
           <input type="text" id="bookSearch" class="search-input" placeholder="Buscar no clube por título ou autor...">
@@ -233,7 +280,9 @@
         </div>
       </section>
 
-      <!-- CATEGORIA: PESSOAL, ROLÊS & MEMÓRIAS -->
+      <!-- =========================================================
+           GRUPO: PESSOAL E ROLÊS
+           ========================================================= -->
       <section id="tab-diario" class="tab-panel single-col">
         <div id="diarioContent"></div>
       </section>
@@ -273,7 +322,9 @@
         </div>
       </section>
 
-      <!-- CATEGORIA: METAS & ESTATÍSTICAS -->
+      <!-- =========================================================
+           GRUPO: PROGRESSO E METAS
+           ========================================================= -->
       <section id="tab-metas" class="tab-panel grid-container">
         <div class="panel-card">
           <h2>Nova meta financeira</h2>
@@ -297,7 +348,6 @@
         <div id="premiacaoContent"></div>
       </section>
 
-      <!-- CATEGORIA: SISTEMA & SOCIAL -->
       <section id="tab-relatorios" class="tab-panel single-col">
         <div class="panel-card">
           <h2>Novo relatório</h2>
@@ -313,6 +363,9 @@
         </div>
       </section>
 
+      <!-- =========================================================
+           GRUPO: SOCIAL E AJUSTES
+           ========================================================= -->
       <section id="tab-chat" class="tab-panel single-col">
         <div class="panel-card chat-card">
           <div id="chatMessages" class="chat-messages"></div>
@@ -320,20 +373,6 @@
             <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." maxlength="500" required>
             <button type="submit" class="primary-btn">Enviar</button>
           </form>
-        </div>
-      </section>
-
-      <section id="tab-notificacoes" class="tab-panel single-col">
-        <div class="panel-card">
-          <h2>Nova notificação</h2>
-          <form id="notifForm" class="inline-form">
-            <input type="text" id="notifText" placeholder="Aviso..." required>
-            <button type="submit" class="primary-btn">Publicar</button>
-          </form>
-        </div>
-        <div class="panel-card">
-          <h2>Avisos</h2>
-          <div id="notificationsList"></div>
         </div>
       </section>
 
@@ -346,11 +385,10 @@
 
   <!-- =========================================================
        3. MODAIS GLOBAIS
-     ========================================================= -->
-  <!-- Evento (Criar/Editar) -->
+       ========================================================= -->
   <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <button id="closeModal" class="close-btn" aria-label="Fechar">×</button>
+      <button id="closeModal" class="close-btn" aria-label="Fechar">x</button>
       <h2 id="modalTitle">Nova atividade</h2>
       <form id="eventForm">
         <input type="hidden" id="eventId">
@@ -382,7 +420,7 @@
           <input type="text" id="eventTheme" placeholder="Ex: Estruturas de Dados">
         </label>
         <label>Equipe / Grupo
-          <input type="text" id="eventTeam" placeholder="Ex: Grupo 3 - João, Maria, Ana">
+          <input type="text" id="eventTeam" placeholder="Ex: Grupo 3 - Joao, Maria, Ana">
         </label>
         <label>Descrição / Observações
           <textarea id="eventDescription" rows="3" placeholder="Conteúdo cobrado, local, links, etc."></textarea>
@@ -395,10 +433,9 @@
     </div>
   </div>
 
-  <!-- Formulário do Livro (Criar/Editar) -->
   <div id="bookFormModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <button id="closeBookForm" class="close-btn" aria-label="Fechar">×</button>
+      <button id="closeBookForm" class="close-btn" aria-label="Fechar">x</button>
       <h2 id="bookFormTitle">Novo livro</h2>
       <div class="panel-card book-search-box">
         <label>Buscar livro online (preenche automático)
@@ -426,20 +463,18 @@
     </div>
   </div>
 
-  <!-- Detalhes do Livro -->
   <div id="bookDetailModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <button id="closeBookDetail" class="close-btn" aria-label="Fechar">×</button>
+      <button id="closeBookDetail" class="close-btn" aria-label="Fechar">x</button>
       <div id="bookDetailBody"></div>
     </div>
   </div>
 
-  <!-- Carta para o Futuro -->
   <div id="cartaModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Antes de começar...</h2>
       <p id="cartaLivroTitulo" class="empty-hint"></p>
-      <p class="empty-hint">Escreva o que você espera deste livro. Fica selada até vocês duas terminarem.</p>
+      <p class="empty-hint">Escreva o que você espera deste livro. Fica selada até vocês terminarem.</p>
       <textarea id="cartaTexto" rows="4" placeholder="O que você espera deste livro?"></textarea>
       <div class="form-actions">
         <button type="button" id="pularCartaBtn" class="danger-btn">Pular por agora</button>
@@ -448,15 +483,12 @@
     </div>
   </div>
 
-  <!-- Visualizador de Foto -->
   <div id="photoViewerModal" class="modal hidden" role="dialog" aria-modal="true">
     <img id="photoViewerImg" src="" alt="Foto ampliada" class="photo-viewer-img">
   </div>
 
-  <!-- Toast Notification System -->
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-  <!-- Entry Point Javascript -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
