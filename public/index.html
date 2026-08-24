@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calend.rio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%237c5cff%22/></svg>">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Calendário & Clube</title>
+
+  <!-- Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%237c5cff%22/></svg>">
+  
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
-  <div class="blob blob-c"></div>
+
+  <!-- Background Decorative Elements -->
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+  <div class="blob blob-c" aria-hidden="true"></div>
 
   <div class="doodles" aria-hidden="true">
     <span class="doodle doodle-1"></span>
@@ -26,46 +31,51 @@
     <span class="doodle doodle-8 doodle-ring"></span>
   </div>
 
-  <!-- Login / Cadastro -->
+  <!-- =========================================================
+       1. AUTENTICAÇÃO (LOGIN / CADASTRO)
+     ========================================================= -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
       <h1 class="brand-title">Meu Calendário</h1>
       <p class="subtitle">Entre com sua conta para acessar o painel</p>
 
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active">Entrar</button>
-        <button id="tabSignup" class="auth-tab">Cadastrar</button>
+      <div class="auth-tabs" role="tablist">
+        <button id="tabLogin" class="auth-tab active" role="tab" aria-selected="true">Entrar</button>
+        <button id="tabSignup" class="auth-tab" role="tab" aria-selected="false">Cadastrar</button>
       </div>
 
       <form id="loginForm" class="auth-form">
         <label>E-mail
-          <input type="email" id="loginEmail" required>
+          <input type="email" id="loginEmail" required autocomplete="email">
         </label>
         <label>Senha
-          <input type="password" id="loginPassword" required minlength="6">
+          <input type="password" id="loginPassword" required minlength="6" autocomplete="current-password">
         </label>
-        <p id="loginError" class="auth-error hidden"></p>
+        <p id="loginError" class="auth-error hidden" role="alert"></p>
         <button type="submit" class="primary-btn full-width">Entrar</button>
       </form>
 
       <form id="signupForm" class="auth-form hidden">
         <label>Nome
-          <input type="text" id="signupName" required>
+          <input type="text" id="signupName" required autocomplete="name">
         </label>
         <label>E-mail
-          <input type="email" id="signupEmail" required>
+          <input type="email" id="signupEmail" required autocomplete="email">
         </label>
         <label>Senha
-          <input type="password" id="signupPassword" required minlength="6">
+          <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password">
         </label>
-        <p id="signupError" class="auth-error hidden"></p>
+        <p id="signupError" class="auth-error hidden" role="alert"></p>
         <button type="submit" class="primary-btn full-width">Criar minha conta</button>
       </form>
     </div>
   </div>
 
-  <!-- Painel principal (após login) -->
+  <!-- =========================================================
+       2. PAINEL PRINCIPAL (DASHBOARD SHELL)
+     ========================================================= -->
   <div id="dashboard" class="dashboard hidden">
+    
     <header class="app-header">
       <div class="brand">
         <div>
@@ -73,8 +83,9 @@
           <p id="headerSubtitle" class="subtitle">provas, atividades, leituras e trabalhos, num só lugar</p>
         </div>
       </div>
+      
       <div class="header-actions">
-        <button id="bellBtn" class="bell-btn" title="Atividades recentes">
+        <button id="bellBtn" class="bell-btn" title="Atividades recentes" aria-label="Notificações">
           <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
             <path d="M10 2a5 5 0 0 0-5 5v2.5c0 .8-.3 1.6-.9 2.2L3 13h14l-1.1-1.3a3 3 0 0 1-.9-2.2V7a5 5 0 0 0-5-5Zm-1.7 14a1.7 1.7 0 0 0 3.4 0h-3.4Z" fill="currentColor"/>
           </svg>
@@ -86,27 +97,30 @@
       </div>
     </header>
 
-    <nav class="tabs">
+    <!-- Navegação Global de Abas -->
+    <nav class="tabs" role="tablist" aria-label="Navegação Principal">
       <button class="tab-btn active" data-tab="geral">Geral</button>
       <button class="tab-btn" data-tab="calendario">Calendário</button>
-      <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
+      <button class="tab-btn" data-tab="biblioteca">Clube do Livro</button>
+      <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       <button class="tab-btn" data-tab="diario">Diário</button>
       <button class="tab-btn" data-tab="secreto">Secreto</button>
-      <button class="tab-btn" data-tab="stats">Estatísticas</button>
-      <button class="tab-btn" data-tab="premiacao">Premiações</button>
       <button class="tab-btn" data-tab="memorias">Memórias</button>
-      <button class="tab-btn" data-tab="chat">Chat</button>
-      <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       <button class="tab-btn" data-tab="roles">Rolês</button>
       <button class="tab-btn" data-tab="metas">Metas</button>
+      <button class="tab-btn" data-tab="stats">Estatísticas</button>
+      <button class="tab-btn" data-tab="premiacao">Premiações</button>
       <button class="tab-btn" data-tab="relatorios">Relatórios</button>
-      <button class="tab-btn" data-tab="notificacoes">Notificações</button>
+      <button class="tab-btn" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="notificacoes">Avisos</button>
       <button class="tab-btn" data-tab="config">Config</button>
     </nav>
 
+    <!-- Conteúdo das Abas -->
     <main class="app-main">
-      <!-- Geral -->
-      <section id="tab-geral" class="tab-panel active single-col">
+
+      <!-- CATEGORIA: VISÃO GERAL & AGENDA -->
+      <section id="tab-geral" class="tab-panel active grid-container">
         <div class="panel-card">
           <h2>Próximos eventos</h2>
           <div id="overviewEvents"></div>
@@ -125,7 +139,6 @@
         </div>
       </section>
 
-      <!-- Calendário -->
       <section id="tab-calendario" class="tab-panel">
         <section class="calendar-panel">
           <div class="calendar-nav">
@@ -163,13 +176,15 @@
         </aside>
       </section>
 
-      <!-- Biblioteca (lista) -->
-      <section id="tab-biblioteca" class="tab-panel single-col">
-        <input type="text" id="bookSearch" class="search-input" placeholder="Buscar por título ou autor...">
+      <!-- CATEGORIA: CLUBE DO LIVRO & MÍDIA -->
+      <section id="tab-biblioteca" class="tab-panel grid-container">
+        <div class="panel-card full-width-card">
+          <input type="text" id="bookSearch" class="search-input" placeholder="Buscar no clube por título ou autor...">
+        </div>
 
         <div class="panel-card roulette-card">
-          <h2>Roleta: qual o próximo livro?</h2>
-          <p class="empty-hint">Deixe o destino escolher a próxima leitura entre os planejados.</p>
+          <h2>Roleta: Qual o próximo livro?</h2>
+          <p class="empty-hint">Sorteie uma leitura entre os livros planejados.</p>
           <button id="rouletteBtn" type="button" class="primary-btn full-width">Girar roleta</button>
           <div id="rouletteResult"></div>
         </div>
@@ -195,47 +210,12 @@
           <div id="booksAbandonados"></div>
         </div>
 
-        <button id="openBookFormBtn" type="button" class="add-book-btn">+ Adicionar livro</button>
-      </section>
-
-      <!-- Diário -->
-      <section id="tab-diario" class="tab-panel single-col">
-        <div id="diarioContent"></div>
-      </section>
-
-      <!-- Secreto -->
-      <section id="tab-secreto" class="tab-panel single-col">
-        <div id="secretoContent"></div>
-      </section>
-
-      <!-- Estatísticas -->
-      <section id="tab-stats" class="tab-panel single-col">
-        <div id="statsContent"></div>
-      </section>
-
-      <!-- Premiações -->
-      <section id="tab-premiacao" class="tab-panel single-col">
-        <div id="premiacaoContent"></div>
-      </section>
-
-      <!-- Memórias -->
-      <section id="tab-memorias" class="tab-panel single-col">
-        <div id="memoriasContent"></div>
-      </section>
-
-      <!-- Chat -->
-      <section id="tab-chat" class="tab-panel single-col">
-        <div class="panel-card chat-card">
-          <div id="chatMessages" class="chat-messages"></div>
-          <form id="chatForm" class="chat-form">
-            <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." maxlength="500" required>
-            <button type="submit" class="primary-btn">Enviar</button>
-          </form>
+        <div class="full-width-card">
+          <button id="openBookFormBtn" type="button" class="add-book-btn">+ Adicionar livro ao Clube</button>
         </div>
       </section>
 
-      <!-- Filmes/Séries -->
-      <section id="tab-filmes" class="tab-panel single-col">
+      <section id="tab-filmes" class="tab-panel grid-container">
         <div class="panel-card">
           <h2>Adicionar filme/série</h2>
           <form id="movieForm" class="inline-form">
@@ -248,13 +228,25 @@
           </form>
         </div>
         <div class="panel-card">
-          <h2>Lista</h2>
+          <h2>Lista de Assistidos / Desejos</h2>
           <div id="moviesList"></div>
         </div>
       </section>
 
-      <!-- Rolês / Fotos e localidades / Ranking de locais -->
-      <section id="tab-roles" class="tab-panel single-col">
+      <!-- CATEGORIA: PESSOAL, ROLÊS & MEMÓRIAS -->
+      <section id="tab-diario" class="tab-panel single-col">
+        <div id="diarioContent"></div>
+      </section>
+
+      <section id="tab-secreto" class="tab-panel single-col">
+        <div id="secretoContent"></div>
+      </section>
+
+      <section id="tab-memorias" class="tab-panel single-col">
+        <div id="memoriasContent"></div>
+      </section>
+
+      <section id="tab-roles" class="tab-panel grid-container">
         <div class="panel-card">
           <h2>Marcar rolê</h2>
           <form id="roleForm" class="stacked-form">
@@ -281,23 +273,31 @@
         </div>
       </section>
 
-      <!-- Metas financeiras de longo prazo -->
-      <section id="tab-metas" class="tab-panel single-col">
+      <!-- CATEGORIA: METAS & ESTATÍSTICAS -->
+      <section id="tab-metas" class="tab-panel grid-container">
         <div class="panel-card">
-          <h2>Nova meta</h2>
+          <h2>Nova meta financeira</h2>
           <form id="goalForm" class="inline-form">
-            <input type="text" id="goalName" placeholder="Ex: Comprar casa, Comprar carro/moto" required>
+            <input type="text" id="goalName" placeholder="Ex: Viagem, Comprar livro" required>
             <input type="number" id="goalTarget" placeholder="Valor alvo (R$)" min="1" step="0.01" required>
             <button type="submit" class="primary-btn">Criar meta</button>
           </form>
         </div>
         <div class="panel-card">
-          <h2>Nossas metas</h2>
+          <h2>Acompanhamento de Metas</h2>
           <div id="goalsList"></div>
         </div>
       </section>
 
-      <!-- Relatórios -->
+      <section id="tab-stats" class="tab-panel single-col">
+        <div id="statsContent"></div>
+      </section>
+
+      <section id="tab-premiacao" class="tab-panel single-col">
+        <div id="premiacaoContent"></div>
+      </section>
+
+      <!-- CATEGORIA: SISTEMA & SOCIAL -->
       <section id="tab-relatorios" class="tab-panel single-col">
         <div class="panel-card">
           <h2>Novo relatório</h2>
@@ -313,7 +313,16 @@
         </div>
       </section>
 
-      <!-- Notificações -->
+      <section id="tab-chat" class="tab-panel single-col">
+        <div class="panel-card chat-card">
+          <div id="chatMessages" class="chat-messages"></div>
+          <form id="chatForm" class="chat-form">
+            <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." maxlength="500" required>
+            <button type="submit" class="primary-btn">Enviar</button>
+          </form>
+        </div>
+      </section>
+
       <section id="tab-notificacoes" class="tab-panel single-col">
         <div class="panel-card">
           <h2>Nova notificação</h2>
@@ -328,14 +337,18 @@
         </div>
       </section>
 
-      <!-- Config -->
       <section id="tab-config" class="tab-panel single-col">
         <div id="configContent"></div>
       </section>
+
     </main>
   </div>
 
-  <div id="eventModal" class="modal hidden">
+  <!-- =========================================================
+       3. MODAIS GLOBAIS
+     ========================================================= -->
+  <!-- Evento (Criar/Editar) -->
+  <div id="eventModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <button id="closeModal" class="close-btn" aria-label="Fechar">×</button>
       <h2 id="modalTitle">Nova atividade</h2>
@@ -382,8 +395,8 @@
     </div>
   </div>
 
-  <!-- Modal: formulário de livro (adicionar/editar) -->
-  <div id="bookFormModal" class="modal hidden">
+  <!-- Formulário do Livro (Criar/Editar) -->
+  <div id="bookFormModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <button id="closeBookForm" class="close-btn" aria-label="Fechar">×</button>
       <h2 id="bookFormTitle">Novo livro</h2>
@@ -413,16 +426,16 @@
     </div>
   </div>
 
-  <!-- Modal: detalhes do livro -->
-  <div id="bookDetailModal" class="modal hidden">
+  <!-- Detalhes do Livro -->
+  <div id="bookDetailModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <button id="closeBookDetail" class="close-btn" aria-label="Fechar">×</button>
       <div id="bookDetailBody"></div>
     </div>
   </div>
 
-  <!-- Modal: carta pro futuro -->
-  <div id="cartaModal" class="modal hidden">
+  <!-- Carta para o Futuro -->
+  <div id="cartaModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Antes de começar...</h2>
       <p id="cartaLivroTitulo" class="empty-hint"></p>
@@ -435,29 +448,15 @@
     </div>
   </div>
 
-  <!-- Visualizador de foto ampliada -->
-  <div id="photoViewerModal" class="modal hidden">
-    <img id="photoViewerImg" src="" alt="" class="photo-viewer-img">
+  <!-- Visualizador de Foto -->
+  <div id="photoViewerModal" class="modal hidden" role="dialog" aria-modal="true">
+    <img id="photoViewerImg" src="" alt="Foto ampliada" class="photo-viewer-img">
   </div>
 
-  <div id="toast" class="toast hidden"></div>
+  <!-- Toast Notification System -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
-  <script type="module" src="auth-ui.js"></script>
-  <script type="module" src="app.js"></script>
-  <script type="module" src="chat.js"></script>
-  <script type="module" src="books.js"></script>
-  <script type="module" src="diario.js"></script>
-  <script type="module" src="secreto.js"></script>
-  <script type="module" src="stats.js"></script>
-  <script type="module" src="premiacoes.js"></script>
-  <script type="module" src="memorias.js"></script>
-  <script type="module" src="config-clube.js"></script>
-  <script type="module" src="sino.js"></script>
-  <script type="module" src="fundo-frases.js"></script>
-  <script type="module" src="movies.js"></script>
-  <script type="module" src="roles.js"></script>
-  <script type="module" src="goals.js"></script>
-  <script type="module" src="reports.js"></script>
-  <script type="module" src="notifications.js"></script>
+  <!-- Entry Point Javascript -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>
