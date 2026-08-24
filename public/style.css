@@ -227,60 +227,85 @@ body {
 .bell-item:last-child { border-bottom: none; }
 
 /* =========================================================
-   4. ESTRUTURA GLOBAL: CONTEÚDO À ESQUERDA + SIDEBAR À DIREITA
+   4. ESTRUTURA GLOBAL: LAYOUT VERTICAL E NAVEGAÇÃO EM DUAS CAMADAS
    ========================================================= */
 .dashboard {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   width: 100%;
   max-width: 100%;
   padding: 1.25rem 2rem;
-  align-items: start;
+  box-sizing: border-box;
 }
 
 .app-main {
   width: 100%;
-  max-width: 100% !important;
   margin: 0;
   padding: 0;
 }
 
-/* Sidebar Fixa na Direita */
-.tabs {
-  position: sticky;
-  top: 1.25rem;
+/* Nível 1: Abas Principais (Topo) */
+.main-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 0.85rem;
+  padding: 0.75rem;
   border-radius: var(--radius);
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow);
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
-.tab-btn {
-  width: 100%;
-  text-align: left;
+.main-tab-btn {
   border: 1.5px solid var(--border);
   background: white;
   color: var(--muted);
   font-family: inherit;
   font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.1rem;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
-.tab-btn:hover { border-color: var(--accent); color: var(--accent); }
-.tab-btn.active {
+.main-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+.main-tab-btn.active {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: white;
   border-color: transparent;
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.25);
+}
+
+/* Nível 2: Sub-abas */
+.sub-tabs-container {
+  width: 100%;
+}
+
+.sub-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.5rem;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 12px rgba(90, 70, 160, 0.05);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.sub-tabs .tab-btn {
+  width: auto;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  flex-shrink: 0;
 }
 
 /* =========================================================
