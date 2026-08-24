@@ -904,6 +904,167 @@ body {
   width: 100%;
 }
 
+/* =========================================================
+   1. RESET BASE & ESCONDEDOR RÁPIDO
+   ========================================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Regra absoluta para ocultar elementos desativados */
+.hidden {
+  display: none !important;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* =========================================================
+   2. ISOLAMENTO DOS DECORATIVOS (Blobs e Doodles)
+   Garante que fiquem no fundo e NÃO travem o clique do usuário
+   ========================================================= */
+.blob, .doodles {
+  position: fixed;
+  z-index: -1;          /* Fica atrás de todo o conteúdo */
+  pointer-events: none; /* Deixa os cliques passarem para os botões */
+}
+
+/* =========================================================
+   3. CABEÇALHO E NAVEGAÇÃO DE ABAS
+   ========================================================= */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+.header-actions {
+  position: relative; /* Contexto de referência para o painel da sineta */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Painel suspenso da sineta de notificações */
+.bell-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 50;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  border-radius: 12px;
+  width: 300px;
+  padding: 1rem;
+}
+
+/* Rolagem horizontal limpa para as 15 abas sem quebrar o layout */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.75rem 1.5rem;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.tab-btn {
+  flex-shrink: 0; /* Impede os botões de amassarem */
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+/* =========================================================
+   4. GRID DOS PAINÉIS (Evita cards encavalados)
+   ========================================================= */
+.app-main {
+  padding: 1.5rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* Grid adaptativo automático */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.panel-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.full-width-card,
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.single-col {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* =========================================================
+   5. MODAIS OVERLAY (Garante visualização em cima de tudo)
+   ========================================================= */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px); /* Suaviza o fundo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Sempre no topo de tudo */
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 .full-width-card {
   grid-column: 1 / -1;
 }
