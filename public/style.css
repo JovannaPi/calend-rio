@@ -887,3 +887,15 @@ body {
   font-size: 0.9rem;
   color: var(--text);
 }
+
+/* Layout Responsivo para seções categorizadas */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.full-width-card {
+  grid-column: 1 / -1;
+}
