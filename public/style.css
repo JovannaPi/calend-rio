@@ -227,17 +227,19 @@ body {
 .bell-item:last-child { border-bottom: none; }
 
 /* =========================================================
-   4. ESTRUTURA GLOBAL: LAYOUT CENTRALIZADO E ABAS COMPACTAS
+   4. ESTRUTURA GLOBAL: LARGURA TOTAL E INTERATIVIDADE GARANTIDA
    ========================================================= */
 .dashboard {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   width: 100%;
-  max-width: 1200px; /* Limita a largura para o painel não esticar demais */
-  margin: 0 auto;    /* Centraliza o painel na tela */
-  padding: 1.25rem 2rem;
+  max-width: 100%; /* Ocupa a tela inteira */
+  margin: 0;
+  padding: 1.5rem 2.5rem;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 .app-main {
@@ -246,20 +248,22 @@ body {
   padding: 0;
 }
 
-/* Nível 1: Abas Principais (Compactas e alinhadas à esquerda) */
+/* Nível 1: Abas Principais (Largura Total) */
 .main-tabs {
-  display: inline-flex;
-  align-self: flex-start;
+  display: flex;
+  width: 100%;
   gap: 0.6rem;
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--radius);
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow);
   overflow-x: auto;
-  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10; /* Garante que fique acima de qualquer fundo */
 }
 
 .main-tab-btn {
@@ -274,6 +278,7 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
+  pointer-events: auto; /* Força o clique a funcionar */
 }
 .main-tab-btn:hover { border-color: var(--accent); color: var(--accent); }
 .main-tab-btn.active {
@@ -283,25 +288,28 @@ body {
   box-shadow: 0 4px 12px rgba(124, 92, 255, 0.25);
 }
 
-/* Nível 2: Sub-abas (Compactas) */
+/* Nível 2: Sub-abas (Largura Total) */
 .sub-tabs-container {
   width: 100%;
   display: flex;
+  flex-direction: column;
 }
 
 .sub-tabs {
-  display: inline-flex;
-  align-self: flex-start;
+  display: flex;
+  width: 100%;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 14px;
   border: 1px solid var(--panel-border);
   box-shadow: 0 4px 12px rgba(90, 70, 160, 0.05);
   overflow-x: auto;
-  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
 }
 
 .sub-tabs .tab-btn {
@@ -310,11 +318,13 @@ body {
   padding: 0.5rem 1rem;
   font-size: 0.82rem;
   flex-shrink: 0;
+  cursor: pointer;
+  pointer-events: auto; /* Força o clique a funcionar */
 }
 
-/* Garante que elementos decorativos não bloqueiem cliques */
-.blob, .doodles {
-  pointer-events: none;
+/* IMPEDE QUE ELEMENTOS DE FUNDO BLOQUEiem OS CLIQUES */
+.blob, .doodles, [class*="blob-"], [class*="doodle-"] {
+  pointer-events: none !important;
 }
 /* =========================================================
    5. PAINÉIS DE CONTEÚDO EM TELA CHEIA
