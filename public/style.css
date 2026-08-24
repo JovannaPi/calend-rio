@@ -722,3 +722,168 @@ body {
   border-radius: 999px;
   transition: width 0.3s ease;
 }
+
+/* Sino de notificações */
+.bell-btn {
+  position: relative;
+  background: white;
+  border: 1px solid var(--panel-border);
+  color: var(--accent);
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+.bell-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--accent-2);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+.bell-panel {
+  position: absolute;
+  top: 4.2rem;
+  right: 2rem;
+  width: 280px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(45,42,74,0.25);
+  z-index: 60;
+  padding: 0.5rem;
+}
+.bell-item { padding: 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.bell-item:last-child { border-bottom: none; }
+
+/* Biblioteca */
+.search-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: white;
+  color: var(--text);
+}
+.roulette-card { text-align: center; }
+.add-book-btn {
+  width: 100%;
+  border: 2px dashed var(--border);
+  background: transparent;
+  border-radius: 16px;
+  padding: 1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+.add-book-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.book-card-row { display: flex; gap: 0.75rem; }
+.book-card-info { flex: 1; min-width: 0; }
+.book-cover-sm { width: 3rem; height: 4rem; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.book-cover-lg { width: 100%; max-width: 180px; display: block; margin: 0 auto 0.75rem; border-radius: 12px; object-fit: cover; }
+.italic { font-style: italic; }
+
+.book-search-box { margin-bottom: 1rem; }
+.book-search-result {
+  width: 100%;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.4rem;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.book-search-result:hover { background: var(--accent-light); }
+.book-search-result img { width: 2rem; height: 2.7rem; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+
+.form-actions.column { flex-direction: column; gap: 0.6rem; }
+.form-actions.column button { width: 100%; }
+
+/* Diário / Secreto */
+.chapter-nav-row { display: flex; align-items: center; justify-content: space-between; }
+.chapter-nav-center { text-align: center; }
+.emoji-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.emoji-btn {
+  font-size: 1.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: var(--accent-light);
+  cursor: pointer;
+}
+.emoji-btn.active { border-color: var(--accent); transform: scale(1.1); }
+
+/* Estatísticas */
+.stat-card { display: inline-block; margin: 0.3rem; min-width: 140px; }
+.stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Fredoka", sans-serif; }
+.stat-bar-row { margin-bottom: 0.75rem; }
+.stat-bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem; }
+
+/* Memórias */
+.memorias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 600px) { .memorias-grid { grid-template-columns: 1fr; } }
+.capsula-card { border-top: 4px solid var(--accent); }
+.capsula-header { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.75rem; }
+.capsula-body { margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.footer-note { text-align: center; font-style: italic; }
+
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0.5rem 0; }
+.photo-box { position: relative; aspect-ratio: 1; }
+.photo-box img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; cursor: pointer; }
+.photo-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  width: 1.4rem;
+  height: 1.4rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.photo-viewer-img { max-width: 90vw; max-height: 90vh; border-radius: 16px; object-fit: contain; }
+#photoViewerModal { background: rgba(0,0,0,0.85); }
+
+/* Fundo de frases (decorativo) */
+.fundo-frases {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.12;
+}
+.fundo-frase {
+  position: absolute;
+  max-width: 200px;
+  font-family: "Fredoka", sans-serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text);
+}

@@ -1,311 +1,582 @@
-import { db } from "./firebase-config.js";
 import { onAuth, getCurrentUser } from "./auth.js";
 import {
-  collection,
-  doc,
-  addDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  onSnapshot,
-  getDocs,
-  orderBy,
-  query,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+  listenLivros,
+  salvarLivro,
+  atualizarLivro,
+  excluirLivro,
+  listenCapitulos,
+  updateConfig,
+  registrarAtividade,
+} from "./db-livros.js";
 
-const STATUS_LABELS = { planejado: "Planejado", lendo: "Lendo", concluido: "Concluído" };
-const STATUS_ORDER = ["lendo", "planejado", "concluido"];
+const STATUS_LABELS = {
+  planejado: "Planejado",
+  lendo: "Lendo",
+  trocar: "Prontos pra trocar",
+  concluido: "Concluído",
+  abandonado: "Abandonado",
+};
 
-const listView = document.getElementById("bibliotecaListView");
-const detailView = document.getElementById("bookDetailView");
-const booksListEl = document.getElementById("booksList");
+const searchInput = document.getElementById("bookSearch");
+const rouletteBtn = document.getElementById("rouletteBtn");
+const rouletteResult = document.getElementById("rouletteResult");
+const openBookFormBtn = document.getElementById("openBookFormBtn");
+
+const bookFormModal = document.getElementById("bookFormModal");
+const bookFormTitle = document.getElementById("bookFormTitle");
 const bookForm = document.getElementById("bookForm");
-const bookTitleInput = document.getElementById("bookTitle");
-const bookAuthorInput = document.getElementById("bookAuthor");
+const closeBookForm = document.getElementById("closeBookForm");
+const deleteBookBtn = document.getElementById("deleteBookBtn");
 
-const overviewReading = document.getElementById("overviewReading");
-const backBtn = document.getElementById("backToBooks");
-const detailTitle = document.getElementById("bookDetailTitle");
-const detailAuthor = document.getElementById("bookDetailAuthor");
-const statusRow = document.getElementById("bookStatusRow");
-const chapterForm = document.getElementById("chapterForm");
-const chapterNumberInput = document.getElementById("chapterNumber");
-const chaptersListEl = document.getElementById("chaptersList");
+const bookOnlineSearch = document.getElementById("bookOnlineSearch");
+const bookOnlineSearchBtn = document.getElementById("bookOnlineSearchBtn");
+const bookOnlineResults = document.getElementById("bookOnlineResults");
 
-const booksRef = collection(db, "livros");
-let books = [];
-let currentBook = null;
-let unsubChapters = null;
+const bookDetailModal = document.getElementById("bookDetailModal");
+const bookDetailBody = document.getElementById("bookDetailBody");
+const closeBookDetail = document.getElementById("closeBookDetail");
+
+const cartaModal = document.getElementById("cartaModal");
+const cartaLivroTitulo = document.getElementById("cartaLivroTitulo");
+const cartaTexto = document.getElementById("cartaTexto");
+const pularCartaBtn = document.getElementById("pularCartaBtn");
+const selarCartaBtn = document.getElementById("selarCartaBtn");
+
+const toast = document.getElementById("toast");
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.remove("hidden");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.add("hidden"), 2400);
+}
+
+let livros = [];
 let started = false;
+let livroParaCarta = null;
 
-function bookCard(book) {
+function jaLeu(livro, uid) {
+  return livro.leituras?.[uid]?.nota != null;
+}
+
+function nomeCurto(name) {
+  return name ? name.split(" ")[0] : "Alguém";
+}
+
+function filtrar(lista) {
+  const termo = searchInput.value.trim().toLowerCase();
+  if (!termo) return lista;
+  return lista.filter(
+    (l) => l.titulo.toLowerCase().includes(termo) || (l.autor || "").toLowerCase().includes(termo)
+  );
+}
+
+function bookMiniCard(livro, { actionsHtml } = {}) {
   const card = document.createElement("div");
-  card.className = "event-card";
+  card.className = "event-card book-card";
 
+  const row = document.createElement("div");
+  row.className = "book-card-row";
+
+  if (livro.capaUrl) {
+    const img = document.createElement("img");
+    img.src = livro.capaUrl;
+    img.alt = livro.titulo;
+    img.className = "book-cover-sm";
+    row.appendChild(img);
+  }
+
+  const info = document.createElement("div");
+  info.className = "book-card-info";
   const title = document.createElement("div");
   title.className = "event-title";
-  title.textContent = book.titulo;
-  card.appendChild(title);
-
+  title.textContent = livro.titulo;
+  info.appendChild(title);
   const meta = document.createElement("div");
   meta.className = "event-meta";
-  meta.textContent = [book.autor, `sugerido por ${book.sugeridoPorName || "alguém"}`]
-    .filter(Boolean)
-    .join(" · ");
-  card.appendChild(meta);
+  meta.textContent = livro.autor || "";
+  info.appendChild(meta);
+  if (livro.motivoEscolha) {
+    const motivo = document.createElement("div");
+    motivo.className = "event-meta italic";
+    motivo.textContent = `"${livro.motivoEscolha}"`;
+    info.appendChild(motivo);
+  }
+  if (livro.sugeridoPorName) {
+    const sug = document.createElement("div");
+    sug.className = "event-meta";
+    sug.textContent = `sugestão de ${nomeCurto(livro.sugeridoPorName)}`;
+    info.appendChild(sug);
+  }
+  row.appendChild(info);
+  card.appendChild(row);
 
-  const tag = document.createElement("span");
-  tag.className = "event-type-tag";
-  tag.style.background = "#7c5cff";
-  tag.textContent = STATUS_LABELS[book.status] || book.status;
-  card.appendChild(tag);
+  const actions = document.createElement("div");
+  actions.className = "status-row";
+  card.appendChild(actions);
+  card.dataset.actionsSlot = "true";
 
-  card.addEventListener("click", () => openBook(book));
-  return card;
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("button")) return;
+    abrirDetalhe(livro);
+  });
+
+  return { card, actions };
 }
 
-function renderBooksList() {
-  booksListEl.innerHTML = "";
-  if (books.length === 0) {
-    booksListEl.innerHTML = '<p class="empty-hint">Nenhum livro ainda.</p>';
-  } else {
-    [...books]
-      .sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status))
-      .forEach((b) => booksListEl.appendChild(bookCard(b)));
-  }
+function addActionBtn(container, label, onClick, danger) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "status-chip" + (danger ? " danger" : " active");
+  btn.textContent = label;
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    onClick();
+  });
+  container.appendChild(btn);
+  return btn;
+}
 
-  const lendo = books.filter((b) => b.status === "lendo");
-  overviewReading.innerHTML = "";
-  if (lendo.length === 0) {
-    overviewReading.innerHTML = '<p class="empty-hint">Ninguém está lendo nada agora.</p>';
-  } else {
-    lendo.forEach((b) => overviewReading.appendChild(bookCard(b)));
+async function definirComoAtual(livro) {
+  const me = getCurrentUser();
+  const lendoAgora = livros.find(
+    (l) => l.status === "lendo" && l.leitorAtualUid === me.uid && l.id !== livro.id
+  );
+  if (lendoAgora) {
+    const continuar = confirm(
+      `Você já está lendo "${lendoAgora.titulo}". Pausar esse livro (volta pra Planejados) e começar este agora?`
+    );
+    if (!continuar) return;
+    await atualizarLivro(lendoAgora.id, { status: "planejado", leitorAtualUid: null });
+  }
+  const hoje = new Date().toISOString().split("T")[0];
+  const leituras = { ...(livro.leituras || {}) };
+  leituras[me.uid] = { ...(leituras[me.uid] || {}), dataInicio: hoje, name: me.name };
+
+  await atualizarLivro(livro.id, { status: "lendo", leitorAtualUid: me.uid, leituras });
+  await updateConfig({ [`livroAtualPorUid.${me.uid}`]: livro.id });
+  await registrarAtividade({ tipo: "troca", uid: me.uid, name: me.name, livroId: livro.id, livroTitulo: livro.titulo });
+
+  const jaEnviei = livro.cartas?.[me.uid]?.enviada;
+  if (!jaEnviei) {
+    livroParaCarta = livro;
+    cartaLivroTitulo.textContent = livro.titulo;
+    cartaTexto.value = "";
+    cartaModal.classList.remove("hidden");
   }
 }
+
+async function desistir(livro) {
+  if (!confirm(`Tem certeza que quer desistir de "${livro.titulo}"?`)) return;
+  await atualizarLivro(livro.id, { status: "abandonado", leitorAtualUid: null });
+  fecharDetalhe();
+}
+
+async function recomecar(livro) {
+  await atualizarLivro(livro.id, { status: "planejado" });
+  fecharDetalhe();
+}
+
+function progressoCapitulos(livro, container) {
+  if (!livro.totalCapitulos || !livro.leitorAtualUid) return;
+  const box = document.createElement("div");
+  box.className = "reveal-box";
+  box.textContent = "Carregando progresso...";
+  container.appendChild(box);
+
+  const unsub = listenCapitulos(livro.id, (capitulos) => {
+    const uid = livro.leitorAtualUid;
+    const concluidos = capitulos.filter((c) => {
+      const e = c.entradas?.[uid];
+      return e && (e.teoriaEnviada || e.impressao || e.frase || (e.emocoes && e.emocoes.length));
+    }).length;
+    const pct = Math.round((concluidos / livro.totalCapitulos) * 100);
+    box.innerHTML = "";
+    const label = document.createElement("div");
+    label.className = "event-meta";
+    label.textContent = `Progresso de leitura: ${concluidos} de ${livro.totalCapitulos} capítulos (${pct}%)`;
+    box.appendChild(label);
+    const outer = document.createElement("div");
+    outer.className = "progress-outer";
+    const inner = document.createElement("div");
+    inner.className = "progress-inner";
+    inner.style.width = `${pct}%`;
+    outer.appendChild(inner);
+    box.appendChild(outer);
+  });
+  container._unsub = container._unsub || [];
+  container._unsub.push(unsub);
+}
+
+function renderSection(containerId, lista, buildActions) {
+  const container = document.getElementById(containerId);
+  if (container._unsub) {
+    container._unsub.forEach((u) => u());
+    container._unsub = [];
+  }
+  container.innerHTML = "";
+  if (lista.length === 0) {
+    container.innerHTML = '<p class="empty-hint">Nada por aqui.</p>';
+    return;
+  }
+  lista.forEach((livro) => {
+    const { card, actions } = bookMiniCard(livro);
+    buildActions(livro, actions, card);
+    container.appendChild(card);
+  });
+}
+
+function render() {
+  const me = getCurrentUser();
+  const filtrados = filtrar(livros);
+
+  const lendo = filtrados.filter((l) => l.status === "lendo");
+  const trocar = filtrados.filter((l) => l.status === "trocar");
+  const planejados = filtrados.filter((l) => l.status === "planejado");
+  const concluidos = filtrados.filter((l) => l.status === "concluido");
+  const abandonados = filtrados.filter((l) => l.status === "abandonado");
+
+  renderSection("booksLendo", lendo, (livro, actions, card) => {
+    if (livro.leitorAtualUid) {
+      const tag = document.createElement("span");
+      tag.className = "event-type-tag";
+      tag.style.background = "#7c5cff";
+      tag.textContent = `${nomeCurto(livro.leituras?.[livro.leitorAtualUid]?.name)} está lendo`;
+      card.insertBefore(tag, card.firstChild);
+    }
+    addActionBtn(actions, "Desistir", () => desistir(livro), true);
+    progressoCapitulos(livro, card);
+  });
+
+  renderSection("booksTrocar", trocar, (livro, actions) => {
+    const jaLi = jaLeu(livro, me.uid);
+    if (jaLi) {
+      const info = document.createElement("p");
+      info.className = "empty-hint";
+      info.textContent = "Você já leu este — esperando a outra pessoa.";
+      actions.appendChild(info);
+    } else {
+      addActionBtn(actions, "Agora é sua vez de ler", () => definirComoAtual(livro));
+    }
+  });
+
+  renderSection("booksPlanejados", planejados, (livro, actions) => {
+    addActionBtn(actions, "Começar a ler", () => definirComoAtual(livro));
+  });
+
+  renderSection("booksConcluidos", concluidos, (livro, actions, card) => {
+    const notas = document.createElement("div");
+    notas.className = "event-meta";
+    notas.textContent = Object.values(livro.leituras || {})
+      .filter((l) => l.nota != null)
+      .map((l) => `${nomeCurto(l.name)}: ${l.nota}/10`)
+      .join(" · ");
+    card.appendChild(notas);
+  });
+
+  renderSection("booksAbandonados", abandonados, (livro, actions) => {
+    addActionBtn(actions, "Recomeçar depois", () => recomecar(livro));
+  });
+}
+
+function rodarRoleta() {
+  const me = getCurrentUser();
+  const planejados = livros.filter((l) => l.status === "planejado");
+  if (planejados.length === 0) {
+    showToast("Adicione livros em Planejados pra poder sortear!");
+    return;
+  }
+  rouletteBtn.disabled = true;
+  let giros = 0;
+  let sorteado = null;
+  const intervalo = setInterval(() => {
+    sorteado = planejados[Math.floor(Math.random() * planejados.length)];
+    rouletteResult.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "event-title";
+    p.textContent = sorteado.titulo;
+    rouletteResult.appendChild(p);
+    giros++;
+    if (giros > 12) {
+      clearInterval(intervalo);
+      rouletteBtn.disabled = false;
+      const actions = document.createElement("div");
+      actions.className = "status-row";
+      addActionBtn(actions, "Começar a ler este livro", () => definirComoAtual(sorteado));
+      addActionBtn(actions, "Ver detalhes", () => abrirDetalhe(sorteado));
+      rouletteResult.appendChild(actions);
+    }
+  }, 100);
+}
+
+// ── Modal: adicionar/editar livro ────────────────────────────────────────
+function abrirFormLivro(livro) {
+  bookFormTitle.textContent = livro ? "Editar livro" : "Novo livro";
+  document.getElementById("bookId").value = livro ? livro.id : "";
+  document.getElementById("bookTitle").value = livro ? livro.titulo : "";
+  document.getElementById("bookAuthor").value = livro ? livro.autor || "" : "";
+  document.getElementById("bookCapaUrl").value = livro ? livro.capaUrl || "" : "";
+  document.getElementById("bookGenero").value = livro ? livro.genero || "" : "";
+  document.getElementById("bookTotalCapitulos").value = livro ? livro.totalCapitulos || "" : "";
+  document.getElementById("bookSinopse").value = livro ? livro.sinopse || "" : "";
+  document.getElementById("bookMotivo").value = livro ? livro.motivoEscolha || "" : "";
+  deleteBookBtn.classList.toggle("hidden", !livro);
+  bookOnlineResults.innerHTML = "";
+  bookOnlineSearch.value = "";
+  bookFormModal.classList.remove("hidden");
+}
+function fecharFormLivro() {
+  bookFormModal.classList.add("hidden");
+  bookForm.reset();
+}
+
+openBookFormBtn.addEventListener("click", () => abrirFormLivro(null));
+closeBookForm.addEventListener("click", fecharFormLivro);
+bookFormModal.addEventListener("click", (e) => e.target === bookFormModal && fecharFormLivro());
 
 bookForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const titulo = bookTitleInput.value.trim();
-  if (!titulo) return;
   const me = getCurrentUser();
-  await addDoc(booksRef, {
-    titulo,
-    autor: bookAuthorInput.value.trim(),
-    status: "planejado",
-    sugeridoPorUid: me.uid,
-    sugeridoPorName: me.name,
-    createdAt: Date.now(),
-  });
-  bookTitleInput.value = "";
-  bookAuthorInput.value = "";
-});
-
-function openBook(book) {
-  currentBook = book;
-  listView.classList.add("hidden");
-  detailView.classList.remove("hidden");
-  detailTitle.textContent = book.titulo;
-  detailAuthor.textContent = book.autor || "";
-
-  statusRow.innerHTML = "";
-  STATUS_ORDER.forEach((status) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "status-chip" + (book.status === status ? " active" : "");
-    btn.textContent = STATUS_LABELS[status];
-    btn.addEventListener("click", () => updateDoc(doc(db, "livros", book.id), { status }));
-    statusRow.appendChild(btn);
-  });
-  const delBtn = document.createElement("button");
-  delBtn.type = "button";
-  delBtn.className = "status-chip danger";
-  delBtn.textContent = "Remover livro";
-  delBtn.addEventListener("click", async () => {
-    await deleteDoc(doc(db, "livros", book.id));
-    backToList();
-  });
-  statusRow.appendChild(delBtn);
-
-  if (unsubChapters) unsubChapters();
-  const chaptersRef = collection(db, "livros", book.id, "capitulos");
-  const q = query(chaptersRef, orderBy("numero", "asc"));
-  unsubChapters = onSnapshot(q, (snap) => {
-    renderChapters(snap.docs.map((d) => d.data()));
-  });
-}
-
-function backToList() {
-  currentBook = null;
-  if (unsubChapters) unsubChapters();
-  unsubChapters = null;
-  detailView.classList.add("hidden");
-  listView.classList.remove("hidden");
-}
-backBtn.addEventListener("click", backToList);
-
-chapterForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const numero = parseInt(chapterNumberInput.value, 10);
-  if (!numero || !currentBook) return;
-  const ref = doc(db, "livros", currentBook.id, "capitulos", String(numero));
-  await setDoc(ref, { numero, entradas: {} }, { merge: true });
-  chapterNumberInput.value = "";
-});
-
-function isRevealed(entradas) {
-  const uids = Object.keys(entradas || {});
-  return uids.filter((uid) => entradas[uid]?.teoriaEnviada).length >= 2;
-}
-
-function renderChapters(chapters) {
-  const me = getCurrentUser();
-  chaptersListEl.innerHTML = "";
-
-  chapters.forEach((cap) => {
-    const entradas = cap.entradas || {};
-    const minha = entradas[me.uid] || {};
-    const revelado = isRevealed(entradas);
-
-    const card = document.createElement("div");
-    card.className = "panel-card chapter-card";
-
-    const h3 = document.createElement("h3");
-    h3.textContent = `Capítulo ${cap.numero}`;
-    card.appendChild(h3);
-
-    const impressaoLabel = document.createElement("label");
-    impressaoLabel.textContent = "Minha impressão (só você vê)";
-    const impressaoInput = document.createElement("textarea");
-    impressaoInput.rows = 2;
-    impressaoInput.value = minha.impressao || "";
-    impressaoLabel.appendChild(impressaoInput);
-    card.appendChild(impressaoLabel);
-
-    const teoriaLabel = document.createElement("label");
-    teoriaLabel.textContent = "Minha teoria / segredo (revelado quando os dois enviarem)";
-    const teoriaInput = document.createElement("textarea");
-    teoriaInput.rows = 2;
-    teoriaInput.value = minha.teoria || "";
-    teoriaInput.disabled = !!minha.teoriaEnviada;
-    teoriaLabel.appendChild(teoriaInput);
-    card.appendChild(teoriaLabel);
-
-    const actions = document.createElement("div");
-    actions.className = "form-actions";
-
-    const saveBtn = document.createElement("button");
-    saveBtn.type = "button";
-    saveBtn.className = "primary-btn";
-    saveBtn.textContent = "Salvar impressão";
-    saveBtn.addEventListener("click", async () => {
-      const ref = doc(db, "livros", currentBook.id, "capitulos", String(cap.numero));
-      await updateDoc(ref, { [`entradas.${me.uid}.impressao`]: impressaoInput.value, [`entradas.${me.uid}.name`]: me.name });
-    });
-    actions.appendChild(saveBtn);
-
-    if (!minha.teoriaEnviada) {
-      const sendBtn = document.createElement("button");
-      sendBtn.type = "button";
-      sendBtn.className = "danger-btn";
-      sendBtn.textContent = "Enviar teoria (trava)";
-      sendBtn.addEventListener("click", async () => {
-        const ref = doc(db, "livros", currentBook.id, "capitulos", String(cap.numero));
-        await updateDoc(ref, {
-          [`entradas.${me.uid}.teoria`]: teoriaInput.value,
-          [`entradas.${me.uid}.teoriaEnviada`]: true,
-          [`entradas.${me.uid}.name`]: me.name,
-        });
-      });
-      actions.appendChild(sendBtn);
-    }
-    card.appendChild(actions);
-
-    const revealBox = document.createElement("div");
-    revealBox.className = "reveal-box";
-    if (revelado) {
-      revealBox.innerHTML = "<strong>🔓 Teorias reveladas:</strong>";
-      Object.entries(entradas).forEach(([uid, dados]) => {
-        if (!dados.teoriaEnviada) return;
-        const p = document.createElement("p");
-        p.textContent = `${dados.name || "Alguém"}: ${dados.teoria}`;
-        revealBox.appendChild(p);
-      });
+  const id = document.getElementById("bookId").value;
+  const dados = {
+    titulo: document.getElementById("bookTitle").value.trim(),
+    autor: document.getElementById("bookAuthor").value.trim(),
+    capaUrl: document.getElementById("bookCapaUrl").value.trim(),
+    genero: document.getElementById("bookGenero").value.trim(),
+    totalCapitulos: Number(document.getElementById("bookTotalCapitulos").value) || null,
+    sinopse: document.getElementById("bookSinopse").value.trim(),
+    motivoEscolha: document.getElementById("bookMotivo").value.trim(),
+  };
+  if (!dados.titulo) return;
+  try {
+    if (id) {
+      await atualizarLivro(id, dados);
     } else {
-      revealBox.textContent = "🔒 Aguardando a outra pessoa enviar a teoria...";
-    }
-    card.appendChild(revealBox);
-
-    if (revelado) {
-      const discussao = document.createElement("div");
-      discussao.className = "chapter-discussion";
-      const discTitle = document.createElement("h4");
-      discTitle.textContent = "Discussão";
-      discussao.appendChild(discTitle);
-      const commentsEl = document.createElement("div");
-      commentsEl.className = "chat-messages small";
-      discussao.appendChild(commentsEl);
-
-      const commentForm = document.createElement("form");
-      commentForm.className = "chat-form";
-      const commentInput = document.createElement("input");
-      commentInput.type = "text";
-      commentInput.placeholder = "Comentar...";
-      commentInput.required = true;
-      const commentBtn = document.createElement("button");
-      commentBtn.type = "submit";
-      commentBtn.className = "primary-btn";
-      commentBtn.textContent = "Enviar";
-      commentForm.appendChild(commentInput);
-      commentForm.appendChild(commentBtn);
-      discussao.appendChild(commentForm);
-      card.appendChild(discussao);
-
-      const commentsRef = collection(
-        db,
-        "livros",
-        currentBook.id,
-        "capitulos",
-        String(cap.numero),
-        "comentarios"
-      );
-
-      async function loadComments() {
-        const q = query(commentsRef, orderBy("createdAt", "asc"));
-        const snap = await getDocs(q);
-        commentsEl.innerHTML = "";
-        snap.docs.forEach((d) => {
-          const c = d.data();
-          const bubble = document.createElement("div");
-          bubble.className = "chat-bubble" + (c.uid === me.uid ? " mine" : "");
-          bubble.innerHTML = `<div class="chat-author">${c.name || "Alguém"}</div>`;
-          const text = document.createElement("div");
-          text.textContent = c.text;
-          bubble.appendChild(text);
-          commentsEl.appendChild(bubble);
-        });
-        commentsEl.scrollTop = commentsEl.scrollHeight;
-      }
-      loadComments();
-
-      commentForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const text = commentInput.value.trim();
-        if (!text) return;
-        commentInput.value = "";
-        await addDoc(commentsRef, { text, uid: me.uid, name: me.name, createdAt: Date.now() });
-        loadComments();
+      await salvarLivro({
+        ...dados,
+        status: "planejado",
+        sugeridoPorUid: me.uid,
+        sugeridoPorName: me.name,
+        createdAt: Date.now(),
       });
     }
+    fecharFormLivro();
+  } catch {
+    showToast("Não foi possível salvar o livro.");
+  }
+});
 
-    chaptersListEl.appendChild(card);
+deleteBookBtn.addEventListener("click", async () => {
+  const id = document.getElementById("bookId").value;
+  if (!id || !confirm("Tem certeza que deseja excluir este livro?")) return;
+  await excluirLivro(id);
+  fecharFormLivro();
+});
+
+// ── Busca online (Google Books / Open Library) ───────────────────────────
+async function buscarGoogleBooks(busca) {
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(busca)}&country=BR&maxResults=6`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("google books");
+  const data = await res.json();
+  return (data.items || []).map((item) => {
+    const info = item.volumeInfo || {};
+    return {
+      id: item.id,
+      titulo: info.title || "",
+      autor: (info.authors || []).join(", "),
+      capaUrl: (info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "").replace("http://", "https://"),
+      sinopse: info.description || "",
+      genero: (info.categories || [])[0] || "",
+    };
   });
 }
+
+async function buscarOpenLibrary(busca) {
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(busca)}&language=por&limit=6`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("open library");
+  const data = await res.json();
+  return (data.docs || []).map((d) => ({
+    id: d.key,
+    titulo: d.title || "",
+    autor: (d.author_name || []).join(", "),
+    capaUrl: d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : "",
+    sinopse: "",
+    genero: (d.subject || [])[0] || "",
+  }));
+}
+
+bookOnlineSearchBtn.addEventListener("click", async () => {
+  const termo = bookOnlineSearch.value.trim();
+  if (!termo) return;
+  bookOnlineResults.innerHTML = '<p class="empty-hint">Buscando...</p>';
+  let resultados = [];
+  try {
+    resultados = await buscarGoogleBooks(termo);
+  } catch {
+    try {
+      resultados = await buscarOpenLibrary(termo);
+    } catch {
+      bookOnlineResults.innerHTML = '<p class="empty-hint">Não consegui buscar agora. Preencha manualmente.</p>';
+      return;
+    }
+  }
+  bookOnlineResults.innerHTML = "";
+  if (resultados.length === 0) {
+    bookOnlineResults.innerHTML = '<p class="empty-hint">Nenhum resultado.</p>';
+    return;
+  }
+  resultados.forEach((item) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "book-search-result";
+    row.innerHTML = "";
+    if (item.capaUrl) {
+      const img = document.createElement("img");
+      img.src = item.capaUrl;
+      row.appendChild(img);
+    }
+    const info = document.createElement("div");
+    const t = document.createElement("div");
+    t.className = "event-title";
+    t.textContent = item.titulo || "Sem título";
+    const a = document.createElement("div");
+    a.className = "event-meta";
+    a.textContent = item.autor || "Autor desconhecido";
+    info.appendChild(t);
+    info.appendChild(a);
+    row.appendChild(info);
+    row.addEventListener("click", () => {
+      document.getElementById("bookTitle").value = item.titulo;
+      document.getElementById("bookAuthor").value = item.autor;
+      document.getElementById("bookCapaUrl").value = item.capaUrl;
+      document.getElementById("bookSinopse").value = item.sinopse;
+      document.getElementById("bookGenero").value = item.genero;
+      bookOnlineResults.innerHTML = "";
+      bookOnlineSearch.value = "";
+    });
+    bookOnlineResults.appendChild(row);
+  });
+});
+
+// ── Modal: detalhes ──────────────────────────────────────────────────────
+function abrirDetalhe(livro) {
+  const me = getCurrentUser();
+  bookDetailBody.innerHTML = "";
+
+  if (livro.capaUrl) {
+    const img = document.createElement("img");
+    img.src = livro.capaUrl;
+    img.className = "book-cover-lg";
+    bookDetailBody.appendChild(img);
+  }
+  bookDetailBody.appendChild(Object.assign(document.createElement("h2"), { textContent: livro.titulo }));
+  if (livro.autor) {
+    bookDetailBody.appendChild(Object.assign(document.createElement("p"), { className: "empty-hint", textContent: livro.autor }));
+  }
+  if (livro.sinopse) {
+    const p = document.createElement("p");
+    p.className = "event-meta";
+    p.textContent = livro.sinopse;
+    bookDetailBody.appendChild(p);
+  }
+  const tags = document.createElement("div");
+  tags.className = "status-row";
+  if (livro.genero) {
+    const t = document.createElement("span");
+    t.className = "event-type-tag";
+    t.style.background = "#a78bfa";
+    t.textContent = livro.genero;
+    tags.appendChild(t);
+  }
+  if (livro.totalCapitulos) {
+    const t = document.createElement("span");
+    t.className = "event-type-tag";
+    t.style.background = "#4d8cff";
+    t.textContent = `${livro.totalCapitulos} capítulos`;
+    tags.appendChild(t);
+  }
+  bookDetailBody.appendChild(tags);
+
+  if (livro.motivoEscolha) {
+    const p = document.createElement("p");
+    p.className = "event-meta italic";
+    p.textContent = `"${livro.motivoEscolha}"`;
+    bookDetailBody.appendChild(p);
+  }
+  if (livro.sugeridoPorName) {
+    const p = document.createElement("p");
+    p.className = "event-meta";
+    p.textContent = `Sugerido por ${nomeCurto(livro.sugeridoPorName)}`;
+    bookDetailBody.appendChild(p);
+  }
+
+  if (livro.status === "concluido" || livro.status === "trocar") {
+    const box = document.createElement("div");
+    box.className = "reveal-box";
+    Object.values(livro.leituras || {}).forEach((l) => {
+      if (l.nota == null) return;
+      const p = document.createElement("p");
+      p.textContent = `${nomeCurto(l.name)}: nota ${l.nota}/10${l.dataInicio ? ` · de ${l.dataInicio}` : ""}${l.dataFim ? ` até ${l.dataFim}` : ""}`;
+      box.appendChild(p);
+    });
+    bookDetailBody.appendChild(box);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "form-actions column";
+  addActionBtn(actions, "Editar informações", () => {
+    fecharDetalhe();
+    abrirFormLivro(livro);
+  });
+  if (livro.status === "lendo" && livro.leitorAtualUid === me.uid) {
+    addActionBtn(actions, "Desistir deste livro", () => desistir(livro), true);
+  }
+  addActionBtn(
+    actions,
+    "Excluir livro",
+    async () => {
+      if (confirm("Tem certeza que deseja excluir este livro?")) {
+        await excluirLivro(livro.id);
+        fecharDetalhe();
+      }
+    },
+    true
+  );
+  bookDetailBody.appendChild(actions);
+
+  bookDetailModal.classList.remove("hidden");
+}
+function fecharDetalhe() {
+  bookDetailModal.classList.add("hidden");
+}
+closeBookDetail.addEventListener("click", fecharDetalhe);
+bookDetailModal.addEventListener("click", (e) => e.target === bookDetailModal && fecharDetalhe());
+
+// ── Modal: carta pro futuro ───────────────────────────────────────────────
+selarCartaBtn.addEventListener("click", async () => {
+  if (!livroParaCarta || !cartaTexto.value.trim()) return;
+  const me = getCurrentUser();
+  const cartas = { ...(livroParaCarta.cartas || {}) };
+  cartas[me.uid] = { texto: cartaTexto.value.trim(), enviada: true, name: me.name };
+  await atualizarLivro(livroParaCarta.id, { cartas });
+  await registrarAtividade({ tipo: "carta", uid: me.uid, name: me.name, livroId: livroParaCarta.id, livroTitulo: livroParaCarta.titulo });
+  cartaModal.classList.add("hidden");
+  livroParaCarta = null;
+});
+pularCartaBtn.addEventListener("click", () => {
+  cartaModal.classList.add("hidden");
+  livroParaCarta = null;
+});
+
+searchInput.addEventListener("input", render);
+rouletteBtn.addEventListener("click", rodarRoleta);
 
 onAuth((user) => {
   if (!user || started) return;
   started = true;
-  onSnapshot(booksRef, (snap) => {
-    books = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    renderBooksList();
+  listenLivros((lista) => {
+    livros = lista;
+    render();
   });
 });

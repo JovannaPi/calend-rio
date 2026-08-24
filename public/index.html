@@ -70,10 +70,17 @@
       <div class="brand">
         <div>
           <h1 id="calendarName" class="brand-title">Meu Calendário</h1>
-          <p class="subtitle">provas, atividades, leituras e trabalhos, num só lugar</p>
+          <p id="headerSubtitle" class="subtitle">provas, atividades, leituras e trabalhos, num só lugar</p>
         </div>
       </div>
       <div class="header-actions">
+        <button id="bellBtn" class="bell-btn" title="Atividades recentes">
+          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+            <path d="M10 2a5 5 0 0 0-5 5v2.5c0 .8-.3 1.6-.9 2.2L3 13h14l-1.1-1.3a3 3 0 0 1-.9-2.2V7a5 5 0 0 0-5-5Zm-1.7 14a1.7 1.7 0 0 0 3.4 0h-3.4Z" fill="currentColor"/>
+          </svg>
+          <span id="bellCount" class="bell-count hidden">0</span>
+        </button>
+        <div id="bellPanel" class="bell-panel hidden"></div>
         <span id="userBadge" class="user-badge"></span>
         <button id="logoutBtn" class="share-btn">Sair</button>
       </div>
@@ -83,12 +90,18 @@
       <button class="tab-btn active" data-tab="geral">Geral</button>
       <button class="tab-btn" data-tab="calendario">Calendário</button>
       <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
+      <button class="tab-btn" data-tab="diario">Diário</button>
+      <button class="tab-btn" data-tab="secreto">Secreto</button>
+      <button class="tab-btn" data-tab="stats">Estatísticas</button>
+      <button class="tab-btn" data-tab="premiacao">Premiações</button>
+      <button class="tab-btn" data-tab="memorias">Memórias</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
       <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       <button class="tab-btn" data-tab="roles">Rolês</button>
       <button class="tab-btn" data-tab="metas">Metas</button>
       <button class="tab-btn" data-tab="relatorios">Relatórios</button>
       <button class="tab-btn" data-tab="notificacoes">Notificações</button>
+      <button class="tab-btn" data-tab="config">Config</button>
     </nav>
 
     <main class="app-main">
@@ -152,40 +165,62 @@
 
       <!-- Biblioteca (lista) -->
       <section id="tab-biblioteca" class="tab-panel single-col">
-        <div id="bibliotecaListView">
-          <div class="panel-card">
-            <h2>Adicionar livro</h2>
-            <form id="bookForm" class="inline-form">
-              <input type="text" id="bookTitle" placeholder="Título" required>
-              <input type="text" id="bookAuthor" placeholder="Autor(a)">
-              <button type="submit" class="primary-btn">Adicionar</button>
-            </form>
-          </div>
-          <div class="panel-card">
-            <h2>Nossos livros</h2>
-            <div id="booksList"></div>
-          </div>
+        <input type="text" id="bookSearch" class="search-input" placeholder="Buscar por título ou autor...">
+
+        <div class="panel-card roulette-card">
+          <h2>Roleta: qual o próximo livro?</h2>
+          <p class="empty-hint">Deixe o destino escolher a próxima leitura entre os planejados.</p>
+          <button id="rouletteBtn" type="button" class="primary-btn full-width">Girar roleta</button>
+          <div id="rouletteResult"></div>
         </div>
 
-        <!-- Detalhe do livro / Diário por capítulo -->
-        <div id="bookDetailView" class="hidden">
-          <button id="backToBooks" class="nav-btn back-btn">‹ Voltar</button>
-          <div class="panel-card">
-            <h2 id="bookDetailTitle"></h2>
-            <p id="bookDetailAuthor" class="empty-hint"></p>
-            <div id="bookStatusRow" class="status-row"></div>
-          </div>
-
-          <div class="panel-card">
-            <h2>Novo capítulo</h2>
-            <form id="chapterForm" class="inline-form">
-              <input type="number" id="chapterNumber" placeholder="Nº do capítulo" min="1" required>
-              <button type="submit" class="primary-btn">Criar</button>
-            </form>
-          </div>
-
-          <div id="chaptersList"></div>
+        <div class="panel-card">
+          <h2>Lendo agora</h2>
+          <div id="booksLendo"></div>
         </div>
+        <div class="panel-card">
+          <h2>Prontos pra trocar</h2>
+          <div id="booksTrocar"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Planejados</h2>
+          <div id="booksPlanejados"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Concluídos</h2>
+          <div id="booksConcluidos"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Abandonados</h2>
+          <div id="booksAbandonados"></div>
+        </div>
+
+        <button id="openBookFormBtn" type="button" class="add-book-btn">+ Adicionar livro</button>
+      </section>
+
+      <!-- Diário -->
+      <section id="tab-diario" class="tab-panel single-col">
+        <div id="diarioContent"></div>
+      </section>
+
+      <!-- Secreto -->
+      <section id="tab-secreto" class="tab-panel single-col">
+        <div id="secretoContent"></div>
+      </section>
+
+      <!-- Estatísticas -->
+      <section id="tab-stats" class="tab-panel single-col">
+        <div id="statsContent"></div>
+      </section>
+
+      <!-- Premiações -->
+      <section id="tab-premiacao" class="tab-panel single-col">
+        <div id="premiacaoContent"></div>
+      </section>
+
+      <!-- Memórias -->
+      <section id="tab-memorias" class="tab-panel single-col">
+        <div id="memoriasContent"></div>
       </section>
 
       <!-- Chat -->
@@ -292,6 +327,11 @@
           <div id="notificationsList"></div>
         </div>
       </section>
+
+      <!-- Config -->
+      <section id="tab-config" class="tab-panel single-col">
+        <div id="configContent"></div>
+      </section>
     </main>
   </div>
 
@@ -342,12 +382,78 @@
     </div>
   </div>
 
+  <!-- Modal: formulário de livro (adicionar/editar) -->
+  <div id="bookFormModal" class="modal hidden">
+    <div class="modal-content">
+      <button id="closeBookForm" class="close-btn" aria-label="Fechar">×</button>
+      <h2 id="bookFormTitle">Novo livro</h2>
+      <div class="panel-card book-search-box">
+        <label>Buscar livro online (preenche automático)
+          <div class="inline-form">
+            <input type="text" id="bookOnlineSearch" placeholder="Título ou autor...">
+            <button type="button" id="bookOnlineSearchBtn" class="primary-btn">Buscar</button>
+          </div>
+        </label>
+        <div id="bookOnlineResults"></div>
+      </div>
+      <form id="bookForm" class="stacked-form">
+        <input type="hidden" id="bookId">
+        <input type="text" id="bookTitle" placeholder="Título *" required>
+        <input type="text" id="bookAuthor" placeholder="Autor(a)">
+        <input type="url" id="bookCapaUrl" placeholder="URL da capa">
+        <input type="text" id="bookGenero" placeholder="Gênero">
+        <input type="number" id="bookTotalCapitulos" placeholder="Nº de capítulos" min="1">
+        <textarea id="bookSinopse" rows="2" placeholder="Sinopse"></textarea>
+        <textarea id="bookMotivo" rows="2" placeholder="Motivo da escolha"></textarea>
+        <div class="form-actions">
+          <button type="button" id="deleteBookBtn" class="danger-btn hidden">Excluir</button>
+          <button type="submit" class="primary-btn">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: detalhes do livro -->
+  <div id="bookDetailModal" class="modal hidden">
+    <div class="modal-content">
+      <button id="closeBookDetail" class="close-btn" aria-label="Fechar">×</button>
+      <div id="bookDetailBody"></div>
+    </div>
+  </div>
+
+  <!-- Modal: carta pro futuro -->
+  <div id="cartaModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Antes de começar...</h2>
+      <p id="cartaLivroTitulo" class="empty-hint"></p>
+      <p class="empty-hint">Escreva o que você espera deste livro. Fica selada até vocês duas terminarem.</p>
+      <textarea id="cartaTexto" rows="4" placeholder="O que você espera deste livro?"></textarea>
+      <div class="form-actions">
+        <button type="button" id="pularCartaBtn" class="danger-btn">Pular por agora</button>
+        <button type="button" id="selarCartaBtn" class="primary-btn">Selar carta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visualizador de foto ampliada -->
+  <div id="photoViewerModal" class="modal hidden">
+    <img id="photoViewerImg" src="" alt="" class="photo-viewer-img">
+  </div>
+
   <div id="toast" class="toast hidden"></div>
 
   <script type="module" src="auth-ui.js"></script>
   <script type="module" src="app.js"></script>
   <script type="module" src="chat.js"></script>
   <script type="module" src="books.js"></script>
+  <script type="module" src="diario.js"></script>
+  <script type="module" src="secreto.js"></script>
+  <script type="module" src="stats.js"></script>
+  <script type="module" src="premiacoes.js"></script>
+  <script type="module" src="memorias.js"></script>
+  <script type="module" src="config-clube.js"></script>
+  <script type="module" src="sino.js"></script>
+  <script type="module" src="fundo-frases.js"></script>
   <script type="module" src="movies.js"></script>
   <script type="module" src="roles.js"></script>
   <script type="module" src="goals.js"></script>
