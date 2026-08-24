@@ -227,14 +227,15 @@ body {
 .bell-item:last-child { border-bottom: none; }
 
 /* =========================================================
-   4. ESTRUTURA GLOBAL: LAYOUT VERTICAL E NAVEGAÇÃO EM DUAS CAMADAS
+   4. ESTRUTURA GLOBAL: LAYOUT CENTRALIZADO E ABAS COMPACTAS
    ========================================================= */
 .dashboard {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   width: 100%;
-  max-width: 100%;
+  max-width: 1200px; /* Limita a largura para o painel não esticar demais */
+  margin: 0 auto;    /* Centraliza o painel na tela */
   padding: 1.25rem 2rem;
   box-sizing: border-box;
 }
@@ -245,9 +246,10 @@ body {
   padding: 0;
 }
 
-/* Nível 1: Abas Principais (Topo) */
+/* Nível 1: Abas Principais (Compactas e alinhadas à esquerda) */
 .main-tabs {
-  display: flex;
+  display: inline-flex;
+  align-self: flex-start;
   gap: 0.6rem;
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
@@ -257,7 +259,7 @@ body {
   border: 1px solid var(--panel-border);
   box-shadow: var(--shadow);
   overflow-x: auto;
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 .main-tab-btn {
@@ -281,13 +283,15 @@ body {
   box-shadow: 0 4px 12px rgba(124, 92, 255, 0.25);
 }
 
-/* Nível 2: Sub-abas */
+/* Nível 2: Sub-abas (Compactas) */
 .sub-tabs-container {
   width: 100%;
+  display: flex;
 }
 
 .sub-tabs {
-  display: flex;
+  display: inline-flex;
+  align-self: flex-start;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
@@ -297,7 +301,7 @@ body {
   border: 1px solid var(--panel-border);
   box-shadow: 0 4px 12px rgba(90, 70, 160, 0.05);
   overflow-x: auto;
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 .sub-tabs .tab-btn {
@@ -308,6 +312,10 @@ body {
   flex-shrink: 0;
 }
 
+/* Garante que elementos decorativos não bloqueiem cliques */
+.blob, .doodles {
+  pointer-events: none;
+}
 /* =========================================================
    5. PAINÉIS DE CONTEÚDO EM TELA CHEIA
    ========================================================= */
