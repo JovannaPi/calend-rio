@@ -21,6 +21,8 @@ Acesse `http://localhost:3000`. Na primeira vez, crie sua conta na aba **Cadastr
   - discussão por capítulo, liberada só depois da revelação.
 - **Chat** — conversa geral em tempo real.
 - **Filmes/Séries** — lista para assistir junto, com status (para assistir / assistindo / assistido).
+- **Rolês** — planejar saídas com data, local, link do mapa e foto; ao marcar como feito, dá pra avaliar de 1 a 5 estrelas, o que alimenta o **ranking de locais**.
+- **Metas** — metas financeiras de longo prazo (ex: comprar casa, comprar carro/moto), com barra de progresso e registro de quanto já foi guardado.
 - **Relatórios** — registro de tópicos abordados, sugestões e feedback.
 - **Notificações** — avisos para o grupo.
 - Visual com gradientes, glassmorphism e tipografia divertida (Fredoka + Quicksand).
@@ -81,6 +83,14 @@ Acesse `http://localhost:3000`. Na primeira vez, crie sua conta na aba **Cadastr
              allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
            }
          }
+       }
+
+       match /roles/{id} {
+         allow read, write: if isSignedIn();
+       }
+
+       match /metas/{id} {
+         allow read, write: if isSignedIn();
        }
      }
    }

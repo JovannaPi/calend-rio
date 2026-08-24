@@ -85,6 +85,8 @@
       <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
       <button class="tab-btn" data-tab="chat">Chat</button>
       <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
+      <button class="tab-btn" data-tab="roles">Rolês</button>
+      <button class="tab-btn" data-tab="metas">Metas</button>
       <button class="tab-btn" data-tab="relatorios">Relatórios</button>
       <button class="tab-btn" data-tab="notificacoes">Notificações</button>
     </nav>
@@ -103,6 +105,10 @@
         <div class="panel-card">
           <h2>Lendo agora</h2>
           <div id="overviewReading"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Próximos rolês</h2>
+          <div id="overviewRoles"></div>
         </div>
       </section>
 
@@ -212,6 +218,50 @@
         </div>
       </section>
 
+      <!-- Rolês / Fotos e localidades / Ranking de locais -->
+      <section id="tab-roles" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Marcar rolê</h2>
+          <form id="roleForm" class="stacked-form">
+            <input type="text" id="roleTitle" placeholder="O que vamos fazer?" required>
+            <div class="inline-form">
+              <input type="date" id="roleDate">
+              <input type="text" id="roleLocal" placeholder="Local">
+            </div>
+            <div class="inline-form">
+              <input type="url" id="roleMapaUrl" placeholder="Link do mapa (opcional)">
+              <input type="url" id="roleFotoUrl" placeholder="Link de uma foto (opcional)">
+            </div>
+            <textarea id="roleNotas" rows="2" placeholder="Notas..."></textarea>
+            <button type="submit" class="primary-btn">Adicionar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Planejados</h2>
+          <div id="rolesPlannedList"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Ranking de locais</h2>
+          <div id="rolesRankingList"></div>
+        </div>
+      </section>
+
+      <!-- Metas financeiras de longo prazo -->
+      <section id="tab-metas" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Nova meta</h2>
+          <form id="goalForm" class="inline-form">
+            <input type="text" id="goalName" placeholder="Ex: Comprar casa, Comprar carro/moto" required>
+            <input type="number" id="goalTarget" placeholder="Valor alvo (R$)" min="1" step="0.01" required>
+            <button type="submit" class="primary-btn">Criar meta</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Nossas metas</h2>
+          <div id="goalsList"></div>
+        </div>
+      </section>
+
       <!-- Relatórios -->
       <section id="tab-relatorios" class="tab-panel single-col">
         <div class="panel-card">
@@ -299,6 +349,8 @@
   <script type="module" src="chat.js"></script>
   <script type="module" src="books.js"></script>
   <script type="module" src="movies.js"></script>
+  <script type="module" src="roles.js"></script>
+  <script type="module" src="goals.js"></script>
   <script type="module" src="reports.js"></script>
   <script type="module" src="notifications.js"></script>
 </body>
