@@ -1,12 +1,11 @@
 import { db } from "./firebase-config.js";
+import { onAuth } from "./auth.js";
 import {
   collection,
   doc,
   addDoc,
   updateDoc,
   deleteDoc,
-  setDoc,
-  getDoc,
   onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
@@ -25,24 +24,22 @@ const TYPE_LABELS = {
 };
 
 let events = [];
-let calendarId = null;
 let currentDate = new Date();
 let selectedDateStr = null;
+let started = false;
 
 const monthLabel = document.getElementById("monthLabel");
 const calendarGrid = document.getElementById("calendarGrid");
 const eventList = document.getElementById("eventList");
 const selectedDateLabel = document.getElementById("selectedDateLabel");
 const upcomingList = document.getElementById("upcomingList");
-const calendarNameEl = document.getElementById("calendarName");
+const overviewEvents = document.getElementById("overviewEvents");
 
 const modal = document.getElementById("eventModal");
 const eventForm = document.getElementById("eventForm");
 const modalTitle = document.getElementById("modalTitle");
 const deleteBtn = document.getElementById("deleteEventBtn");
 
-const shareModal = document.getElementById("shareModal");
-const shareLinkInput = document.getElementById("shareLink");
 const toast = document.getElementById("toast");
 
 function showToast(msg) {
@@ -52,52 +49,7 @@ function showToast(msg) {
   showToast._t = setTimeout(() => toast.classList.add("hidden"), 2200);
 }
 
-function shortId(len = 8) {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let id = "";
-  for (let i = 0; i < len; i++) id += chars[Math.floor(Math.random() * chars.length)];
-  return id;
-}
-
-function calendarDocRef(id) {
-  return doc(db, "calendars", id);
-}
-
-function eventsCollectionRef(id) {
-  return collection(db, "calendars", id, "events");
-}
-
-async function ensureCalendar() {
-  const params = new URLSearchParams(location.search);
-  let id = params.get("c");
-  if (!id) {
-    id = shortId();
-    await setDoc(calendarDocRef(id), { name: "Meu Calendário", createdAt: Date.now() });
-    params.set("c", id);
-    history.replaceState(null, "", `${location.pathname}?${params.toString()}`);
-  } else {
-    const snap = await getDoc(calendarDocRef(id));
-    if (!snap.exists()) {
-      await setDoc(calendarDocRef(id), { name: "Meu Calendário", createdAt: Date.now() });
-    }
-  }
-  return id;
-}
-
-function watchCalendar() {
-  onSnapshot(calendarDocRef(calendarId), (snap) => {
-    const data = snap.data();
-    if (data?.name) {
-      calendarNameEl.textContent = data.name;
-      document.title = `${data.name} · Calend.rio`;
-    }
-  });
-
-  onSnapshot(eventsCollectionRef(calendarId), (snap) => {
-    events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    renderAll();
-  });
-}
+const eventsRef = collection(db, "events");
 
 function toDateStr(d) {
   const y = d.getFullYear();
@@ -276,10 +228,26 @@ function renderUpcoming() {
   });
 }
 
+function renderOverview() {
+  const todayStr = toDateStr(new Date());
+  const upcoming = events
+    .filter((e) => e.date >= todayStr)
+    .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")))
+    .slice(0, 3);
+
+  overviewEvents.innerHTML = "";
+  if (upcoming.length === 0) {
+    overviewEvents.innerHTML = '<p class="empty-hint">Nada por aqui ainda.</p>';
+    return;
+  }
+  upcoming.forEach((ev) => overviewEvents.appendChild(buildEventCard(ev)));
+}
+
 function renderAll() {
   renderCalendar();
   renderEventList();
   renderUpcoming();
+  renderOverview();
 }
 
 function openModal(ev) {
@@ -321,9 +289,9 @@ eventForm.addEventListener("submit", async (e) => {
 
   try {
     if (id) {
-      await updateDoc(doc(db, "calendars", calendarId, "events", id), payload);
+      await updateDoc(doc(db, "events", id), payload);
     } else {
-      await addDoc(eventsCollectionRef(calendarId), payload);
+      await addDoc(eventsRef, payload);
     }
     selectedDateStr = payload.date;
     closeModal();
@@ -336,7 +304,7 @@ deleteBtn.addEventListener("click", async () => {
   const id = document.getElementById("eventId").value;
   if (!id) return;
   try {
-    await deleteDoc(doc(db, "calendars", calendarId, "events", id));
+    await deleteDoc(doc(db, "events", id));
     closeModal();
   } catch {
     showToast("Não foi possível excluir. Tente novamente.");
@@ -362,52 +330,12 @@ document.querySelectorAll(".type-filter").forEach((cb) => {
   cb.addEventListener("change", renderAll);
 });
 
-// Sharing
-document.getElementById("shareBtn").addEventListener("click", () => {
-  shareLinkInput.value = location.href;
-  shareModal.classList.remove("hidden");
-});
-document.getElementById("closeShareModal").addEventListener("click", () => {
-  shareModal.classList.add("hidden");
-});
-shareModal.addEventListener("click", (e) => {
-  if (e.target === shareModal) shareModal.classList.add("hidden");
-});
-document.getElementById("copyLinkBtn").addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(shareLinkInput.value);
-  } catch {
-    shareLinkInput.select();
-    document.execCommand("copy");
-  }
-  showToast("Link copiado!");
-});
-
-// Calendar name editing
-calendarNameEl.addEventListener("blur", async () => {
-  const name = calendarNameEl.textContent.trim() || "Meu Calendário";
-  calendarNameEl.textContent = name;
-  try {
-    await updateDoc(calendarDocRef(calendarId), { name });
-    document.title = `${name} · Calend.rio`;
-  } catch {
-    showToast("Não foi possível renomear.");
-  }
-});
-calendarNameEl.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    calendarNameEl.blur();
-  }
-});
-
-(async function init() {
+onAuth((user) => {
+  if (!user || started) return;
+  started = true;
   selectedDateStr = toDateStr(new Date());
-  try {
-    calendarId = await ensureCalendar();
-    watchCalendar();
+  onSnapshot(eventsRef, (snap) => {
+    events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     renderAll();
-  } catch {
-    showToast("Não foi possível conectar ao Firebase.");
-  }
-})();
+  });
+});

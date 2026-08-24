@@ -26,59 +26,224 @@
     <span class="doodle doodle-8 doodle-ring"></span>
   </div>
 
-  <header class="app-header">
-    <div class="brand">
-      <div>
-        <h1 id="calendarName" class="brand-title" contenteditable="true" spellcheck="false">Meu Calendário</h1>
-        <p class="subtitle">provas, atividades e trabalhos, num só lugar</p>
+  <!-- Login / Cadastro -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <h1 class="brand-title">Meu Calendário</h1>
+      <p class="subtitle">Entre com sua conta para acessar o painel</p>
+
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active">Entrar</button>
+        <button id="tabSignup" class="auth-tab">Cadastrar</button>
       </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>E-mail
+          <input type="email" id="loginEmail" required>
+        </label>
+        <label>Senha
+          <input type="password" id="loginPassword" required minlength="6">
+        </label>
+        <p id="loginError" class="auth-error hidden"></p>
+        <button type="submit" class="primary-btn full-width">Entrar</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <label>Nome
+          <input type="text" id="signupName" required>
+        </label>
+        <label>E-mail
+          <input type="email" id="signupEmail" required>
+        </label>
+        <label>Senha
+          <input type="password" id="signupPassword" required minlength="6">
+        </label>
+        <p id="signupError" class="auth-error hidden"></p>
+        <button type="submit" class="primary-btn full-width">Criar minha conta</button>
+      </form>
     </div>
-    <div class="header-actions">
-      <button id="shareBtn" class="share-btn">
-        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-          <path d="M14.5 3a2.5 2.5 0 1 0-2.45 3.02L8.4 8.36a2.5 2.5 0 1 0 0 3.28l3.65 2.34a2.5 2.5 0 1 0 .82-1.28L9.22 10.36a2.5 2.5 0 0 0 0-.72l3.65-2.34c.45.43 1.05.7 1.63.7a2.5 2.5 0 0 0 0-5Z" fill="currentColor"/>
-        </svg>
-        Compartilhar
-      </button>
-    </div>
-  </header>
+  </div>
 
-  <main class="app-main">
-    <section class="calendar-panel">
-      <div class="calendar-nav">
-        <button id="prevMonth" class="nav-btn" aria-label="Mês anterior">‹</button>
-        <h2 id="monthLabel"></h2>
-        <button id="nextMonth" class="nav-btn" aria-label="Próximo mês">›</button>
+  <!-- Painel principal (após login) -->
+  <div id="dashboard" class="dashboard hidden">
+    <header class="app-header">
+      <div class="brand">
+        <div>
+          <h1 id="calendarName" class="brand-title">Meu Calendário</h1>
+          <p class="subtitle">provas, atividades, leituras e trabalhos, num só lugar</p>
+        </div>
       </div>
-      <div class="weekdays">
-        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+      <div class="header-actions">
+        <span id="userBadge" class="user-badge"></span>
+        <button id="logoutBtn" class="share-btn">Sair</button>
       </div>
-      <div id="calendarGrid" class="calendar-grid"></div>
-    </section>
+    </header>
 
-    <aside class="side-panel">
-      <div class="side-header">
-        <h2 id="selectedDateLabel">Selecione um dia</h2>
-        <button id="addEventBtn" class="primary-btn">+ Nova</button>
-      </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="geral">Geral</button>
+      <button class="tab-btn" data-tab="calendario">Calendário</button>
+      <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
+      <button class="tab-btn" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
+      <button class="tab-btn" data-tab="relatorios">Relatórios</button>
+      <button class="tab-btn" data-tab="notificacoes">Notificações</button>
+    </nav>
 
-      <div id="filters" class="filters">
-        <label class="chip chip-prova"><input type="checkbox" class="type-filter" value="prova" checked><span>Prova</span></label>
-        <label class="chip chip-atividade"><input type="checkbox" class="type-filter" value="atividade" checked><span>Atividade</span></label>
-        <label class="chip chip-trabalho"><input type="checkbox" class="type-filter" value="trabalho" checked><span>Trabalho</span></label>
-        <label class="chip chip-outro"><input type="checkbox" class="type-filter" value="outro" checked><span>Outro</span></label>
-      </div>
+    <main class="app-main">
+      <!-- Geral -->
+      <section id="tab-geral" class="tab-panel active single-col">
+        <div class="panel-card">
+          <h2>Próximos eventos</h2>
+          <div id="overviewEvents"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Últimas notificações</h2>
+          <div id="overviewNotifications"></div>
+        </div>
+        <div class="panel-card">
+          <h2>Lendo agora</h2>
+          <div id="overviewReading"></div>
+        </div>
+      </section>
 
-      <div id="eventList" class="event-list">
-        <p class="empty-hint">Clique em um dia no calendário para ver os detalhes.</p>
-      </div>
+      <!-- Calendário -->
+      <section id="tab-calendario" class="tab-panel">
+        <section class="calendar-panel">
+          <div class="calendar-nav">
+            <button id="prevMonth" class="nav-btn" aria-label="Mês anterior">‹</button>
+            <h2 id="monthLabel"></h2>
+            <button id="nextMonth" class="nav-btn" aria-label="Próximo mês">›</button>
+          </div>
+          <div class="weekdays">
+            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+          </div>
+          <div id="calendarGrid" class="calendar-grid"></div>
+        </section>
 
-      <div class="upcoming">
-        <h3>Próximos eventos</h3>
-        <div id="upcomingList"></div>
-      </div>
-    </aside>
-  </main>
+        <aside class="side-panel">
+          <div class="side-header">
+            <h2 id="selectedDateLabel">Selecione um dia</h2>
+            <button id="addEventBtn" class="primary-btn">+ Nova</button>
+          </div>
+
+          <div id="filters" class="filters">
+            <label class="chip chip-prova"><input type="checkbox" class="type-filter" value="prova" checked><span>Prova</span></label>
+            <label class="chip chip-atividade"><input type="checkbox" class="type-filter" value="atividade" checked><span>Atividade</span></label>
+            <label class="chip chip-trabalho"><input type="checkbox" class="type-filter" value="trabalho" checked><span>Trabalho</span></label>
+            <label class="chip chip-outro"><input type="checkbox" class="type-filter" value="outro" checked><span>Outro</span></label>
+          </div>
+
+          <div id="eventList" class="event-list">
+            <p class="empty-hint">Clique em um dia no calendário para ver os detalhes.</p>
+          </div>
+
+          <div class="upcoming">
+            <h3>Próximos eventos</h3>
+            <div id="upcomingList"></div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Biblioteca (lista) -->
+      <section id="tab-biblioteca" class="tab-panel single-col">
+        <div id="bibliotecaListView">
+          <div class="panel-card">
+            <h2>Adicionar livro</h2>
+            <form id="bookForm" class="inline-form">
+              <input type="text" id="bookTitle" placeholder="Título" required>
+              <input type="text" id="bookAuthor" placeholder="Autor(a)">
+              <button type="submit" class="primary-btn">Adicionar</button>
+            </form>
+          </div>
+          <div class="panel-card">
+            <h2>Nossos livros</h2>
+            <div id="booksList"></div>
+          </div>
+        </div>
+
+        <!-- Detalhe do livro / Diário por capítulo -->
+        <div id="bookDetailView" class="hidden">
+          <button id="backToBooks" class="nav-btn back-btn">‹ Voltar</button>
+          <div class="panel-card">
+            <h2 id="bookDetailTitle"></h2>
+            <p id="bookDetailAuthor" class="empty-hint"></p>
+            <div id="bookStatusRow" class="status-row"></div>
+          </div>
+
+          <div class="panel-card">
+            <h2>Novo capítulo</h2>
+            <form id="chapterForm" class="inline-form">
+              <input type="number" id="chapterNumber" placeholder="Nº do capítulo" min="1" required>
+              <button type="submit" class="primary-btn">Criar</button>
+            </form>
+          </div>
+
+          <div id="chaptersList"></div>
+        </div>
+      </section>
+
+      <!-- Chat -->
+      <section id="tab-chat" class="tab-panel single-col">
+        <div class="panel-card chat-card">
+          <div id="chatMessages" class="chat-messages"></div>
+          <form id="chatForm" class="chat-form">
+            <input type="text" id="chatInput" placeholder="Escreva uma mensagem..." maxlength="500" required>
+            <button type="submit" class="primary-btn">Enviar</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Filmes/Séries -->
+      <section id="tab-filmes" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Adicionar filme/série</h2>
+          <form id="movieForm" class="inline-form">
+            <input type="text" id="movieTitle" placeholder="Título" required>
+            <select id="movieType">
+              <option value="filme">Filme</option>
+              <option value="serie">Série</option>
+            </select>
+            <button type="submit" class="primary-btn">Adicionar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Lista</h2>
+          <div id="moviesList"></div>
+        </div>
+      </section>
+
+      <!-- Relatórios -->
+      <section id="tab-relatorios" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Novo relatório</h2>
+          <form id="reportForm" class="stacked-form">
+            <input type="text" id="reportTitle" placeholder="Título do encontro/tópico" required>
+            <textarea id="reportContent" rows="3" placeholder="Conteúdo abordado, sugestões, feedback..." required></textarea>
+            <button type="submit" class="primary-btn">Publicar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Relatórios anteriores</h2>
+          <div id="reportsList"></div>
+        </div>
+      </section>
+
+      <!-- Notificações -->
+      <section id="tab-notificacoes" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Nova notificação</h2>
+          <form id="notifForm" class="inline-form">
+            <input type="text" id="notifText" placeholder="Aviso..." required>
+            <button type="submit" class="primary-btn">Publicar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Avisos</h2>
+          <div id="notificationsList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <div id="eventModal" class="modal hidden">
     <div class="modal-content">
@@ -127,20 +292,14 @@
     </div>
   </div>
 
-  <div id="shareModal" class="modal hidden">
-    <div class="modal-content share-content">
-      <button id="closeShareModal" class="close-btn" aria-label="Fechar">×</button>
-      <h2>Compartilhar calendário</h2>
-      <p class="share-desc">Qualquer pessoa com este link vê e edita os mesmos eventos, em tempo real.</p>
-      <div class="share-link-row">
-        <input type="text" id="shareLink" readonly>
-        <button id="copyLinkBtn" class="primary-btn">Copiar</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast" class="toast hidden"></div>
 
+  <script type="module" src="auth-ui.js"></script>
   <script type="module" src="app.js"></script>
+  <script type="module" src="chat.js"></script>
+  <script type="module" src="books.js"></script>
+  <script type="module" src="movies.js"></script>
+  <script type="module" src="reports.js"></script>
+  <script type="module" src="notifications.js"></script>
 </body>
 </html>

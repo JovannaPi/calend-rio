@@ -138,17 +138,13 @@ body {
 .share-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(124, 92, 255, 0.22); }
 
 .app-main {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
   max-width: 1200px;
   margin: 1.25rem auto 2.5rem;
   padding: 0 2rem;
-  align-items: start;
 }
 
 @media (max-width: 900px) {
-  .app-main { grid-template-columns: 1fr; padding: 0 1.25rem; }
+  .app-main { padding: 0 1.25rem; }
   .app-header { padding: 1.5rem 1.25rem 0.5rem; }
 }
 
@@ -486,3 +482,219 @@ body {
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--accent-light); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Auth screen */
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.auth-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.auth-card .subtitle { margin-bottom: 1.25rem; }
+
+.auth-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--accent-light);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 1.25rem;
+}
+.auth-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+.auth-tab.active { background: white; color: var(--accent); box-shadow: 0 2px 8px rgba(90,70,160,0.12); }
+
+.auth-form { display: flex; flex-direction: column; text-align: left; }
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--muted);
+  gap: 5px;
+  margin-bottom: 0.85rem;
+}
+.auth-form input {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaff;
+  color: var(--text);
+}
+.auth-error { color: #d63384; font-size: 0.82rem; margin: -0.3rem 0 0.6rem; }
+.full-width { width: 100%; }
+
+/* Dashboard shell */
+.dashboard { max-width: 1200px; margin: 0 auto; }
+
+.user-badge {
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 1200px;
+  margin: 0 auto 1rem;
+  padding: 0 2rem;
+}
+@media (max-width: 900px) { .tabs { padding: 0 1.25rem; } }
+
+.tab-btn {
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  border-color: transparent;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; }
+.tab-panel.active.single-col { display: flex; flex-direction: column; gap: 1.25rem; max-width: 720px; margin: 0 auto; }
+
+.panel-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+.panel-card h2 {
+  margin: 0 0 0.9rem;
+  font-family: "Fredoka", sans-serif;
+  font-size: 1.05rem;
+}
+
+.inline-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.inline-form input, .inline-form select {
+  flex: 1;
+  min-width: 140px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaff;
+  color: var(--text);
+}
+
+.stacked-form { display: flex; flex-direction: column; gap: 0.6rem; }
+.stacked-form input, .stacked-form textarea {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaff;
+  color: var(--text);
+}
+
+/* Chat */
+.chat-card { display: flex; flex-direction: column; height: 60vh; }
+.chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; }
+.chat-messages.small { height: 160px; flex: none; }
+.chat-bubble {
+  align-self: flex-start;
+  background: white;
+  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  max-width: 80%;
+  box-shadow: 0 2px 6px rgba(90,70,160,0.08);
+}
+.chat-bubble.mine { align-self: flex-end; background: var(--accent-light); }
+.chat-author { font-size: 0.72rem; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+.chat-form { display: flex; gap: 0.6rem; }
+.chat-form input {
+  flex: 1;
+  font-family: inherit;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fbfaff;
+}
+
+/* Status chips (movies / books) */
+.status-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+.status-chip {
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.status-chip.active { background: var(--accent); color: white; border-color: transparent; }
+.status-chip.danger { color: #d63384; border-color: #ffd3e4; }
+.status-chip.danger:hover { background: #ff6fa5; color: white; }
+
+/* Biblioteca detail */
+.back-btn { width: auto; height: auto; padding: 0.5rem 1rem; border-radius: 999px; margin-bottom: 1rem; }
+.chapter-card label { display: flex; flex-direction: column; font-size: 0.8rem; font-weight: 600; color: var(--muted); gap: 4px; margin-bottom: 0.75rem; }
+.chapter-card textarea {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fbfaff;
+  color: var(--text);
+}
+.reveal-box {
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.chapter-discussion { margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem; }
+.chapter-discussion h4 { margin: 0 0 0.5rem; font-family: "Fredoka", sans-serif; font-size: 0.9rem; }
+
+@media (max-width: 900px) {
+  .tab-panel.active { grid-template-columns: 1fr; }
+}

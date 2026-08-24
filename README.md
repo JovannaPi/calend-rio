@@ -1,6 +1,6 @@
 # Calend.rio
 
-Um calendário bonito e compartilhável para organizar provas, atividades e trabalhos — com tema, disciplina, equipe e um link mágico para compartilhar com a turma.
+Um painel só seu (e de quem você convidar) — calendário de provas/atividades, biblioteca com diário de leitura por capítulo (com segredos revelados quando os dois enviarem), chat, filmes/séries para assistir juntos, relatórios e notificações. Cada pessoa entra com sua própria conta, então suas anotações pessoais ficam separadas das da outra pessoa; o que é para compartilhar (calendário, chat, avisos) todo mundo vê.
 
 ## Como rodar
 
@@ -9,49 +9,84 @@ npm install
 npm start
 ```
 
-Acesse `http://localhost:3000`. Um calendário novo é criado automaticamente e a URL passa a ter um link único, por exemplo `http://localhost:3000/?c=Ab12Cd34`.
-
-## Como compartilhar
-
-Clique em **Compartilhar** e copie o link. Qualquer pessoa que abrir esse link enxerga e edita os mesmos eventos — as mudanças aparecem para todo mundo em poucos segundos (sincronização automática, sem precisar dar F5).
+Acesse `http://localhost:3000`. Na primeira vez, crie sua conta na aba **Cadastrar** (nome, e-mail e senha).
 
 ## Funcionalidades
 
-- Visualização em calendário mensal, com navegação entre meses.
-- Cadastro de eventos com título, tipo (prova / atividade / trabalho / outro), data, hora, cor, tema/disciplina, equipe/grupo e descrição.
-- Lista de eventos do dia selecionado e lista dos próximos eventos.
-- Filtro por tipo de evento.
-- Edição e exclusão de eventos.
-- Nome do calendário editável (clique no título para renomear).
-- Compartilhamento por link, sem necessidade de login — cada calendário tem um ID único.
+- **Login/Cadastro** — cada pessoa tem sua própria conta.
+- **Calendário** — provas, atividades, trabalhos, com tema/disciplina, equipe e descrição, compartilhado entre todos os logados.
+- **Biblioteca** — livros planejados/lendo/concluídos. Ao abrir um livro, dá pra criar capítulos com:
+  - sua impressão pessoal (só você vê);
+  - sua teoria/segredo sobre o capítulo (fica escondida até **as duas pessoas enviarem** a delas — aí revela os dois de uma vez);
+  - discussão por capítulo, liberada só depois da revelação.
+- **Chat** — conversa geral em tempo real.
+- **Filmes/Séries** — lista para assistir junto, com status (para assistir / assistindo / assistido).
+- **Relatórios** — registro de tópicos abordados, sugestões e feedback.
+- **Notificações** — avisos para o grupo.
 - Visual com gradientes, glassmorphism e tipografia divertida (Fredoka + Quicksand).
 
 ## Stack
 
-- **Frontend:** HTML, CSS e JavaScript puros, sem build step.
+- **Frontend:** HTML, CSS e JavaScript puros (módulos ES), sem build step.
 - **Servidor:** Node.js + Express, servindo apenas os arquivos estáticos de `public/`.
-- **Dados:** [Firebase Firestore](https://firebase.google.com/docs/firestore), acessado direto do navegador (configuração em `public/firebase-config.js`). Os dados ficam salvos de forma permanente e sincronizam em tempo real entre todas as pessoas que abrirem o mesmo link.
+- **Autenticação:** [Firebase Authentication](https://firebase.google.com/docs/auth) (e-mail/senha).
+- **Dados:** [Firebase Firestore](https://firebase.google.com/docs/firestore), acessado direto do navegador (configuração em `public/firebase-config.js`). Tudo sincroniza em tempo real entre as contas logadas.
 
-### Configurando o Firestore
+### Configurando o Firebase
 
-1. No [console do Firebase](https://console.firebase.google.com), abra o projeto e vá em **Build → Firestore Database → Create database**.
-2. Na aba **Regras**, use algo como:
+1. **Autenticação** — no [console do Firebase](https://console.firebase.google.com), vá em **Build → Authentication → Get started**, aba **Sign-in method**, e ative o provedor **E-mail/senha**.
+2. **Firestore** — em **Build → Firestore Database → Create database**.
+3. Na aba **Regras** do Firestore, use:
 
    ```
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
-       match /calendars/{calendarId} {
-         allow read, write: if true;
-         match /events/{eventId} {
-           allow read, write: if true;
+       function isSignedIn() { return request.auth != null; }
+
+       match /users/{userId} {
+         allow read: if isSignedIn();
+         allow create, update: if isSignedIn() && request.auth.uid == userId;
+       }
+
+       match /events/{id} {
+         allow read, write: if isSignedIn();
+       }
+
+       match /messages/{id} {
+         allow read: if isSignedIn();
+         allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+       }
+
+       match /watchlist/{id} {
+         allow read, write: if isSignedIn();
+       }
+
+       match /reports/{id} {
+         allow read: if isSignedIn();
+         allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+       }
+
+       match /notifications/{id} {
+         allow read: if isSignedIn();
+         allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+       }
+
+       match /livros/{livroId} {
+         allow read, write: if isSignedIn();
+         match /capitulos/{capId} {
+           allow read, write: if isSignedIn();
+           match /comentarios/{comId} {
+             allow read: if isSignedIn();
+             allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+           }
          }
        }
      }
    }
    ```
 
-   Como o app não tem login (compartilhamento é só por link), as regras liberam leitura/escrita para qualquer pessoa com o link — é o mesmo modelo de "quem tem o link, edita".
+   Isso exige estar logado para ler/escrever qualquer coisa — sem login, o Firestore recusa a conexão.
 
 ## Deploy
 
