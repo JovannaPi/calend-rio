@@ -15,6 +15,12 @@ import {
   limit,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+// ── Usuários cadastrados (pra telas de importação/atribuição) ───────────
+export async function listarUsuarios() {
+  const snap = await getDocs(collection(db, "users"));
+  return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
+}
+
 // ── Config (documento único, compartilhado por todo mundo) ──────────────
 export const configRef = () => doc(db, "config", "app");
 

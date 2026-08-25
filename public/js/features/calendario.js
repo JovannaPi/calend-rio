@@ -183,7 +183,9 @@ function buildEventCard(ev) {
   meta.className = "event-meta";
   const tag = document.createElement("span");
   tag.className = "event-type-tag";
-  tag.style.background = ev.color || TYPE_COLORS[ev.type];
+  const corTipo = ev.color || TYPE_COLORS[ev.type];
+  tag.style.color = corTipo;
+  tag.style.background = `color-mix(in srgb, ${corTipo} 14%, white)`;
   tag.textContent = TYPE_LABELS[ev.type] || ev.type;
   meta.appendChild(tag);
 

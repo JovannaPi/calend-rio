@@ -638,17 +638,19 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
 .empty-hint { color: var(--muted); font-size: 0.88rem; }
 
 .event-card {
-  border-left: 5px solid var(--accent);
-  background: rgba(255, 255, 255, 0.7);
+  border-left: 3px solid var(--accent);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-left-width: 3px;
   border-radius: 12px;
   padding: 0.7rem 0.85rem;
   margin-bottom: 0.55rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 2px 8px rgba(45, 45, 45, 0.06);
+  box-shadow: 0 2px 6px rgba(45, 45, 45, 0.05);
 }
-.event-card:hover { transform: translateX(3px); box-shadow: 0 6px 16px rgba(45, 45, 45, 0.12); }
-.event-card .event-title { font-weight: 700; font-family: "Fredoka", sans-serif; }
+.event-card:hover { transform: translateX(3px); box-shadow: 0 6px 14px rgba(45, 45, 45, 0.1); }
+.event-card .event-title { font-weight: 700; font-family: "Fraunces", "Fredoka", serif; }
 .event-card .event-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
 .event-card .event-type-tag {
   display: inline-block;
@@ -656,7 +658,6 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
   text-transform: uppercase;
   letter-spacing: 0.03em;
   font-weight: 700;
-  color: white;
   padding: 2px 7px;
   border-radius: 999px;
   margin-right: 6px;

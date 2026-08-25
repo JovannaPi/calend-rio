@@ -8,6 +8,7 @@ import {
   restaurarLivro,
   salvarCapitulo,
   salvarPremiacao,
+  listarUsuarios,
 } from "../core/db.js";
 import { enviarFoto } from "../core/upload.js";
 import { el } from "../core/util.js";
@@ -183,6 +184,162 @@ function render() {
   backupCard.appendChild(restoreBtn);
   backupCard.appendChild(restoreFileInput);
   content.appendChild(backupCard);
+
+  content.appendChild(cardImportarClubeAntigo());
+}
+
+// ── Importar o backup do Clube do Livro antigo (formato diferente) ──────
+function cardImportarClubeAntigo() {
+  const card = el("div", "panel-card");
+  card.appendChild(el("h2", null, "Importar do Clube do Livro antigo"));
+  card.appendChild(
+    el(
+      "p",
+      "empty-hint",
+      "Aquele .json que você já tinha exportado do site antigo. O formato é diferente do backup daqui, então é preciso dizer quem é quem antes de importar."
+    )
+  );
+
+  const jovannaLabel = el("label", null, "Quem é \"jovanna\" nesse arquivo?");
+  const jovannaSelect = document.createElement("select");
+  const leticiaLabel = el("label", null, "Quem é \"leticia\" nesse arquivo?");
+  const leticiaSelect = document.createElement("select");
+
+  card.appendChild(jovannaLabel);
+  card.appendChild(jovannaSelect);
+  card.appendChild(leticiaLabel);
+  card.appendChild(leticiaSelect);
+
+  listarUsuarios().then((usuarios) => {
+    [jovannaSelect, leticiaSelect].forEach((select) => {
+      select.innerHTML = "";
+      usuarios.forEach((u) => {
+        const opt = document.createElement("option");
+        opt.value = u.uid;
+        opt.textContent = u.name || u.email || u.uid;
+        select.appendChild(opt);
+      });
+    });
+    if (usuarios[1]) leticiaSelect.value = usuarios[1].uid;
+  });
+
+  const importBtn = el("button", "primary-btn full-width", "Importar arquivo antigo");
+  importBtn.type = "button";
+  const importFileInput = document.createElement("input");
+  importFileInput.type = "file";
+  importFileInput.accept = "application/json,.json";
+  importFileInput.className = "hidden";
+  importBtn.addEventListener("click", () => importFileInput.click());
+
+  importFileInput.addEventListener("change", async () => {
+    const file = importFileInput.files?.[0];
+    importFileInput.value = "";
+    if (!file) return;
+    const uidJovanna = jovannaSelect.value;
+    const uidLeticia = leticiaSelect.value;
+    if (!uidJovanna || !uidLeticia) {
+      alert("Escolha as duas pessoas antes de importar.");
+      return;
+    }
+    if (
+      !confirm(
+        "Isso vai trazer os livros, diários e teorias do arquivo antigo pra cá (sobrescrevendo livros com o mesmo id). Continuar?"
+      )
+    )
+      return;
+
+    importBtn.textContent = "Importando...";
+    try {
+      const texto = await file.text();
+      const antigo = JSON.parse(texto);
+      const nomeJovanna = jovannaSelect.selectedOptions[0].textContent;
+      const nomeLeticia = leticiaSelect.selectedOptions[0].textContent;
+      const uidPorRole = { jovanna: uidJovanna, leticia: uidLeticia };
+      const nomePorRole = { jovanna: nomeJovanna, leticia: nomeLeticia };
+
+      if (antigo.config) {
+        const livroAtualPorUid = { ...(config.livroAtualPorUid || {}) };
+        if (antigo.config.livroAtualIdJovanna) livroAtualPorUid[uidJovanna] = antigo.config.livroAtualIdJovanna;
+        if (antigo.config.livroAtualIdLeticia) livroAtualPorUid[uidLeticia] = antigo.config.livroAtualIdLeticia;
+        await updateConfig({
+          nomeclube: antigo.config.nomeclube || config.nomeclube || "",
+          citacaoFavorita: antigo.config.citacaoFavorita || config.citacaoFavorita || "",
+          fotoUrl: antigo.config.fotoUrl || config.fotoUrl || "",
+          metaAnual: antigo.config.metaAnual || config.metaAnual || 0,
+          livroAtualPorUid,
+        });
+      }
+
+      for (const livroAntigo of antigo.livros || []) {
+        if (!livroAntigo.id) continue;
+
+        const cartas = {};
+        if (livroAntigo.cartaJovanna) {
+          cartas[uidJovanna] = {
+            texto: livroAntigo.cartaJovanna,
+            enviada: !!livroAntigo.cartaJovannaEnviada,
+            name: nomeJovanna,
+          };
+        }
+        if (livroAntigo.cartaLeticia) {
+          cartas[uidLeticia] = {
+            texto: livroAntigo.cartaLeticia,
+            enviada: !!livroAntigo.cartaLeticiaEnviada,
+            name: nomeLeticia,
+          };
+        }
+
+        await restaurarLivro(livroAntigo.id, {
+          titulo: livroAntigo.titulo || "",
+          autor: livroAntigo.autor || "",
+          capaUrl: livroAntigo.capaUrl || "",
+          sinopse: livroAntigo.sinopse || "",
+          genero: livroAntigo.genero || "",
+          totalCapitulos: livroAntigo.totalCapitulos || 0,
+          motivoEscolha: livroAntigo.motivoEscolha || "",
+          status: livroAntigo.status || "planejado",
+          sugeridoPorUid: uidPorRole[livroAntigo.sugeridoPor] || "",
+          sugeridoPorName: nomePorRole[livroAntigo.sugeridoPor] || "",
+          ...(Object.keys(cartas).length > 0 ? { cartas } : {}),
+        });
+
+        for (const capAntigo of livroAntigo.capitulos || []) {
+          if (!capAntigo.numero) continue;
+          const entradas = {};
+          for (const role of ["jovanna", "leticia"]) {
+            const uid = uidPorRole[role];
+            const entrada = {
+              teoria: capAntigo[`teoria_${role}`] || "",
+              teoriaEnviada: !!capAntigo[`${role}_enviou`],
+              impressao: capAntigo[`impressao_${role}`] || "",
+              frase: capAntigo[`frase_${role}`] || "",
+              emocoes: capAntigo[`emocoes_${role}`] || [],
+              name: nomePorRole[role],
+            };
+            const temConteudo =
+              entrada.teoria || entrada.impressao || entrada.frase || entrada.emocoes.length > 0;
+            if (temConteudo) entradas[uid] = entrada;
+          }
+          if (Object.keys(entradas).length > 0) {
+            await salvarCapitulo(livroAntigo.id, capAntigo.numero, { entradas });
+          }
+        }
+      }
+
+      alert(
+        "Importado! Premiações do site antigo não foram trazidas (o formato delas não veio preenchido no arquivo pra eu confirmar a estrutura) — se tiver alguma, me avisa que eu ajusto."
+      );
+    } catch (err) {
+      console.error("Falha ao importar clube antigo:", err);
+      alert("Não consegui importar esse arquivo. Confira se é o .json certo.");
+    } finally {
+      importBtn.textContent = "Importar arquivo antigo";
+    }
+  });
+
+  card.appendChild(importBtn);
+  card.appendChild(importFileInput);
+  return card;
 }
 
 onAuth((user) => {
