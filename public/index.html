@@ -105,36 +105,37 @@
     <nav class="main-tabs" role="tablist" aria-label="Grupos Principais">
       <button class="main-tab-btn active" data-group="agenda">Agenda e Início</button>
       <button class="main-tab-btn" data-group="midia">Mídia e Clube</button>
-      <button class="main-tab-btn" data-group="pessoal">Pessoal e Rolês</button>
+      <button class="main-tab-btn" data-group="pessoal">Rolês</button>
       <button class="main-tab-btn" data-group="progresso">Progresso e Metas</button>
       <button class="main-tab-btn" data-group="comunidade">Social e Ajustes</button>
     </nav>
 
     <!-- Nível 2: Sub-abas (Ocultam ou exibem dependendo do grupo selecionado) -->
     <div class="sub-tabs-container">
-      
+
       <nav id="sub-agenda" class="sub-tabs active" role="tablist">
         <button class="tab-btn active" data-tab="geral">Geral</button>
         <button class="tab-btn" data-tab="calendario">Calendário</button>
         <button class="tab-btn" data-tab="notificacoes">Avisos</button>
       </nav>
 
+      <!-- Todas as funcionalidades do Clube do Livro moram aqui -->
       <nav id="sub-midia" class="sub-tabs hidden" role="tablist">
-        <button class="tab-btn" data-tab="biblioteca">Clube do Livro</button>
+        <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
+        <button class="tab-btn" data-tab="diario">Diário</button>
+        <button class="tab-btn" data-tab="secreto">Secreto</button>
+        <button class="tab-btn" data-tab="memorias">Memórias</button>
+        <button class="tab-btn" data-tab="stats">Estatísticas</button>
+        <button class="tab-btn" data-tab="premiacao">Premiações</button>
         <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       </nav>
 
       <nav id="sub-pessoal" class="sub-tabs hidden" role="tablist">
-        <button class="tab-btn" data-tab="diario">Diário</button>
-        <button class="tab-btn" data-tab="secreto">Secreto</button>
-        <button class="tab-btn" data-tab="memorias">Memórias</button>
         <button class="tab-btn" data-tab="roles">Rolês</button>
       </nav>
 
       <nav id="sub-progresso" class="sub-tabs hidden" role="tablist">
         <button class="tab-btn" data-tab="metas">Metas</button>
-        <button class="tab-btn" data-tab="stats">Estatísticas</button>
-        <button class="tab-btn" data-tab="premiacao">Premiações</button>
         <button class="tab-btn" data-tab="relatorios">Relatórios</button>
       </nav>
 
@@ -142,7 +143,7 @@
         <button class="tab-btn" data-tab="chat">Chat</button>
         <button class="tab-btn" data-tab="config">Configurações</button>
       </nav>
-      
+
     </div>
 
     <!-- Conteúdo das Abas -->
@@ -222,7 +223,7 @@
       </section>
 
       <!-- =========================================================
-           GRUPO: MÍDIA E CLUBE
+           GRUPO: MÍDIA E CLUBE — tudo que era do Clube do Livro
            ========================================================= -->
       <section id="tab-biblioteca" class="tab-panel grid-container">
         <div class="panel-card full-width-card">
@@ -262,6 +263,26 @@
         </div>
       </section>
 
+      <section id="tab-diario" class="tab-panel single-col">
+        <div id="diarioContent"></div>
+      </section>
+
+      <section id="tab-secreto" class="tab-panel single-col">
+        <div id="secretoContent"></div>
+      </section>
+
+      <section id="tab-memorias" class="tab-panel single-col">
+        <div id="memoriasContent"></div>
+      </section>
+
+      <section id="tab-stats" class="tab-panel single-col">
+        <div id="statsContent"></div>
+      </section>
+
+      <section id="tab-premiacao" class="tab-panel single-col">
+        <div id="premiacaoContent"></div>
+      </section>
+
       <section id="tab-filmes" class="tab-panel grid-container">
         <div class="panel-card">
           <h2>Adicionar filme/série</h2>
@@ -281,20 +302,8 @@
       </section>
 
       <!-- =========================================================
-           GRUPO: PESSOAL E ROLÊS
+           GRUPO: ROLÊS
            ========================================================= -->
-      <section id="tab-diario" class="tab-panel single-col">
-        <div id="diarioContent"></div>
-      </section>
-
-      <section id="tab-secreto" class="tab-panel single-col">
-        <div id="secretoContent"></div>
-      </section>
-
-      <section id="tab-memorias" class="tab-panel single-col">
-        <div id="memoriasContent"></div>
-      </section>
-
       <section id="tab-roles" class="tab-panel grid-container">
         <div class="panel-card">
           <h2>Marcar rolê</h2>
@@ -338,14 +347,6 @@
           <h2>Acompanhamento de Metas</h2>
           <div id="goalsList"></div>
         </div>
-      </section>
-
-      <section id="tab-stats" class="tab-panel single-col">
-        <div id="statsContent"></div>
-      </section>
-
-      <section id="tab-premiacao" class="tab-panel single-col">
-        <div id="premiacaoContent"></div>
       </section>
 
       <section id="tab-relatorios" class="tab-panel single-col">
