@@ -651,6 +651,8 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
   box-shadow: 0 2px 6px rgba(45, 45, 45, 0.05);
 }
 .event-card:hover { transform: translateX(3px); box-shadow: 0 6px 14px rgba(45, 45, 45, 0.1); }
+.event-card-compact { padding: 0.55rem 0.75rem; margin-bottom: 0.4rem; }
+.event-card-compact .event-title { font-family: "Inter", "Quicksand", sans-serif; font-size: 0.85rem; font-weight: 600; }
 .event-card .event-title { font-weight: 700; font-family: "Fraunces", "Fredoka", serif; }
 .event-card .event-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
 .event-card .event-type-tag {
@@ -1071,6 +1073,8 @@ input:focus, select:focus, textarea:focus {
   50% { transform: scale(1.04); }
 }
 .roulette-result.landed .roulette-card-preview { animation: pop-in 0.35s ease; }
+.roulette-result { position: relative; }
+.roulette-close-btn { position: absolute; top: 0; right: 0; width: 1.7rem; height: 1.7rem; font-size: 1rem; }
 .book-cover-sm { transition: transform 0.2s ease; }
 .book-card-row:hover .book-cover-sm { transform: scale(1.06) rotate(-1deg); }
 .add-book-btn {

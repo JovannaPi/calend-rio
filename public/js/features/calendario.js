@@ -39,6 +39,10 @@ const modal = document.getElementById("eventModal");
 const eventForm = document.getElementById("eventForm");
 const modalTitle = document.getElementById("modalTitle");
 const deleteBtn = document.getElementById("deleteEventBtn");
+const detailModal = document.getElementById("eventDetailModal");
+const detailBody = document.getElementById("eventDetailBody");
+const closeEventDetail = document.getElementById("closeEventDetail");
+const editEventFromDetailBtn = document.getElementById("editEventFromDetailBtn");
 const repeatWrap = document.getElementById("eventRepeatWrap");
 const repeatInput = document.getElementById("eventRepeat");
 const repeatUntilWrap = document.getElementById("eventRepeatUntilWrap");
@@ -171,10 +175,22 @@ function renderEventList() {
   dayEvents.forEach((ev) => eventList.appendChild(buildEventCard(ev)));
 }
 
-function buildEventCard(ev) {
+function buildEventCard(ev, { compact } = {}) {
   const card = document.createElement("div");
-  card.className = "event-card";
+  card.className = "event-card" + (compact ? " event-card-compact" : "");
   card.style.borderLeftColor = ev.color || TYPE_COLORS[ev.type];
+
+  if (compact) {
+    const linha = document.createElement("div");
+    linha.className = "event-title";
+    const d = new Date(ev.date + "T00:00:00");
+    const partes = [d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })];
+    if (ev.time) partes.push(ev.time);
+    linha.textContent = `${partes.join(" · ")} — ${ev.title}`;
+    card.appendChild(linha);
+    card.addEventListener("click", () => abrirDetalheEvento(ev));
+    return card;
+  }
 
   const title = document.createElement("div");
   title.className = "event-title";
@@ -205,9 +221,51 @@ function buildEventCard(ev) {
     card.appendChild(desc);
   }
 
-  card.addEventListener("click", () => openModal(ev));
+  card.addEventListener("click", () => abrirDetalheEvento(ev));
   return card;
 }
+
+function linhaDetalhe(label, valor) {
+  const p = document.createElement("p");
+  p.className = "event-meta";
+  const strong = document.createElement("strong");
+  strong.textContent = `${label}: `;
+  p.appendChild(strong);
+  p.appendChild(document.createTextNode(valor));
+  return p;
+}
+
+function abrirDetalheEvento(ev) {
+  detailBody.innerHTML = "";
+  detailBody.appendChild(Object.assign(document.createElement("h2"), { textContent: ev.title }));
+
+  const tag = document.createElement("span");
+  tag.className = "event-type-tag";
+  const corTipo = ev.color || TYPE_COLORS[ev.type];
+  tag.style.color = corTipo;
+  tag.style.background = `color-mix(in srgb, ${corTipo} 14%, white)`;
+  tag.textContent = TYPE_LABELS[ev.type] || ev.type;
+  detailBody.appendChild(tag);
+
+  const d = new Date(ev.date + "T00:00:00");
+  detailBody.appendChild(
+    linhaDetalhe("Quando", d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" }) + (ev.time ? ` às ${ev.time}` : ""))
+  );
+  if (ev.theme) detailBody.appendChild(linhaDetalhe("Tema/Disciplina", ev.theme));
+  if (ev.team) detailBody.appendChild(linhaDetalhe("Equipe", ev.team));
+  if (ev.description) detailBody.appendChild(linhaDetalhe("Descrição", ev.description));
+
+  editEventFromDetailBtn.onclick = () => {
+    detailModal.classList.add("hidden");
+    openModal(ev);
+  };
+  detailModal.classList.remove("hidden");
+}
+
+closeEventDetail.addEventListener("click", () => detailModal.classList.add("hidden"));
+detailModal.addEventListener("click", (e) => {
+  if (e.target === detailModal) detailModal.classList.add("hidden");
+});
 
 function renderUpcoming() {
   const todayStr = toDateStr(new Date());
@@ -222,18 +280,7 @@ function renderUpcoming() {
     upcomingList.innerHTML = '<p class="empty-hint">Nada por aqui ainda.</p>';
     return;
   }
-  upcoming.forEach((ev) => {
-    const card = buildEventCard(ev);
-    const dateTag = document.createElement("div");
-    dateTag.className = "event-meta";
-    const d = new Date(ev.date + "T00:00:00");
-    dateTag.textContent = d.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-    card.insertBefore(dateTag, card.firstChild);
-    upcomingList.appendChild(card);
-  });
+  upcoming.forEach((ev) => upcomingList.appendChild(buildEventCard(ev, { compact: true })));
 }
 
 function renderOverview() {
@@ -248,7 +295,7 @@ function renderOverview() {
     overviewEvents.innerHTML = '<p class="empty-hint">Nada por aqui ainda.</p>';
     return;
   }
-  upcoming.forEach((ev) => overviewEvents.appendChild(buildEventCard(ev)));
+  upcoming.forEach((ev) => overviewEvents.appendChild(buildEventCard(ev, { compact: true })));
 }
 
 function renderAll() {

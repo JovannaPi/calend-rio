@@ -92,6 +92,16 @@ export function girarRoleta({ itens, container, obterTitulo, obterCapa, aoParar,
     if (decorrido >= duracaoMs) {
       container.classList.remove("spinning-roulette");
       container.classList.add("landed");
+      const sairBtn = document.createElement("button");
+      sairBtn.type = "button";
+      sairBtn.className = "close-btn roulette-close-btn";
+      sairBtn.textContent = "×";
+      sairBtn.title = "Sair da roleta";
+      sairBtn.addEventListener("click", () => {
+        container.innerHTML = "";
+        container.classList.remove("landed");
+      });
+      container.appendChild(sairBtn);
       aoParar(sorteado);
       return;
     }
