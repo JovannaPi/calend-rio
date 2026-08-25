@@ -109,7 +109,7 @@ function buildCard(role, { showActions } = { showActions: true }) {
     row.className = "status-row";
     const doneBtn = document.createElement("button");
     doneBtn.type = "button";
-    doneBtn.className = "status-chip active";
+    doneBtn.className = "status-chip active small";
     doneBtn.textContent = "Marcar como feito";
     doneBtn.addEventListener("click", () =>
       updateDoc(doc(db, "roles", role.id), { status: "feito" })
@@ -117,13 +117,13 @@ function buildCard(role, { showActions } = { showActions: true }) {
     row.appendChild(doneBtn);
     const editBtn = document.createElement("button");
     editBtn.type = "button";
-    editBtn.className = "status-chip";
+    editBtn.className = "status-chip small";
     editBtn.textContent = "Editar";
     editBtn.addEventListener("click", () => entrarModoEdicao(role));
     row.appendChild(editBtn);
     const delBtn = document.createElement("button");
     delBtn.type = "button";
-    delBtn.className = "status-chip danger";
+    delBtn.className = "status-chip danger small";
     delBtn.textContent = "Remover";
     delBtn.addEventListener("click", () => {
       card.classList.add("removing");
@@ -247,7 +247,7 @@ function buildAlbumCard(role) {
 
   const delBtn = document.createElement("button");
   delBtn.type = "button";
-  delBtn.className = "status-chip danger";
+  delBtn.className = "status-chip danger small";
   delBtn.style.marginTop = "0.5rem";
   delBtn.textContent = "Remover";
   delBtn.addEventListener("click", () => {
