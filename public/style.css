@@ -86,8 +86,8 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
 .doodle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.22;
-  animation: doodle-drift 16s ease-in-out infinite;
+  opacity: 0.3;
+  animation: doodle-drift 13s ease-in-out infinite;
 }
 .doodle-ring {
   border-radius: 50%;
@@ -95,13 +95,17 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
   border: 2px solid currentColor;
 }
 .doodle-1 { top: 12%; left: 8%;  width: 12px; height: 12px; background: var(--accent-2); animation-delay: 0s; }
+.doodle-2 { top: 22%; left: 42%; width: 9px;  height: 9px;  background: var(--accent); animation-delay: 1.2s; }
 .doodle-3 { top: 8%;  left: 68%; width: 18px; height: 18px; color: var(--accent); animation-delay: 2.1s; }
+.doodle-4 { top: 68%; left: 6%;  width: 14px; height: 14px; background: var(--accent); animation-delay: 0.6s; }
 .doodle-5 { top: 78%; left: 48%; width: 14px; height: 14px; color: var(--accent-2); animation-delay: 3s; }
+.doodle-6 { top: 34%; left: 88%; width: 11px; height: 11px; background: var(--accent-2); animation-delay: 1.8s; }
+.doodle-7 { top: 58%; left: 78%; width: 8px;  height: 8px;  background: var(--accent); animation-delay: 2.6s; }
 .doodle-8 { top: 88%; left: 82%; width: 16px; height: 16px; color: var(--accent); animation-delay: 0.9s; }
 
 @keyframes doodle-drift {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.14; }
-  50% { transform: translate(10px, -16px) rotate(12deg); opacity: 0.3; }
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.18; }
+  50% { transform: translate(16px, -24px) rotate(18deg); opacity: 0.4; }
 }
 
 .fundo-frases { inset: 0; opacity: 0.12; }
@@ -718,8 +722,29 @@ input:focus, select:focus, textarea:focus {
   background: var(--bg-a);
   z-index: 999;
 }
+.loading-heart-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loading-heart-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, var(--accent-2) 12%, var(--accent) 28%, transparent 42%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  animation: snake-spin 1.3s linear infinite;
+}
+@keyframes snake-spin {
+  to { transform: rotate(360deg); }
+}
 .loading-heart {
-  font-size: 3rem;
+  font-size: 2.6rem;
   color: var(--accent);
   animation: heartbeat 1.1s ease-in-out infinite;
 }
