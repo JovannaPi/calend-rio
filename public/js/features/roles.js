@@ -2,7 +2,7 @@ import { db } from "../core/firebase-config.js";
 import { onAuth, getCurrentUser } from "../core/auth.js";
 import { listenFotosRole, adicionarFotoRole, removerFotoRole } from "../core/db.js";
 import { enviarFoto } from "../core/upload.js";
-import { personTag } from "../core/util.js";
+import { personTag, girarRoleta } from "../core/util.js";
 import {
   collection,
   addDoc,
@@ -430,25 +430,17 @@ rouletteBtn.addEventListener("click", () => {
   }
   rouletteBtn.disabled = true;
   rouletteBtn.classList.add("spinning");
-  rouletteResult.classList.remove("landed");
-  let giros = 0;
-  let sorteado = null;
-  const intervalo = setInterval(() => {
-    sorteado = ideias[Math.floor(Math.random() * ideias.length)];
-    rouletteResult.innerHTML = "";
-    const p = document.createElement("p");
-    p.className = "event-title roulette-spinning-title";
-    p.textContent = sorteado.titulo;
-    rouletteResult.appendChild(p);
-    giros++;
-    if (giros > 12) {
-      clearInterval(intervalo);
+  girarRoleta({
+    itens: ideias,
+    container: rouletteResult,
+    obterTitulo: (r) => r.titulo,
+    obterCapa: (r) => r.fotoUrl,
+    aoParar: (sorteado) => {
       rouletteBtn.disabled = false;
       rouletteBtn.classList.remove("spinning");
-      p.classList.remove("roulette-spinning-title");
-      rouletteResult.classList.add("landed");
       const actions = document.createElement("div");
       actions.className = "status-row";
+      actions.style.justifyContent = "center";
       const marcarBtn = document.createElement("button");
       marcarBtn.type = "button";
       marcarBtn.className = "status-chip active small";
@@ -456,8 +448,8 @@ rouletteBtn.addEventListener("click", () => {
       marcarBtn.addEventListener("click", () => entrarModoEdicao(sorteado));
       actions.appendChild(marcarBtn);
       rouletteResult.appendChild(actions);
-    }
-  }, 100);
+    },
+  });
 });
 
 onAuth((user) => {

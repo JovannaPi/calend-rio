@@ -1042,6 +1042,36 @@ input:focus, select:focus, textarea:focus {
 }
 .roulette-spinning-title { opacity: 0.6; filter: blur(0.5px); }
 .roulette-result.landed { animation: pop-in 0.3s ease; }
+
+.roulette-card-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem auto 0;
+  padding: 1rem;
+  max-width: 220px;
+  background: white;
+  border-radius: 16px;
+  border: 2px solid var(--accent-light);
+  box-shadow: 0 8px 20px rgba(45, 45, 45, 0.1);
+}
+.roulette-card-preview img {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.roulette-card-preview .event-title { text-align: center; font-size: 1rem; }
+.spinning-roulette .roulette-card-preview {
+  border-color: var(--accent);
+  animation: roulette-pulse 0.3s ease infinite;
+}
+@keyframes roulette-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.roulette-result.landed .roulette-card-preview { animation: pop-in 0.35s ease; }
 .book-cover-sm { transition: transform 0.2s ease; }
 .book-card-row:hover .book-cover-sm { transform: scale(1.06) rotate(-1deg); }
 .add-book-btn {

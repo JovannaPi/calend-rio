@@ -8,6 +8,7 @@ import {
   updateConfig,
   registrarAtividade,
 } from "../core/db.js";
+import { girarRoleta } from "../core/util.js";
 
 const STATUS_LABELS = {
   planejado: "Planejado",
@@ -288,30 +289,22 @@ function rodarRoleta() {
   }
   rouletteBtn.disabled = true;
   rouletteBtn.classList.add("spinning");
-  rouletteResult.classList.remove("landed");
-  let giros = 0;
-  let sorteado = null;
-  const intervalo = setInterval(() => {
-    sorteado = planejados[Math.floor(Math.random() * planejados.length)];
-    rouletteResult.innerHTML = "";
-    const p = document.createElement("p");
-    p.className = "event-title roulette-spinning-title";
-    p.textContent = sorteado.titulo;
-    rouletteResult.appendChild(p);
-    giros++;
-    if (giros > 12) {
-      clearInterval(intervalo);
+  girarRoleta({
+    itens: planejados,
+    container: rouletteResult,
+    obterTitulo: (l) => l.titulo,
+    obterCapa: (l) => l.capaUrl,
+    aoParar: (sorteado) => {
       rouletteBtn.disabled = false;
       rouletteBtn.classList.remove("spinning");
-      p.classList.remove("roulette-spinning-title");
-      rouletteResult.classList.add("landed");
       const actions = document.createElement("div");
       actions.className = "status-row";
       addActionBtn(actions, "Começar a ler este livro", () => definirComoAtual(sorteado));
       addActionBtn(actions, "Ver detalhes", () => abrirDetalhe(sorteado));
+      actions.style.justifyContent = "center";
       rouletteResult.appendChild(actions);
-    }
-  }, 100);
+    },
+  });
 }
 
 // ── Modal: adicionar/editar livro ────────────────────────────────────────

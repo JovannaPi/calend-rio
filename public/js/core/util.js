@@ -60,6 +60,50 @@ export function corPessoa(uid) {
   return hash % 2 === 0 ? "var(--accent)" : "var(--accent-2)";
 }
 
+// Roleta visual bonitinha (capa/foto + título), compartilhada entre
+// Biblioteca e Rolês. Desacelera com o tempo, tipo uma roleta de verdade.
+export function girarRoleta({ itens, container, obterTitulo, obterCapa, aoParar, duracaoMs = 2200 }) {
+  if (!itens || itens.length === 0) return;
+  container.classList.remove("landed");
+  container.classList.add("spinning-roulette");
+  const inicio = Date.now();
+  let sorteado = null;
+
+  function desenharCard(item) {
+    container.innerHTML = "";
+    const card = document.createElement("div");
+    card.className = "roulette-card-preview";
+    const capa = obterCapa ? obterCapa(item) : null;
+    if (capa) {
+      const img = document.createElement("img");
+      img.src = capa;
+      img.alt = "";
+      card.appendChild(img);
+    }
+    const titulo = document.createElement("p");
+    titulo.className = "event-title";
+    titulo.textContent = obterTitulo(item);
+    card.appendChild(titulo);
+    container.appendChild(card);
+  }
+
+  function passo() {
+    const decorrido = Date.now() - inicio;
+    if (decorrido >= duracaoMs) {
+      container.classList.remove("spinning-roulette");
+      container.classList.add("landed");
+      aoParar(sorteado);
+      return;
+    }
+    sorteado = itens[Math.floor(Math.random() * itens.length)];
+    desenharCard(sorteado);
+    const progresso = decorrido / duracaoMs;
+    const atraso = 70 + progresso * progresso * 260;
+    setTimeout(passo, atraso);
+  }
+  passo();
+}
+
 export function personTag(nome, uid) {
   const span = document.createElement("span");
   span.className = "person-tag";
