@@ -8,7 +8,7 @@
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%237c5cff%22/></svg>">
   
   <link rel="stylesheet" href="style.css">
@@ -27,14 +27,6 @@
     <span class="doodle doodle-8 doodle-ring"></span>
   </div>
 
-  <!-- Fundo animado exclusivo da aba Mídia e Clube (só aparece nesse grupo) -->
-  <div class="doodles media-doodles" aria-hidden="true">
-    <span class="doodle doodle-media-1"></span>
-    <span class="doodle doodle-media-2 doodle-ring"></span>
-    <span class="doodle doodle-media-3"></span>
-    <span class="doodle doodle-media-4 doodle-ring"></span>
-    <span class="doodle doodle-media-5"></span>
-  </div>
 
   <!-- =========================================================
        1. AUTENTICAÇÃO (LOGIN / CADASTRO)
@@ -163,7 +155,7 @@
       <!-- =========================================================
            GRUPO: AGENDA E INÍCIO
            ========================================================= -->
-      <section id="tab-calendario" class="tab-panel">
+      <section id="tab-calendario" class="tab-panel active">
         <section class="calendar-panel">
           <div class="calendar-nav">
             <button id="prevMonth" class="nav-btn" aria-label="Mês anterior">‹</button>
@@ -479,7 +471,7 @@
             <input type="time" id="eventTime">
           </label>
           <label>Cor
-            <input type="color" id="eventColor" value="#6c5ce7">
+            <input type="color" id="eventColor" value="#e07a5f">
           </label>
         </div>
         <label>Tema / Disciplina

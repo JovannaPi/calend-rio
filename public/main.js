@@ -35,6 +35,16 @@ const subTabsContainers = document.querySelectorAll('.sub-tabs-container .sub-ta
 const subTabBtns = document.querySelectorAll('.sub-tabs .tab-btn');
 const tabPanels = document.querySelectorAll('.tab-panel');
 
+// Lembra a última aba visitada (sobrevive a um F5)
+const ABA_STORAGE_KEY = 'cr_ultima_aba';
+function salvarAbaAtual(group, tab) {
+  try {
+    localStorage.setItem(ABA_STORAGE_KEY, JSON.stringify({ group, tab }));
+  } catch {
+    // localStorage indisponível (modo privado, etc.) — sem persistência, sem problema
+  }
+}
+
 // 1. Clique nas Abas Principais (Nível 1 - ex: Mídia e Clube)
 mainTabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -43,7 +53,6 @@ mainTabBtns.forEach(btn => {
     btn.classList.add('active');
 
     const group = btn.getAttribute('data-group'); // ex: 'midia'
-    document.body.classList.toggle('media-theme', group === 'midia');
 
     // Esconde todos os containers de sub-abas e mostra apenas o do grupo selecionado
     subTabsContainers.forEach(container => {
@@ -86,5 +95,26 @@ subTabBtns.forEach(btn => {
     if (targetPanel) {
       targetPanel.classList.add('active');
     }
+
+    const parentGroup = btn.closest('.sub-tabs')?.id?.replace('sub-', '');
+    if (parentGroup) salvarAbaAtual(parentGroup, tabName);
   });
 });
+
+// 3. Restaura a aba de quando a pessoa saiu (em vez de sempre voltar pro início)
+(function restaurarUltimaAba() {
+  let salvo = null;
+  try {
+    salvo = JSON.parse(localStorage.getItem(ABA_STORAGE_KEY) || 'null');
+  } catch {
+    salvo = null;
+  }
+  if (!salvo || !salvo.group || !salvo.tab) return;
+
+  const groupBtn = document.querySelector(`.main-tab-btn[data-group="${salvo.group}"]`);
+  const tabBtn = document.querySelector(`.sub-tabs .tab-btn[data-tab="${salvo.tab}"]`);
+  if (!groupBtn || !tabBtn) return;
+
+  groupBtn.click();
+  tabBtn.click();
+})();
