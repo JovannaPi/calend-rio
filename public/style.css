@@ -103,6 +103,19 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
 .doodle-7 { top: 58%; left: 78%; width: 8px;  height: 8px;  background: var(--accent); animation-delay: 2.6s; }
 .doodle-8 { top: 88%; left: 82%; width: 16px; height: 16px; color: var(--accent); animation-delay: 0.9s; }
 
+.doodle-heart {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.doodle-h1 { top: 45%; left: 15%; font-size: 15px; color: var(--accent); animation-delay: 1.5s; }
+.doodle-h2 { top: 18%; left: 55%; font-size: 20px; color: var(--accent-2); animation-delay: 2.8s; }
+.doodle-h3 { top: 68%; left: 62%; font-size: 13px; color: var(--accent); animation-delay: 0.4s; }
+
 @keyframes doodle-drift {
   0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.18; }
   50% { transform: translate(16px, -24px) rotate(18deg); opacity: 0.4; }
@@ -964,6 +977,7 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   transition: all 0.15s ease;
 }
+.status-chip.small { padding: 0.28rem 0.6rem; font-size: 0.7rem; }
 .status-chip:hover { transform: scale(1.06); }
 .status-chip.active { background: var(--accent); color: white; border-color: transparent; }
 .status-chip.active:hover { transform: scale(1.06); box-shadow: 0 6px 14px rgba(224, 122, 95, 0.3); }
@@ -998,7 +1012,7 @@ input:focus, select:focus, textarea:focus {
 /* Biblioteca */
 .search-input { border-radius: 999px; background: white; padding: 0.65rem 0.9rem; }
 .roulette-card { text-align: center; }
-.primary-btn.spinning { animation: roulette-shake 0.35s ease infinite; }
+.primary-btn.spinning, .status-chip.spinning { animation: roulette-shake 0.35s ease infinite; }
 @keyframes roulette-shake {
   0%, 100% { transform: rotate(0deg); }
   25% { transform: rotate(-2deg); }
@@ -1100,6 +1114,7 @@ input:focus, select:focus, textarea:focus {
 /* Rolês & Progresso */
 .role-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 0.5rem; }
 .album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+.ideias-list { margin-top: 0.75rem; }
 .album-card { display: flex; flex-direction: column; }
 .album-card .role-photo { max-height: 200px; }
 .album-story { background: var(--accent-light); border-radius: 10px; padding: 0.6rem 0.75rem; margin: 0.4rem 0; }

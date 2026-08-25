@@ -158,13 +158,13 @@ function buildIdeiaCard(role) {
   row.className = "status-row";
   const markBtn = document.createElement("button");
   markBtn.type = "button";
-  markBtn.className = "status-chip active";
+  markBtn.className = "status-chip active small";
   markBtn.textContent = "Marcar data";
   markBtn.addEventListener("click", () => entrarModoEdicao(role));
   row.appendChild(markBtn);
   const delBtn = document.createElement("button");
   delBtn.type = "button";
-  delBtn.className = "status-chip danger";
+  delBtn.className = "status-chip danger small";
   delBtn.textContent = "Remover";
   delBtn.addEventListener("click", () => {
     card.classList.add("removing");
@@ -451,7 +451,7 @@ rouletteBtn.addEventListener("click", () => {
       actions.className = "status-row";
       const marcarBtn = document.createElement("button");
       marcarBtn.type = "button";
-      marcarBtn.className = "status-chip active";
+      marcarBtn.className = "status-chip active small";
       marcarBtn.textContent = "Marcar data";
       marcarBtn.addEventListener("click", () => entrarModoEdicao(sorteado));
       actions.appendChild(marcarBtn);
