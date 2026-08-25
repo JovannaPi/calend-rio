@@ -839,8 +839,20 @@ input:focus, select:focus, textarea:focus {
 .book-search-result:hover { background: var(--accent-light); }
 .book-search-result img { width: 2rem; height: 2.7rem; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
 
+/* Conteúdo revelado (Secreto, Diário, Premiações, Biblioteca, Memórias) */
+.reveal-box {
+  background: var(--accent-light);
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.italic { font-style: italic; }
+.footer-note { text-align: center; }
+
 /* Diário / Secreto */
 .chapter-nav-row { display: flex; align-items: center; justify-content: space-between; }
+.chapter-nav-center { text-align: center; }
 .emoji-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .emoji-btn {
   font-size: 1.4rem;
@@ -899,20 +911,16 @@ input:focus, select:focus, textarea:focus {
    ========================================================= */
 @media (max-width: 900px) {
   .dashboard {
-    grid-template-columns: 1fr;
     padding: 1rem;
   }
-  
-  .tabs {
-    position: static;
-    flex-direction: row;
-    overflow-x: auto;
+
+  .main-tabs, .sub-tabs {
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Oculta scrollbar no Firefox */
   }
 
-  .tabs::-webkit-scrollbar {
+  .main-tabs::-webkit-scrollbar, .sub-tabs::-webkit-scrollbar {
     display: none; /* Oculta scrollbar no Chrome/Safari */
   }
 

@@ -1,4 +1,4 @@
-import { onAuth, signUp, logIn, logOut, getCurrentUser } from "./auth.js";
+import { onAuth, signUp, logIn, logOut } from "./auth.js";
 
 const authScreen = document.getElementById("authScreen");
 const dashboard = document.getElementById("dashboard");
@@ -56,16 +56,6 @@ signupForm.addEventListener("submit", async (e) => {
 
 document.getElementById("logoutBtn").addEventListener("click", () => logOut());
 
-// Tab navigation
-document.querySelectorAll(".tab-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
-  });
-});
-
 onAuth((user) => {
   if (user) {
     authScreen.classList.add("hidden");
@@ -76,5 +66,3 @@ onAuth((user) => {
     authScreen.classList.remove("hidden");
   }
 });
-
-export { getCurrentUser };
