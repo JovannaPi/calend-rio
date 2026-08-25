@@ -48,7 +48,9 @@
           <input type="password" id="loginPassword" required minlength="6" autocomplete="current-password">
         </label>
         <p id="loginError" class="auth-error hidden" role="alert"></p>
+        <p id="loginResetMsg" class="empty-hint hidden"></p>
         <button type="submit" class="primary-btn full-width">Entrar</button>
+        <button type="button" id="forgotPasswordBtn" class="forgot-password-btn">Esqueci minha senha</button>
       </form>
 
       <form id="signupForm" class="auth-form hidden">
@@ -299,8 +301,9 @@
            ========================================================= -->
       <section id="tab-roles" class="tab-panel grid-container">
         <div class="panel-card">
-          <h2>Marcar rolê</h2>
+          <h2 id="roleFormTitle">Marcar rolê</h2>
           <form id="roleForm" class="stacked-form">
+            <input type="hidden" id="roleId">
             <input type="text" id="roleTitle" placeholder="O que vamos fazer?" required>
             <div class="inline-form">
               <input type="date" id="roleDate">
@@ -310,8 +313,13 @@
               <input type="url" id="roleMapaUrl" placeholder="Link do mapa (opcional)">
               <input type="url" id="roleFotoUrl" placeholder="Link de uma foto (opcional)">
             </div>
+            <button type="button" id="roleFotoUploadBtn" class="status-chip">Ou enviar uma foto do dispositivo</button>
+            <input type="file" id="roleFotoUploadInput" accept="image/*" class="hidden">
             <textarea id="roleNotas" rows="2" placeholder="Notas..."></textarea>
-            <button type="submit" class="primary-btn">Adicionar</button>
+            <div class="form-actions">
+              <button type="button" id="roleCancelEditBtn" class="danger-btn hidden">Cancelar edição</button>
+              <button type="submit" id="roleSubmitBtn" class="primary-btn">Adicionar</button>
+            </div>
           </form>
         </div>
         <div class="panel-card">
@@ -445,6 +453,12 @@
         </label>
         <label>Descrição / Observações
           <textarea id="eventDescription" rows="3" placeholder="Conteúdo cobrado, local, links, etc."></textarea>
+        </label>
+        <label class="chip" id="eventRepeatWrap">
+          <input type="checkbox" id="eventRepeat"><span>Repetir toda semana</span>
+        </label>
+        <label id="eventRepeatUntilWrap" class="hidden">Repetir até
+          <input type="date" id="eventRepeatUntil">
         </label>
         <div class="form-actions">
           <button type="button" id="deleteEventBtn" class="danger-btn hidden">Excluir</button>

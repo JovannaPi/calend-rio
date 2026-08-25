@@ -769,6 +769,19 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 0.85rem;
 }
 .auth-error { color: #d63384; font-size: 0.82rem; margin: -0.3rem 0 0.6rem; }
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 0.7rem;
+  width: 100%;
+  text-align: center;
+  text-decoration: underline;
+}
+.forgot-password-btn:hover { color: var(--accent); }
 
 /* =========================================================
    9. MODAIS & OVERLAYS
@@ -1069,7 +1082,8 @@ input:focus, select:focus, textarea:focus {
    ========================================================= */
 @media (max-width: 900px) {
   .dashboard {
-    padding: 1rem;
+    padding: 0.75rem;
+    gap: 0.75rem;
   }
 
   .main-tabs, .sub-tabs {
@@ -1089,11 +1103,46 @@ input:focus, select:focus, textarea:focus {
   #tab-calendario.tab-panel.active {
     grid-template-columns: 1fr;
   }
-  
+
   .form-row { grid-template-columns: 1fr; }
+
+  .tab-panel.active.grid-container,
+  .overview-row,
+  .album-grid,
+  .memorias-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
-  .app-header { padding: 0.85rem 1rem; }
+  /* Cabeçalho: empilha em vez de espremer tudo numa linha só */
+  .app-header {
+    flex-wrap: wrap;
+    padding: 0.6rem 0.85rem;
+    gap: 0.5rem;
+  }
+  .brand-title { font-size: 1.05rem; }
+  .subtitle { display: none; }
+  .header-special-badge { order: 3; flex-basis: 100%; text-align: center; }
+  .header-actions { gap: 0.5rem; }
+  .user-badge { display: none; }
+
+  .panel-card, .calendar-panel, .side-panel {
+    padding: 1rem;
+  }
+
+  .modal-content { padding: 1.15rem; width: 94%; }
+  .form-actions { flex-direction: column-reverse; gap: 0.6rem; }
+  .form-actions button { width: 100%; }
+
+  .day-cell { min-height: 64px; padding: 4px; }
+  .day-number { font-size: 0.72rem; }
+  .day-event-dot { font-size: 0.6rem; padding: 1px 4px; }
+  .weekdays { font-size: 0.65rem; }
+
+  .status-chip, .primary-btn, .danger-btn { padding: 0.6rem 0.9rem; }
+
+  .bell-panel { width: min(280px, 90vw); right: -0.5rem; }
+
   .memorias-grid { grid-template-columns: 1fr; }
 }

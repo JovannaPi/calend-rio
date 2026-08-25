@@ -12,12 +12,18 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const form = document.getElementById("roleForm");
+const formTitle = document.getElementById("roleFormTitle");
+const idInput = document.getElementById("roleId");
 const titleInput = document.getElementById("roleTitle");
 const dateInput = document.getElementById("roleDate");
 const localInput = document.getElementById("roleLocal");
 const mapaInput = document.getElementById("roleMapaUrl");
 const fotoInput = document.getElementById("roleFotoUrl");
 const notasInput = document.getElementById("roleNotas");
+const submitBtn = document.getElementById("roleSubmitBtn");
+const cancelEditBtn = document.getElementById("roleCancelEditBtn");
+const fotoUploadBtn = document.getElementById("roleFotoUploadBtn");
+const fotoUploadInput = document.getElementById("roleFotoUploadInput");
 
 const plannedListEl = document.getElementById("rolesPlannedList");
 const rankingListEl = document.getElementById("rolesRankingList");
@@ -102,6 +108,12 @@ function buildCard(role, { showActions } = { showActions: true }) {
       updateDoc(doc(db, "roles", role.id), { status: "feito" })
     );
     row.appendChild(doneBtn);
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "status-chip";
+    editBtn.textContent = "Editar";
+    editBtn.addEventListener("click", () => entrarModoEdicao(role));
+    row.appendChild(editBtn);
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "status-chip danger";
@@ -284,24 +296,70 @@ function render() {
   }
 }
 
+function entrarModoEdicao(role) {
+  idInput.value = role.id;
+  titleInput.value = role.titulo || "";
+  dateInput.value = role.data || "";
+  localInput.value = role.local || "";
+  mapaInput.value = role.mapaUrl || "";
+  fotoInput.value = role.fotoUrl || "";
+  notasInput.value = role.notas || "";
+  formTitle.textContent = "Editar rolê";
+  submitBtn.textContent = "Salvar alterações";
+  cancelEditBtn.classList.remove("hidden");
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function sairModoEdicao() {
+  idInput.value = "";
+  form.reset();
+  formTitle.textContent = "Marcar rolê";
+  submitBtn.textContent = "Adicionar";
+  cancelEditBtn.classList.add("hidden");
+}
+
+cancelEditBtn.addEventListener("click", sairModoEdicao);
+
+fotoUploadBtn.addEventListener("click", () => fotoUploadInput.click());
+fotoUploadInput.addEventListener("change", async () => {
+  const file = fotoUploadInput.files?.[0];
+  fotoUploadInput.value = "";
+  if (!file) return;
+  fotoUploadBtn.textContent = "Enviando...";
+  try {
+    fotoInput.value = await enviarFoto(file, { folder: "calend-rio/roles" });
+  } catch (err) {
+    alert(err.message || "Falha ao enviar foto.");
+  } finally {
+    fotoUploadBtn.textContent = "Ou enviar uma foto do dispositivo";
+  }
+});
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const titulo = titleInput.value.trim();
   if (!titulo) return;
   const me = getCurrentUser();
-  await addDoc(rolesRef, {
+  const payload = {
     titulo,
     data: dateInput.value,
     local: localInput.value.trim(),
     mapaUrl: mapaInput.value.trim(),
     fotoUrl: fotoInput.value.trim(),
     notas: notasInput.value.trim(),
-    status: "planejado",
-    criadoPorUid: me.uid,
-    criadoPorName: me.name,
-    createdAt: Date.now(),
-  });
-  form.reset();
+  };
+  if (idInput.value) {
+    await updateDoc(doc(db, "roles", idInput.value), payload);
+  } else {
+    await addDoc(rolesRef, {
+      ...payload,
+      status: "planejado",
+      criadoPorUid: me.uid,
+      criadoPorName: me.name,
+      createdAt: Date.now(),
+    });
+  }
+  sairModoEdicao();
 });
 
 onAuth((user) => {

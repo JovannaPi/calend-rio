@@ -1,4 +1,4 @@
-import { onAuth, signUp, logIn, logOut } from "./auth.js";
+import { onAuth, signUp, logIn, logOut, resetPassword } from "./auth.js";
 
 const authScreen = document.getElementById("authScreen");
 const dashboard = document.getElementById("dashboard");
@@ -56,6 +56,23 @@ signupForm.addEventListener("submit", async (e) => {
 });
 
 document.getElementById("logoutBtn").addEventListener("click", () => logOut());
+
+const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
+const loginResetMsg = document.getElementById("loginResetMsg");
+forgotPasswordBtn.addEventListener("click", async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  loginResetMsg.classList.remove("hidden");
+  if (!email) {
+    loginResetMsg.textContent = "Digite seu e-mail no campo acima primeiro.";
+    return;
+  }
+  try {
+    await resetPassword(email);
+    loginResetMsg.textContent = "Enviamos um link pra redefinir sua senha nesse e-mail.";
+  } catch {
+    loginResetMsg.textContent = "Não consegui enviar. Confira se o e-mail está certo.";
+  }
+});
 
 onAuth((user) => {
   if (user) {

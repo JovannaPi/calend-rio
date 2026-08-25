@@ -39,6 +39,10 @@ const modal = document.getElementById("eventModal");
 const eventForm = document.getElementById("eventForm");
 const modalTitle = document.getElementById("modalTitle");
 const deleteBtn = document.getElementById("deleteEventBtn");
+const repeatWrap = document.getElementById("eventRepeatWrap");
+const repeatInput = document.getElementById("eventRepeat");
+const repeatUntilWrap = document.getElementById("eventRepeatUntilWrap");
+const repeatUntilInput = document.getElementById("eventRepeatUntil");
 
 const toast = document.getElementById("toast");
 
@@ -262,13 +266,22 @@ function openModal(ev) {
   document.getElementById("eventTeam").value = ev ? ev.team || "" : "";
   document.getElementById("eventDescription").value = ev ? ev.description || "" : "";
   deleteBtn.classList.toggle("hidden", !ev);
+  repeatInput.checked = false;
+  repeatUntilInput.value = "";
+  repeatUntilWrap.classList.add("hidden");
+  repeatWrap.classList.toggle("hidden", !!ev);
   modal.classList.remove("hidden");
 }
 
 function closeModal() {
   modal.classList.add("hidden");
   eventForm.reset();
+  repeatUntilWrap.classList.add("hidden");
 }
+
+repeatInput.addEventListener("change", () => {
+  repeatUntilWrap.classList.toggle("hidden", !repeatInput.checked);
+});
 
 eventForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -290,6 +303,18 @@ eventForm.addEventListener("submit", async (e) => {
   try {
     if (id) {
       await updateDoc(doc(db, "events", id), payload);
+    } else if (repeatInput.checked && repeatUntilInput.value && repeatUntilInput.value > payload.date) {
+      const seriesId = `serie-${Date.now()}`;
+      const datas = [];
+      let cursor = new Date(payload.date + "T00:00:00");
+      const fim = new Date(repeatUntilInput.value + "T00:00:00");
+      while (cursor <= fim) {
+        datas.push(toDateStr(cursor));
+        cursor.setDate(cursor.getDate() + 7);
+      }
+      await Promise.all(
+        datas.map((data) => addDoc(eventsRef, { ...payload, date: data, seriesId }))
+      );
     } else {
       await addDoc(eventsRef, payload);
     }
