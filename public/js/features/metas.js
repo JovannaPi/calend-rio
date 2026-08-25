@@ -9,6 +9,7 @@ import {
   onSnapshot,
   increment,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { personTag } from "../core/util.js";
 
 const listEl = document.getElementById("goalsList");
 const form = document.getElementById("goalForm");
@@ -36,6 +37,8 @@ function render(goals) {
 
     const card = document.createElement("div");
     card.className = "event-card";
+
+    card.appendChild(personTag(goal.criadoPorName, goal.criadoPorUid));
 
     const title = document.createElement("div");
     title.className = "event-title";

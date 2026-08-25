@@ -1060,6 +1060,18 @@ input:focus, select:focus, textarea:focus {
 .wish-done { opacity: 0.6; }
 .wish-done .event-title { text-decoration: line-through; }
 
+/* Etiqueta de quem criou/desejou (cor estável por pessoa) */
+.person-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 /* Rolês & Progresso */
 .role-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 0.5rem; }
 .album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }

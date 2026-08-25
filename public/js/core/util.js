@@ -12,7 +12,7 @@ export function lembrarCapitulo(livroId, uid, numero) {
 
 // Confete simples, sem dependências externas.
 export function confetti() {
-  const cores = ["#7c5cff", "#ff6fa5", "#ef476f", "#4d8cff", "#06b6a4", "#a78bfa"];
+  const cores = ["#e07a5f", "#81b29a", "#ef476f", "#4d8cff", "#06b6a4", "#f2cc8f"];
   const container = document.createElement("div");
   container.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden;";
   document.body.appendChild(container);
@@ -48,4 +48,22 @@ export function el(tag, className, text) {
   if (className) node.className = className;
   if (text != null) node.textContent = text;
   return node;
+}
+
+// Cor estável por pessoa (mesmo uid sempre cai na mesma cor, em qualquer
+// tela/sessão) — pra dar pra distinguir "isso é da Jovanna" x "isso é da
+// Letícia" em Rolês, Presentes, etc. sem precisar hardcodar nomes.
+export function corPessoa(uid) {
+  if (!uid) return "var(--muted)";
+  let hash = 0;
+  for (let i = 0; i < uid.length; i++) hash = (hash * 31 + uid.charCodeAt(i)) >>> 0;
+  return hash % 2 === 0 ? "var(--accent)" : "var(--accent-2)";
+}
+
+export function personTag(nome, uid) {
+  const span = document.createElement("span");
+  span.className = "person-tag";
+  span.style.background = corPessoa(uid);
+  span.textContent = nome ? nome.split(" ")[0] : "Alguém";
+  return span;
 }

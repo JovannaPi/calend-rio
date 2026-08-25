@@ -8,6 +8,7 @@ import {
   doc,
   onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { personTag } from "../core/util.js";
 
 const listEl = document.getElementById("moviesList");
 const form = document.getElementById("movieForm");
@@ -51,6 +52,7 @@ function render(items) {
     }
     const info = document.createElement("div");
     info.className = "book-card-info";
+    info.appendChild(personTag(item.addedByName, item.addedByUid));
     const title = document.createElement("div");
     title.className = "event-title";
     title.textContent = item.title;
@@ -60,7 +62,6 @@ function render(items) {
     meta.className = "event-meta";
     const partes = [item.type === "serie" ? "Série" : "Filme"];
     if (item.ano) partes.push(item.ano);
-    partes.push(`adicionado por ${item.addedByName || "alguém"}`);
     meta.textContent = partes.join(" · ");
     info.appendChild(meta);
     if (item.sinopse) {

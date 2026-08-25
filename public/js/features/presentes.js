@@ -8,6 +8,7 @@ import {
   doc,
   onSnapshot,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { personTag } from "../core/util.js";
 
 const listEl = document.getElementById("desejosList");
 const form = document.getElementById("desejoForm");
@@ -34,18 +35,19 @@ function render(items) {
     const card = document.createElement("div");
     card.className = "event-card" + (item.comprado ? " wish-done" : "");
 
+    card.appendChild(personTag(item.criadoPorName, item.criadoPorUid));
+
     const title = document.createElement("div");
     title.className = "event-title";
     title.textContent = item.titulo;
     card.appendChild(title);
 
-    const meta = document.createElement("div");
-    meta.className = "event-meta";
-    const partes = [];
-    if (item.preco) partes.push(formatMoney(item.preco));
-    partes.push(`sugerido por ${item.criadoPorName || "alguém"}`);
-    meta.textContent = partes.join(" · ");
-    card.appendChild(meta);
+    if (item.preco) {
+      const meta = document.createElement("div");
+      meta.className = "event-meta";
+      meta.textContent = formatMoney(item.preco);
+      card.appendChild(meta);
+    }
 
     if (item.notas) {
       const notas = document.createElement("div");

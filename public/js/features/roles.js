@@ -2,6 +2,7 @@ import { db } from "../core/firebase-config.js";
 import { onAuth, getCurrentUser } from "../core/auth.js";
 import { listenFotosRole, adicionarFotoRole, removerFotoRole } from "../core/db.js";
 import { enviarFoto } from "../core/upload.js";
+import { personTag } from "../core/util.js";
 import {
   collection,
   addDoc,
@@ -67,6 +68,8 @@ function buildCard(role, { showActions } = { showActions: true }) {
     img.className = "role-photo";
     card.appendChild(img);
   }
+
+  card.appendChild(personTag(role.criadoPorName, role.criadoPorUid));
 
   const title = document.createElement("div");
   title.className = "event-title";
@@ -137,6 +140,8 @@ function buildIdeiaCard(role) {
   const card = document.createElement("div");
   card.className = "event-card";
 
+  card.appendChild(personTag(role.criadoPorName, role.criadoPorUid));
+
   const title = document.createElement("div");
   title.className = "event-title";
   title.textContent = role.titulo;
@@ -182,6 +187,8 @@ function buildAlbumCard(role) {
     img.className = "role-photo";
     card.appendChild(img);
   }
+
+  card.appendChild(personTag(role.criadoPorName, role.criadoPorUid));
 
   const title = document.createElement("div");
   title.className = "event-title";
