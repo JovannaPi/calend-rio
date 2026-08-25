@@ -133,6 +133,7 @@
 
       <nav id="sub-agenda" class="sub-tabs active" role="tablist">
         <button class="tab-btn active" data-tab="calendario">Calendário</button>
+        <button class="tab-btn" data-tab="timeline">Nossa Timeline</button>
       </nav>
 
       <!-- Todas as funcionalidades do Clube do Livro moram aqui -->
@@ -143,6 +144,7 @@
         <button class="tab-btn" data-tab="memorias">Memórias</button>
         <button class="tab-btn" data-tab="stats">Estatísticas</button>
         <button class="tab-btn" data-tab="premiacao">Premiações</button>
+        <button class="tab-btn" data-tab="relatorios">Relatórios</button>
         <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       </nav>
 
@@ -154,7 +156,6 @@
       <nav id="sub-progresso" class="sub-tabs hidden" role="tablist">
         <button class="tab-btn" data-tab="metas">Metas</button>
         <button class="tab-btn" data-tab="desejos">Lista de desejos</button>
-        <button class="tab-btn" data-tab="relatorios">Relatórios</button>
       </nav>
 
       <nav id="sub-comunidade" class="sub-tabs hidden" role="tablist">
@@ -220,6 +221,14 @@
             <div id="overviewRoles"></div>
           </div>
         </div>
+      </section>
+
+      <section id="tab-timeline" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Nossa timeline</h2>
+          <p class="empty-hint">Tudo que vocês já viveram juntas — rolês, livros terminados e datas especiais — numa linha do tempo só.</p>
+        </div>
+        <div id="timelineList"></div>
       </section>
 
       <!-- =========================================================
@@ -315,6 +324,21 @@
         </div>
       </section>
 
+      <section id="tab-relatorios" class="tab-panel single-col">
+        <div class="panel-card">
+          <h2>Novo relatório</h2>
+          <form id="reportForm" class="stacked-form">
+            <input type="text" id="reportTitle" placeholder="Título do encontro/tópico" required>
+            <textarea id="reportContent" rows="3" placeholder="Conteúdo abordado, sugestões, feedback..." required></textarea>
+            <button type="submit" class="primary-btn">Publicar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Relatórios anteriores</h2>
+          <div id="reportsList"></div>
+        </div>
+      </section>
+
       <!-- =========================================================
            GRUPO: ROLÊS
            ========================================================= -->
@@ -382,21 +406,6 @@
         <div class="panel-card">
           <h2>Lista de desejos</h2>
           <div id="desejosList"></div>
-        </div>
-      </section>
-
-      <section id="tab-relatorios" class="tab-panel single-col">
-        <div class="panel-card">
-          <h2>Novo relatório</h2>
-          <form id="reportForm" class="stacked-form">
-            <input type="text" id="reportTitle" placeholder="Título do encontro/tópico" required>
-            <textarea id="reportContent" rows="3" placeholder="Conteúdo abordado, sugestões, feedback..." required></textarea>
-            <button type="submit" class="primary-btn">Publicar</button>
-          </form>
-        </div>
-        <div class="panel-card">
-          <h2>Relatórios anteriores</h2>
-          <div id="reportsList"></div>
         </div>
       </section>
 

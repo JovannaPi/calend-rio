@@ -8,6 +8,7 @@
 import "./js/core/auth-ui.js";
 
 import "./js/features/calendario.js";
+import "./js/features/timeline.js";
 import "./js/features/biblioteca.js";
 import "./js/features/filmes.js";
 import "./js/features/diario.js";

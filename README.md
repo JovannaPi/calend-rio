@@ -1,6 +1,6 @@
 # Calend.rio
 
-Um painel de casal/clube completo: calendário de provas/atividades, uma biblioteca de leitura compartilhada (com diário por capítulo, teorias secretas reveladas quando as duas pessoas enviarem, discussão liberada após a revelação, estatísticas, premiações e uma página de memórias por livro concluído), chat, filmes/séries, rolês com ranking de locais, metas financeiras, relatórios e notificações. Cada pessoa entra com sua própria conta — suas anotações pessoais (diário, teorias, cartas) ficam separadas até o momento certo de revelar; o que é pra compartilhar (calendário, chat, avisos) todo mundo vê.
+Um painel de casal/clube completo: calendário de provas/atividades (com eventos recorrentes), uma timeline com tudo que vocês já viveram juntas, uma biblioteca de leitura compartilhada (com diário por capítulo, teorias secretas reveladas quando as duas pessoas enviarem, discussão liberada após a revelação, estatísticas, premiações e uma página de memórias por livro concluído), chat, filmes/séries, rolês com álbum de fotos e um banco de ideias pra sortear, lista de desejos, metas financeiras, relatórios, datas especiais com contagem regressiva e notificações. Cada pessoa entra com sua própria conta, escolhe seu nome/foto/cor de perfil — suas anotações pessoais (diário, teorias, cartas) ficam separadas até o momento certo de revelar; o que é pra compartilhar (calendário, chat, avisos) todo mundo vê.
 
 ## Como rodar
 
@@ -13,23 +13,27 @@ Acesse `http://localhost:3000`. Na primeira vez, crie sua conta na aba **Cadastr
 
 ## Funcionalidades
 
-- **Login/Cadastro** — cada pessoa tem sua própria conta.
-- **Calendário** — provas, atividades, trabalhos, com tema/disciplina, equipe e descrição, compartilhado entre todos os logados.
-- **Biblioteca** — livros planejados, lendo, prontos pra trocar, concluídos e abandonados. Busca automática de livro (Google Books/Open Library), roleta pra sortear o próximo, progresso de leitura por capítulo, e uma "carta pro futuro" selada ao começar um livro (só revela quando as duas terminam).
-- **Diário** — impressão, emoções e frase favorita por capítulo (privado, cada um só vê o seu).
+- **Login/Cadastro** — cada pessoa tem sua própria conta, com "esqueci minha senha".
+- **Meu perfil** — nome, foto e uma cor própria (aparece no avatar do topo e nas etiquetas de "quem fez o quê" em Rolês/Presentes/Metas/Filmes).
+- **Calendário** — provas, atividades, trabalhos, com tema/disciplina, equipe e descrição, compartilhado entre todos os logados; eventos podem repetir toda semana até uma data. Clicar num evento mostra os detalhes; editar é um botão à parte.
+- **Nossa Timeline** — linha do tempo com rolês feitos, livros concluídos e datas especiais, tudo junto em ordem cronológica.
+- **Biblioteca** — livros planejados, lendo, prontos pra trocar, concluídos e abandonados, em ordem de leitura (lendo agora em destaque, com progresso). Busca automática de livro (Google Books/Open Library), roleta visual (capa + título) pra sortear o próximo, progresso de leitura por capítulo, e uma "carta pro futuro" selada ao começar um livro (só revela quando as duas terminam).
+- **Diário** — impressão, emoções e frase favorita por capítulo (privado, cada um só vê o seu). A nota final só aparece depois de chegar no último capítulo.
 - **Secreto** — sua teoria sobre o capítulo fica travada até a outra pessoa também enviar a dela; aí revela as duas juntas.
 - **Discussão** — chat por capítulo, liberado só depois da revelação do Secreto.
 - **Estatísticas** — meta anual, hall da fama, sequência de leitura, notas médias, gêneros mais lidos, sugestões por pessoa.
 - **Premiações** — melhor personagem, cena favorita, teoria mais maluca e maior surpresa de cada livro (também reveladas só depois que as duas responderem).
 - **Memórias** — mural de frases favoritas e uma "cápsula do tempo" por livro concluído, com fotos, diário completo, premiações e as cartas seladas.
-- **Config** — nome do clube, citação (aparece no topo), foto, meta anual de livros e backup completo em `.json`.
-- **Chat** — conversa geral em tempo real.
-- **Filmes/Séries** — lista para assistir junto, com status (para assistir / assistindo / assistido).
-- **Rolês** — planejar saídas com data, local, link do mapa e foto; ao marcar como feito, dá pra avaliar de 1 a 5 estrelas, o que alimenta o **ranking de locais**.
+- **Relatórios** — registro de tópicos abordados, sugestões e feedback dos encontros do clube.
+- **Filmes/Séries** — busca online (iTunes Search, sem chave) com pôster/sinopse/ano, lista pra assistir junto, com status (para assistir / assistindo / assistido).
+- **Rolês** — planejar saídas com data, local, link do mapa e foto, ou deixar só como ideia no banco pra sortear depois; ao marcar como feito, dá pra avaliar de 1 a 5 estrelas e montar um álbum de fotos daquele rolê (aba própria).
 - **Metas** — metas financeiras de longo prazo (ex: comprar casa, comprar carro/moto), com barra de progresso e registro de quanto já foi guardado.
-- **Relatórios** — registro de tópicos abordados, sugestões e feedback.
+- **Lista de desejos** — coisas que qualquer uma das duas quer, com link/preço opcional, marcar como já dado.
+- **Datas especiais** — aniversário de namoro (repete todo ano) ou datas únicas, com contagem de dias e um selo no cabeçalho pra próxima chegando.
 - **Notificações** — avisos para o grupo, e um sino no topo com o feed de atividades da outra pessoa.
-- Visual com gradientes, glassmorphism e tipografia divertida (Fredoka + Quicksand).
+- **Importar do Clube do Livro antigo** — traz o backup `.json` do site anterior (formato com campos fixos por pessoa) e converte pro formato daqui.
+- **Backup** — baixa (e restaura) tudo em `.json`.
+- Visual próprio (rose/sage/creme, cards planos, tipografia Fraunces + Inter), com um fundo discreto de bolinhas/corações flutuando e frases favoritas passando.
 
 ## Stack
 
@@ -56,16 +60,19 @@ public/
       util.js          ← helpers pequenos (confete, lembrar capítulo, etc.)
     features/          ← um arquivo por aba, cada um cuida só da sua parte
       calendario.js
+      timeline.js
       biblioteca.js
       diario.js
       secreto.js
       memorias.js
       estatisticas.js
       premiacoes.js
+      relatorios.js
       filmes.js
       roles.js
       metas.js
-      relatorios.js
+      presentes.js
+      datas-especiais.js
       chat.js
       notificacoes.js
       config.js
