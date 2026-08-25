@@ -82,6 +82,9 @@ onAuth((user) => {
     dashboard.classList.remove("hidden");
     const nome = user.name || user.email;
     userBadge.textContent = `Olá, ${nome.split(" ")[0]}`;
+    if (user.cor) {
+      userAvatar.style.background = user.cor;
+    }
     if (user.fotoUrl) {
       userAvatar.textContent = "";
       userAvatar.style.backgroundImage = `url("${user.fotoUrl}")`;

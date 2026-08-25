@@ -72,12 +72,18 @@ function cardMeuPerfil() {
   card.appendChild(uploadBtn);
   card.appendChild(fileInput);
 
+  card.appendChild(el("label", null, "Sua cor (aparece nas etiquetas de quem fez o quê)"));
+  const corInput = document.createElement("input");
+  corInput.type = "color";
+  corInput.value = me.cor || "#e07a5f";
+  card.appendChild(corInput);
+
   const saveBtn = el("button", "primary-btn full-width", "Salvar perfil");
   saveBtn.type = "button";
   saveBtn.addEventListener("click", async () => {
     const nome = nomeInput.value.trim();
     if (!nome) return;
-    await atualizarPerfil({ name: nome, fotoUrl: novaFotoUrl });
+    await atualizarPerfil({ name: nome, fotoUrl: novaFotoUrl, cor: corInput.value });
     saveBtn.textContent = "✓ Salvo!";
     setTimeout(() => (saveBtn.textContent = "Salvar perfil"), 1800);
   });

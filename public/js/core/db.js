@@ -21,6 +21,10 @@ export async function listarUsuarios() {
   return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
 }
 
+export function listenUsuarios(cb) {
+  return onSnapshot(collection(db, "users"), (snap) => cb(snap.docs.map((d) => ({ uid: d.id, ...d.data() }))));
+}
+
 // ── Config (documento único, compartilhado por todo mundo) ──────────────
 export const configRef = () => doc(db, "config", "app");
 

@@ -1165,16 +1165,24 @@ input:focus, select:focus, textarea:focus {
 .wish-done { opacity: 0.6; }
 .wish-done .event-title { text-decoration: line-through; }
 
-/* Etiqueta de quem criou/desejou (cor estável por pessoa) */
+/* Etiqueta de quem criou/desejou — discreta, um pontinho + nome na cor da pessoa */
 .person-tag {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 1px 0;
   margin-right: 6px;
   vertical-align: middle;
+}
+.person-tag::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--muted));
 }
 
 /* Rolês & Progresso */

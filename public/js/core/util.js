@@ -1,3 +1,6 @@
+import { onAuth } from "./auth.js";
+import { listenUsuarios } from "./db.js";
+
 // Lembra em qual capítulo cada pessoa parou, por livro, no localStorage.
 export function capituloLembrado(livroId, uid) {
   if (!livroId) return 1;
@@ -53,8 +56,21 @@ export function el(tag, className, text) {
 // Cor estável por pessoa (mesmo uid sempre cai na mesma cor, em qualquer
 // tela/sessão) — pra dar pra distinguir "isso é da Jovanna" x "isso é da
 // Letícia" em Rolês, Presentes, etc. sem precisar hardcodar nomes.
+let coresPorUid = {};
+onAuth((user) => {
+  if (!user) return;
+  listenUsuarios((usuarios) => {
+    const novo = {};
+    usuarios.forEach((u) => {
+      if (u.cor) novo[u.uid] = u.cor;
+    });
+    coresPorUid = novo;
+  });
+});
+
 export function corPessoa(uid) {
   if (!uid) return "var(--muted)";
+  if (coresPorUid[uid]) return coresPorUid[uid];
   let hash = 0;
   for (let i = 0; i < uid.length; i++) hash = (hash * 31 + uid.charCodeAt(i)) >>> 0;
   return hash % 2 === 0 ? "var(--accent)" : "var(--accent-2)";
@@ -115,9 +131,11 @@ export function girarRoleta({ itens, container, obterTitulo, obterCapa, aoParar,
 }
 
 export function personTag(nome, uid) {
+  const cor = corPessoa(uid);
   const span = document.createElement("span");
   span.className = "person-tag";
-  span.style.background = corPessoa(uid);
+  span.style.color = cor;
+  span.style.setProperty("--dot-color", cor);
   span.textContent = nome ? nome.split(" ")[0] : "Alguém";
   return span;
 }
