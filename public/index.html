@@ -114,8 +114,7 @@
     <div class="sub-tabs-container">
 
       <nav id="sub-agenda" class="sub-tabs active" role="tablist">
-        <button class="tab-btn active" data-tab="geral">Geral</button>
-        <button class="tab-btn" data-tab="calendario">Calendário</button>
+        <button class="tab-btn active" data-tab="calendario">Calendário</button>
         <button class="tab-btn" data-tab="notificacoes">Avisos</button>
       </nav>
 
@@ -152,25 +151,6 @@
       <!-- =========================================================
            GRUPO: AGENDA E INÍCIO
            ========================================================= -->
-      <section id="tab-geral" class="tab-panel active grid-container">
-        <div class="panel-card">
-          <h2>Próximos eventos</h2>
-          <div id="overviewEvents"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Últimas notificações</h2>
-          <div id="overviewNotifications"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Lendo agora</h2>
-          <div id="overviewReading"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Próximos rolês</h2>
-          <div id="overviewRoles"></div>
-        </div>
-      </section>
-
       <section id="tab-calendario" class="tab-panel">
         <section class="calendar-panel">
           <div class="calendar-nav">
@@ -206,6 +186,21 @@
             <div id="upcomingList"></div>
           </div>
         </aside>
+
+        <div class="full-width-card overview-row">
+          <div class="panel-card">
+            <h2>Próximos eventos</h2>
+            <div id="overviewEvents"></div>
+          </div>
+          <div class="panel-card">
+            <h2>Últimas notificações</h2>
+            <div id="overviewNotifications"></div>
+          </div>
+          <div class="panel-card">
+            <h2>Próximos rolês</h2>
+            <div id="overviewRoles"></div>
+          </div>
+        </div>
       </section>
 
       <section id="tab-notificacoes" class="tab-panel single-col">

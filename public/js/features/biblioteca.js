@@ -286,19 +286,24 @@ function rodarRoleta() {
     return;
   }
   rouletteBtn.disabled = true;
+  rouletteBtn.classList.add("spinning");
+  rouletteResult.classList.remove("landed");
   let giros = 0;
   let sorteado = null;
   const intervalo = setInterval(() => {
     sorteado = planejados[Math.floor(Math.random() * planejados.length)];
     rouletteResult.innerHTML = "";
     const p = document.createElement("p");
-    p.className = "event-title";
+    p.className = "event-title roulette-spinning-title";
     p.textContent = sorteado.titulo;
     rouletteResult.appendChild(p);
     giros++;
     if (giros > 12) {
       clearInterval(intervalo);
       rouletteBtn.disabled = false;
+      rouletteBtn.classList.remove("spinning");
+      p.classList.remove("roulette-spinning-title");
+      rouletteResult.classList.add("landed");
       const actions = document.createElement("div");
       actions.className = "status-row";
       addActionBtn(actions, "Começar a ler este livro", () => definirComoAtual(sorteado));
