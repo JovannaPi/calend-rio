@@ -196,6 +196,8 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
   height: 1.6rem;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background-size: cover;
+  background-position: center;
   color: white;
   font-weight: 700;
   font-size: 0.75rem;
@@ -1097,6 +1099,17 @@ input:focus, select:focus, textarea:focus {
 .stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Fredoka", sans-serif; color: var(--accent); }
 .stat-bar-row { margin-bottom: 0.75rem; }
 .stat-bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem; }
+
+.profile-preview {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 0.75rem;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(45, 45, 45, 0.12);
+}
 
 .wish-done { opacity: 0.6; }
 .wish-done .event-title { text-decoration: line-through; }

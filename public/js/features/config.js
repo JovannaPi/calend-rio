@@ -1,4 +1,4 @@
-import { onAuth } from "../core/auth.js";
+import { onAuth, getCurrentUser, atualizarPerfil } from "../core/auth.js";
 import {
   listenConfig,
   updateConfig,
@@ -29,9 +29,67 @@ function atualizarHeader() {
   }
 }
 
+function cardMeuPerfil() {
+  const me = getCurrentUser();
+  const card = el("div", "panel-card");
+  card.appendChild(el("h2", null, "Meu perfil"));
+
+  const fotoPreview = document.createElement("img");
+  fotoPreview.className = "profile-preview";
+  fotoPreview.src = me.fotoUrl || "";
+  fotoPreview.classList.toggle("hidden", !me.fotoUrl);
+  card.appendChild(fotoPreview);
+
+  card.appendChild(el("label", null, "Nome"));
+  const nomeInput = document.createElement("input");
+  nomeInput.type = "text";
+  nomeInput.value = me.name || "";
+  card.appendChild(nomeInput);
+
+  const uploadBtn = el("button", "status-chip", "Enviar uma foto do dispositivo");
+  uploadBtn.type = "button";
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.className = "hidden";
+  let novaFotoUrl = me.fotoUrl || "";
+  uploadBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = "";
+    if (!file) return;
+    uploadBtn.textContent = "Enviando...";
+    try {
+      novaFotoUrl = await enviarFoto(file, { folder: `calend-rio/perfil/${me.uid}`, publicId: "foto", overwrite: true });
+      fotoPreview.src = novaFotoUrl;
+      fotoPreview.classList.remove("hidden");
+    } catch (err) {
+      alert(err.message || "Falha ao enviar foto.");
+    } finally {
+      uploadBtn.textContent = "Enviar uma foto do dispositivo";
+    }
+  });
+  card.appendChild(uploadBtn);
+  card.appendChild(fileInput);
+
+  const saveBtn = el("button", "primary-btn full-width", "Salvar perfil");
+  saveBtn.type = "button";
+  saveBtn.addEventListener("click", async () => {
+    const nome = nomeInput.value.trim();
+    if (!nome) return;
+    await atualizarPerfil({ name: nome, fotoUrl: novaFotoUrl });
+    saveBtn.textContent = "✓ Salvo!";
+    setTimeout(() => (saveBtn.textContent = "Salvar perfil"), 1800);
+  });
+  card.appendChild(saveBtn);
+
+  return card;
+}
+
 function render() {
   atualizarHeader();
   content.innerHTML = "";
+  content.appendChild(cardMeuPerfil());
 
   const card = el("div", "panel-card");
   card.appendChild(el("h2", null, "Personalização"));

@@ -52,6 +52,12 @@ export async function resetPassword(email) {
   await sendPasswordResetEmail(auth, email);
 }
 
+export async function atualizarPerfil({ name, fotoUrl }) {
+  if (!auth.currentUser) return;
+  await updateProfile(auth.currentUser, { displayName: name });
+  await setDoc(doc(db, "users", auth.currentUser.uid), { name, fotoUrl }, { merge: true });
+}
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     currentUser = null;

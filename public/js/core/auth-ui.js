@@ -82,7 +82,15 @@ onAuth((user) => {
     dashboard.classList.remove("hidden");
     const nome = user.name || user.email;
     userBadge.textContent = `Olá, ${nome.split(" ")[0]}`;
-    userAvatar.textContent = nome.trim().charAt(0).toUpperCase();
+    if (user.fotoUrl) {
+      userAvatar.textContent = "";
+      userAvatar.style.backgroundImage = `url("${user.fotoUrl}")`;
+      userAvatar.classList.add("has-photo");
+    } else {
+      userAvatar.textContent = nome.trim().charAt(0).toUpperCase();
+      userAvatar.style.backgroundImage = "";
+      userAvatar.classList.remove("has-photo");
+    }
   } else {
     dashboard.classList.add("hidden");
     authScreen.classList.remove("hidden");
