@@ -349,6 +349,12 @@ body {
 .tab-panel.active {
   display: block !important;
   width: 100%;
+  animation: panel-fade-in 0.25s ease;
+}
+
+@keyframes panel-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .tab-panel.active.grid-container {
@@ -384,11 +390,39 @@ body {
   box-shadow: var(--shadow);
 }
 
+h2, h3 { font-family: "Fredoka", sans-serif; }
+
+.panel-card {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.panel-card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(90, 70, 160, 0.16); }
+
 .panel-card h2 {
   margin: 0 0 0.9rem;
-  font-family: "Fredoka", sans-serif;
+  padding-left: 0.75rem;
   font-size: 1.05rem;
+  position: relative;
 }
+.panel-card h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  bottom: 0.1em;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+}
+
+.panel-card h3 {
+  margin: 1rem 0 0.55rem;
+  font-size: 0.92rem;
+  color: var(--text);
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px dashed var(--border);
+}
+.panel-card h3:first-child { margin-top: 0; }
 
 .full-width, .full-width-card {
   grid-column: 1 / -1;
@@ -534,6 +568,7 @@ body {
   user-select: none;
 }
 .chip input { display: none; }
+.chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 .chip-prova:has(input:checked) { background: color-mix(in srgb, var(--c-prova) 15%, white); border-color: var(--c-prova); color: var(--c-prova); }
 .chip-atividade:has(input:checked) { background: color-mix(in srgb, var(--c-atividade) 15%, white); border-color: var(--c-atividade); color: var(--c-atividade); }
 .chip-trabalho:has(input:checked) { background: color-mix(in srgb, var(--c-trabalho) 15%, white); border-color: var(--c-trabalho); color: var(--c-trabalho); }
@@ -722,7 +757,13 @@ input:focus, select:focus, textarea:focus {
   to { transform: scale(1); opacity: 1; }
 }
 
-.modal-content h2 { font-family: "Fredoka", sans-serif; margin-top: 0; }
+.modal-content h2 {
+  font-family: "Fredoka", sans-serif;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1.5px dashed var(--border);
+}
 
 .close-btn {
   position: absolute;
@@ -911,8 +952,18 @@ input:focus, select:focus, textarea:focus {
 .emoji-btn.active { border-color: var(--accent); transform: scale(1.1); }
 
 /* Estatísticas */
-.stat-card { display: inline-block; margin: 0.3rem; min-width: 140px; }
-.stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Fredoka", sans-serif; }
+.stat-card {
+  display: inline-block;
+  margin: 0.3rem;
+  min-width: 140px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  transition: all 0.15s ease;
+}
+.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 18px rgba(124, 92, 255, 0.14); }
+.stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Fredoka", sans-serif; background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .stat-bar-row { margin-bottom: 0.75rem; }
 .stat-bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem; }
 
