@@ -59,6 +59,12 @@ export async function excluirLivro(id) {
   await deleteDoc(livroRef(id));
 }
 
+// Restaura um livro a partir de um backup, mantendo o mesmo id (pra bater
+// com os capítulos/premiações que também estão sendo restaurados).
+export async function restaurarLivro(id, data) {
+  await setDoc(livroRef(id), data, { merge: true });
+}
+
 // ── Capítulos ─────────────────────────────────────────────────────────
 export const capituloRef = (livroId, num) => doc(db, "livros", livroId, "capitulos", String(num));
 export const capitulosCol = (livroId) => collection(db, "livros", livroId, "capitulos");

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%237c5cff%22/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><path d=%22M16 28C16 28 4 20 4 12C4 7 8 4 12 4C14 4 16 6 16 8C16 6 18 4 20 4C24 4 28 7 28 12C28 20 16 28 16 28Z%22 fill=%22%23e07a5f%22/></svg>">
   
   <link rel="stylesheet" href="style.css">
 </head>
@@ -28,10 +28,15 @@
   </div>
 
 
+  <!-- Tela de carregamento, enquanto o Firebase confere se já tem login -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-heart">♥</div>
+  </div>
+
   <!-- =========================================================
        1. AUTENTICAÇÃO (LOGIN / CADASTRO)
        ========================================================= -->
-  <div id="authScreen" class="auth-screen">
+  <div id="authScreen" class="auth-screen hidden">
     <div class="auth-card">
       <h1 class="brand-title">Meu Calendário</h1>
       <p class="subtitle">Entre com sua conta para acessar o painel</p>
@@ -328,7 +333,7 @@
         <div class="panel-card">
           <h2>Banco de ideias</h2>
           <p class="empty-hint">Rolês sem data marcada ainda — sorteie um quando quiser decidir.</p>
-          <button id="roleRouletteBtn" type="button" class="primary-btn full-width">🎲 Sortear um rolê</button>
+          <button id="roleRouletteBtn" type="button" class="primary-btn full-width">Sortear um rolê</button>
           <div id="roleRouletteResult" class="roulette-result"></div>
           <div id="rolesIdeiasList"></div>
         </div>

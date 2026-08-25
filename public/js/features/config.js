@@ -1,5 +1,14 @@
 import { onAuth } from "../core/auth.js";
-import { listenConfig, updateConfig, listenLivros, listarCapitulosUmaVez, listenPremiacao } from "../core/db.js";
+import {
+  listenConfig,
+  updateConfig,
+  listenLivros,
+  listarCapitulosUmaVez,
+  listenPremiacao,
+  restaurarLivro,
+  salvarCapitulo,
+  salvarPremiacao,
+} from "../core/db.js";
 import { enviarFoto } from "../core/upload.js";
 import { el } from "../core/util.js";
 
@@ -129,6 +138,50 @@ function render() {
     }
   });
   backupCard.appendChild(backupBtn);
+
+  const restoreBtn = el("button", "status-chip", "Restaurar backup (.json)");
+  restoreBtn.type = "button";
+  restoreBtn.style.marginLeft = "0.5rem";
+  const restoreFileInput = document.createElement("input");
+  restoreFileInput.type = "file";
+  restoreFileInput.accept = "application/json,.json";
+  restoreFileInput.className = "hidden";
+  restoreBtn.addEventListener("click", () => restoreFileInput.click());
+  restoreFileInput.addEventListener("change", async () => {
+    const file = restoreFileInput.files?.[0];
+    restoreFileInput.value = "";
+    if (!file) return;
+    if (
+      !confirm(
+        "Isso vai trazer de volta os livros, diários e premiações desse arquivo (sobrescrevendo os que tiverem o mesmo id). Continuar?"
+      )
+    )
+      return;
+    restoreBtn.textContent = "Restaurando...";
+    try {
+      const texto = await file.text();
+      const backup = JSON.parse(texto);
+      if (backup.config) await updateConfig(backup.config);
+      for (const livro of backup.livros || []) {
+        const { id, capitulos, premiacao, ...dados } = livro;
+        if (!id) continue;
+        await restaurarLivro(id, dados);
+        for (const cap of capitulos || []) {
+          await salvarCapitulo(id, cap.numero, cap);
+        }
+        if (premiacao && Object.keys(premiacao).length > 0) {
+          await salvarPremiacao(id, premiacao);
+        }
+      }
+      alert("Backup restaurado!");
+    } catch (err) {
+      alert("Não foi possível restaurar esse arquivo. Confira se é um backup válido do Calend.rio.");
+    } finally {
+      restoreBtn.textContent = "Restaurar backup (.json)";
+    }
+  });
+  backupCard.appendChild(restoreBtn);
+  backupCard.appendChild(restoreFileInput);
   content.appendChild(backupCard);
 }
 

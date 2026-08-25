@@ -1,5 +1,6 @@
 import { onAuth, signUp, logIn, logOut, resetPassword } from "./auth.js";
 
+const loadingScreen = document.getElementById("loadingScreen");
 const authScreen = document.getElementById("authScreen");
 const dashboard = document.getElementById("dashboard");
 const userBadge = document.getElementById("userBadge");
@@ -75,6 +76,7 @@ forgotPasswordBtn.addEventListener("click", async () => {
 });
 
 onAuth((user) => {
+  loadingScreen.classList.add("hidden");
   if (user) {
     authScreen.classList.add("hidden");
     dashboard.classList.remove("hidden");

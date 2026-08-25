@@ -120,18 +120,44 @@ form.addEventListener("submit", async (e) => {
 });
 
 // ── Busca online (iTunes Search API — sem chave, filmes e séries) ───────
-async function buscarNoItunes(busca, media) {
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(busca)}&media=${media}&entity=${media}&country=BR&limit=6`;
+// country=US pega o catálogo mais completo (é só pra pegar título/capa/sinopse,
+// não pra comprar nada). O parâmetro "entity" só é válido pra filme — pra
+// série não existe entity=tvShow, então nem mandamos (a API já traz temporadas
+// por padrão, e a gente tira as duplicadas do mesmo show).
+async function buscarFilmes(busca) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(busca)}&media=movie&entity=movie&country=US&limit=8`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error("itunes");
+  if (!res.ok) throw new Error("itunes movie " + res.status);
   const data = await res.json();
   return (data.results || []).map((it) => ({
-    titulo: it.trackName || it.collectionName || "",
+    titulo: it.trackName || "",
     capaUrl: (it.artworkUrl100 || "").replace("100x100", "300x300"),
     sinopse: it.longDescription || it.shortDescription || "",
     ano: it.releaseDate ? it.releaseDate.slice(0, 4) : "",
-    tipo: media === "tvShow" ? "serie" : "filme",
+    tipo: "filme",
   }));
+}
+
+async function buscarSeries(busca) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(busca)}&media=tvShow&country=US&limit=10`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("itunes tv " + res.status);
+  const data = await res.json();
+  const vistos = new Set();
+  const resultados = [];
+  for (const it of data.results || []) {
+    const nome = it.collectionName || it.trackName || "";
+    if (!nome || vistos.has(nome)) continue;
+    vistos.add(nome);
+    resultados.push({
+      titulo: nome,
+      capaUrl: (it.artworkUrl100 || "").replace("100x100", "300x300"),
+      sinopse: it.longDescription || it.shortDescription || "",
+      ano: it.releaseDate ? it.releaseDate.slice(0, 4) : "",
+      tipo: "serie",
+    });
+  }
+  return resultados.slice(0, 6);
 }
 
 onlineSearchBtn.addEventListener("click", async () => {
@@ -139,18 +165,25 @@ onlineSearchBtn.addEventListener("click", async () => {
   if (!termo) return;
   onlineResults.innerHTML = '<p class="empty-hint">Buscando...</p>';
   let resultados = [];
+  let falhouTudo = false;
   try {
-    const [filmes, series] = await Promise.all([
-      buscarNoItunes(termo, "movie").catch(() => []),
-      buscarNoItunes(termo, "tvShow").catch(() => []),
-    ]);
-    resultados = [...filmes, ...series];
-  } catch {
-    resultados = [];
+    const [filmes, series] = await Promise.allSettled([buscarFilmes(termo), buscarSeries(termo)]);
+    if (filmes.status === "fulfilled") resultados.push(...filmes.value);
+    else console.error("Busca de filmes falhou:", filmes.reason);
+    if (series.status === "fulfilled") resultados.push(...series.value);
+    else console.error("Busca de séries falhou:", series.reason);
+    falhouTudo = filmes.status === "rejected" && series.status === "rejected";
+  } catch (err) {
+    console.error("Busca online falhou:", err);
+    falhouTudo = true;
   }
   onlineResults.innerHTML = "";
+  if (falhouTudo) {
+    onlineResults.innerHTML = '<p class="empty-hint">Não consegui buscar agora (sem conexão com a busca online). Preencha manualmente abaixo.</p>';
+    return;
+  }
   if (resultados.length === 0) {
-    onlineResults.innerHTML = '<p class="empty-hint">Nenhum resultado. Preencha manualmente abaixo.</p>';
+    onlineResults.innerHTML = '<p class="empty-hint">Nenhum resultado pra esse nome. Preencha manualmente abaixo.</p>';
     return;
   }
   resultados.forEach((item) => {

@@ -10,14 +10,18 @@ import {
 import { doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 let currentUser = null; // { uid, name, email }
+let authResolved = false; // já sabemos se tem login ou não? (evita o "pisca" pra tela de login)
 const listeners = [];
 
 export function onAuth(fn) {
   listeners.push(fn);
-  fn(currentUser);
+  // Só chama de cara se a gente já sabe de verdade se tem alguém logado —
+  // antes disso, quem escuta fica esperando (tela de carregamento cuida do resto).
+  if (authResolved) fn(currentUser);
 }
 
 function notify() {
+  authResolved = true;
   listeners.forEach((fn) => fn(currentUser));
 }
 
@@ -54,15 +58,28 @@ onAuthStateChanged(auth, async (user) => {
     notify();
     return;
   }
-  const snap = await getDoc(doc(db, "users", user.uid));
-  const profile = snap.exists() ? snap.data() : { name: user.displayName || "Sem nome" };
-  currentUser = { uid: user.uid, email: user.email, ...profile };
+
+  // Se o Firestore recusar a leitura (regras de segurança não publicadas, por
+  // exemplo), não pode travar aqui pra sempre — a pessoa continua logada no
+  // Firebase Auth, só sem o perfil (nome/foto) carregado ainda.
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const profile = snap.exists() ? snap.data() : { name: user.displayName || "Sem nome" };
+    currentUser = { uid: user.uid, email: user.email, ...profile };
+  } catch (err) {
+    console.error("Não consegui carregar o perfil do Firestore:", err);
+    currentUser = { uid: user.uid, email: user.email, name: user.displayName || "Sem nome" };
+  }
   notify();
 
-  onSnapshot(doc(db, "users", user.uid), (docSnap) => {
-    const data = docSnap.data();
-    if (!data) return;
-    currentUser = { uid: user.uid, email: user.email, ...data };
-    notify();
-  });
+  onSnapshot(
+    doc(db, "users", user.uid),
+    (docSnap) => {
+      const data = docSnap.data();
+      if (!data) return;
+      currentUser = { uid: user.uid, email: user.email, ...data };
+      notify();
+    },
+    (err) => console.error("Não consegui escutar o perfil no Firestore:", err)
+  );
 });
