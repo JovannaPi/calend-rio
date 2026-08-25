@@ -126,6 +126,10 @@ Cada arquivo em `features/` só conversa com o Firestore através de `js/core/db
          allow read, write: if isSignedIn();
        }
 
+       match /presentes/{id} {
+         allow read, write: if isSignedIn();
+       }
+
        match /config/{id} {
          allow read, write: if isSignedIn();
        }

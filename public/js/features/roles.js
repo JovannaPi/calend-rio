@@ -24,10 +24,14 @@ const submitBtn = document.getElementById("roleSubmitBtn");
 const cancelEditBtn = document.getElementById("roleCancelEditBtn");
 const fotoUploadBtn = document.getElementById("roleFotoUploadBtn");
 const fotoUploadInput = document.getElementById("roleFotoUploadInput");
+const isIdeiaInput = document.getElementById("roleIsIdeia");
 
 const plannedListEl = document.getElementById("rolesPlannedList");
 const rankingListEl = document.getElementById("rolesRankingList");
 const overviewRolesEl = document.getElementById("overviewRoles");
+const ideiasListEl = document.getElementById("rolesIdeiasList");
+const rouletteBtn = document.getElementById("roleRouletteBtn");
+const rouletteResult = document.getElementById("roleRouletteResult");
 
 const photoViewerModal = document.getElementById("photoViewerModal");
 const photoViewerImg = document.getElementById("photoViewerImg");
@@ -125,6 +129,44 @@ function buildCard(role, { showActions } = { showActions: true }) {
     row.appendChild(delBtn);
     card.appendChild(row);
   }
+
+  return card;
+}
+
+function buildIdeiaCard(role) {
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  const title = document.createElement("div");
+  title.className = "event-title";
+  title.textContent = role.titulo;
+  card.appendChild(title);
+
+  if (role.notas) {
+    const notas = document.createElement("div");
+    notas.className = "event-meta";
+    notas.textContent = role.notas;
+    card.appendChild(notas);
+  }
+
+  const row = document.createElement("div");
+  row.className = "status-row";
+  const markBtn = document.createElement("button");
+  markBtn.type = "button";
+  markBtn.className = "status-chip active";
+  markBtn.textContent = "Marcar data";
+  markBtn.addEventListener("click", () => entrarModoEdicao(role));
+  row.appendChild(markBtn);
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.className = "status-chip danger";
+  delBtn.textContent = "Remover";
+  delBtn.addEventListener("click", () => {
+    card.classList.add("removing");
+    setTimeout(() => deleteDoc(doc(db, "roles", role.id)), 250);
+  });
+  row.appendChild(delBtn);
+  card.appendChild(row);
 
   return card;
 }
@@ -270,6 +312,14 @@ function montarAlbum(role, bodyEl) {
 function render() {
   const planned = roles.filter((r) => r.status === "planejado");
   const done = roles.filter((r) => r.status === "feito");
+  const ideias = roles.filter((r) => r.status === "ideia");
+
+  ideiasListEl.innerHTML = "";
+  if (ideias.length === 0) {
+    ideiasListEl.innerHTML = '<p class="empty-hint">Nenhuma ideia ainda. Adicione uma acima marcando "é só uma ideia".</p>';
+  } else {
+    ideias.forEach((r) => ideiasListEl.appendChild(buildIdeiaCard(r)));
+  }
 
   plannedListEl.innerHTML = "";
   if (planned.length === 0) {
@@ -304,6 +354,7 @@ function entrarModoEdicao(role) {
   mapaInput.value = role.mapaUrl || "";
   fotoInput.value = role.fotoUrl || "";
   notasInput.value = role.notas || "";
+  isIdeiaInput.checked = role.status === "ideia";
   formTitle.textContent = "Editar rolê";
   submitBtn.textContent = "Salvar alterações";
   cancelEditBtn.classList.remove("hidden");
@@ -348,18 +399,58 @@ form.addEventListener("submit", async (e) => {
     fotoUrl: fotoInput.value.trim(),
     notas: notasInput.value.trim(),
   };
+  const status = isIdeiaInput.checked ? "ideia" : "planejado";
   if (idInput.value) {
-    await updateDoc(doc(db, "roles", idInput.value), payload);
+    await updateDoc(doc(db, "roles", idInput.value), { ...payload, status });
   } else {
     await addDoc(rolesRef, {
       ...payload,
-      status: "planejado",
+      status,
       criadoPorUid: me.uid,
       criadoPorName: me.name,
       createdAt: Date.now(),
     });
   }
   sairModoEdicao();
+});
+
+// ── Roleta de ideias ──────────────────────────────────────────────────────
+rouletteBtn.addEventListener("click", () => {
+  const ideias = roles.filter((r) => r.status === "ideia");
+  if (ideias.length === 0) {
+    rouletteResult.innerHTML = '<p class="empty-hint">Adicione umas ideias primeiro!</p>';
+    return;
+  }
+  rouletteBtn.disabled = true;
+  rouletteBtn.classList.add("spinning");
+  rouletteResult.classList.remove("landed");
+  let giros = 0;
+  let sorteado = null;
+  const intervalo = setInterval(() => {
+    sorteado = ideias[Math.floor(Math.random() * ideias.length)];
+    rouletteResult.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "event-title roulette-spinning-title";
+    p.textContent = sorteado.titulo;
+    rouletteResult.appendChild(p);
+    giros++;
+    if (giros > 12) {
+      clearInterval(intervalo);
+      rouletteBtn.disabled = false;
+      rouletteBtn.classList.remove("spinning");
+      p.classList.remove("roulette-spinning-title");
+      rouletteResult.classList.add("landed");
+      const actions = document.createElement("div");
+      actions.className = "status-row";
+      const marcarBtn = document.createElement("button");
+      marcarBtn.type = "button";
+      marcarBtn.className = "status-chip active";
+      marcarBtn.textContent = "Marcar data";
+      marcarBtn.addEventListener("click", () => entrarModoEdicao(sorteado));
+      actions.appendChild(marcarBtn);
+      rouletteResult.appendChild(actions);
+    }
+  }, 100);
 });
 
 onAuth((user) => {

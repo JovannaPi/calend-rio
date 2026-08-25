@@ -15,6 +15,7 @@ import "./js/features/secreto.js";
 import "./js/features/memorias.js";
 import "./js/features/roles.js";
 import "./js/features/metas.js";
+import "./js/features/presentes.js";
 import "./js/features/estatisticas.js";
 import "./js/features/premiacoes.js";
 import "./js/features/relatorios.js";

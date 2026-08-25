@@ -960,7 +960,7 @@ input:focus, select:focus, textarea:focus {
   75% { transform: rotate(2deg); }
 }
 .roulette-spinning-title { opacity: 0.6; filter: blur(0.5px); }
-#rouletteResult.landed { animation: pop-in 0.3s ease; }
+.roulette-result.landed { animation: pop-in 0.3s ease; }
 .book-cover-sm { transition: transform 0.2s ease; }
 .book-card-row:hover .book-cover-sm { transform: scale(1.06) rotate(-1deg); }
 .add-book-btn {
@@ -1036,6 +1036,9 @@ input:focus, select:focus, textarea:focus {
 .stat-value { font-size: 1.4rem; font-weight: 700; font-family: "Fredoka", sans-serif; color: var(--accent); }
 .stat-bar-row { margin-bottom: 0.75rem; }
 .stat-bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem; }
+
+.wish-done { opacity: 0.6; }
+.wish-done .event-title { text-decoration: line-through; }
 
 /* Rolês & Progresso */
 .role-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 10px; margin-bottom: 0.5rem; }

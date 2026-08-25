@@ -137,6 +137,7 @@
 
       <nav id="sub-progresso" class="sub-tabs hidden" role="tablist">
         <button class="tab-btn" data-tab="metas">Metas</button>
+        <button class="tab-btn" data-tab="desejos">Lista de desejos</button>
         <button class="tab-btn" data-tab="relatorios">Relatórios</button>
       </nav>
 
@@ -217,7 +218,7 @@
           <h2>Roleta: Qual o próximo livro?</h2>
           <p class="empty-hint">Sorteie uma leitura entre os livros planejados.</p>
           <button id="rouletteBtn" type="button" class="primary-btn full-width">Girar roleta</button>
-          <div id="rouletteResult"></div>
+          <div id="rouletteResult" class="roulette-result"></div>
         </div>
 
         <div class="panel-card">
@@ -316,11 +317,19 @@
             <button type="button" id="roleFotoUploadBtn" class="status-chip">Ou enviar uma foto do dispositivo</button>
             <input type="file" id="roleFotoUploadInput" accept="image/*" class="hidden">
             <textarea id="roleNotas" rows="2" placeholder="Notas..."></textarea>
+            <label class="chip"><input type="checkbox" id="roleIsIdeia"><span>É só uma ideia (sem data ainda, pra sortear depois)</span></label>
             <div class="form-actions">
               <button type="button" id="roleCancelEditBtn" class="danger-btn hidden">Cancelar edição</button>
               <button type="submit" id="roleSubmitBtn" class="primary-btn">Adicionar</button>
             </div>
           </form>
+        </div>
+        <div class="panel-card">
+          <h2>Banco de ideias</h2>
+          <p class="empty-hint">Rolês sem data marcada ainda — sorteie um quando quiser decidir.</p>
+          <button id="roleRouletteBtn" type="button" class="primary-btn full-width">🎲 Sortear um rolê</button>
+          <div id="roleRouletteResult" class="roulette-result"></div>
+          <div id="rolesIdeiasList"></div>
         </div>
         <div class="panel-card">
           <h2>Planejados</h2>
@@ -348,6 +357,25 @@
         <div class="panel-card">
           <h2>Acompanhamento de Metas</h2>
           <div id="goalsList"></div>
+        </div>
+      </section>
+
+      <section id="tab-desejos" class="tab-panel grid-container">
+        <div class="panel-card">
+          <h2>Adicionar desejo</h2>
+          <form id="desejoForm" class="stacked-form">
+            <input type="text" id="desejoTitulo" placeholder="O que você quer?" required>
+            <div class="inline-form">
+              <input type="url" id="desejoLink" placeholder="Link (opcional)">
+              <input type="number" id="desejoPreco" placeholder="Preço aprox. (R$)" min="0" step="0.01">
+            </div>
+            <textarea id="desejoNotas" rows="2" placeholder="Tamanho, cor, qualquer detalhe..."></textarea>
+            <button type="submit" class="primary-btn">Adicionar à lista</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Lista de desejos</h2>
+          <div id="desejosList"></div>
         </div>
       </section>
 
