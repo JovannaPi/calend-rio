@@ -694,6 +694,19 @@ input:focus, select:focus, textarea:focus {
   background: #ffffff;
 }
 
+/* Espaço entre campos soltos direto num panel-card (fora de <form>),
+   tipo Personalização/Meu perfil em Configurações */
+.panel-card > label {
+  display: block;
+  margin: 1rem 0 0.35rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.panel-card > label:first-of-type { margin-top: 0.2rem; }
+.panel-card > input, .panel-card > select, .panel-card > textarea { margin-bottom: 0.3rem; }
+.panel-card > .status-chip, .panel-card > .primary-btn, .panel-card > .danger-btn { margin-top: 0.6rem; }
+
 .inline-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .inline-form input, .inline-form select { flex: 1; min-width: 140px; }
 
