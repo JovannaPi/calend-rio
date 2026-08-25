@@ -22,12 +22,8 @@
 
   <div class="doodles" aria-hidden="true">
     <span class="doodle doodle-1"></span>
-    <span class="doodle doodle-2"></span>
     <span class="doodle doodle-3 doodle-ring"></span>
-    <span class="doodle doodle-4"></span>
     <span class="doodle doodle-5 doodle-ring"></span>
-    <span class="doodle doodle-6"></span>
-    <span class="doodle doodle-7"></span>
     <span class="doodle doodle-8 doodle-ring"></span>
   </div>
 
@@ -83,7 +79,9 @@
           <p id="headerSubtitle" class="subtitle">provas, atividades, leituras e trabalhos, num só lugar</p>
         </div>
       </div>
-      
+
+      <span id="headerSpecialBadge" class="header-special-badge hidden"></span>
+
       <div class="header-actions">
         <button id="bellBtn" class="bell-btn" title="Atividades recentes" aria-label="Notificações">
           <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
@@ -92,7 +90,10 @@
           <span id="bellCount" class="bell-count hidden">0</span>
         </button>
         <div id="bellPanel" class="bell-panel hidden"></div>
-        <span id="userBadge" class="user-badge"></span>
+        <div class="user-chip">
+          <span id="userAvatar" class="user-avatar"></span>
+          <span id="userBadge" class="user-badge"></span>
+        </div>
         <button id="logoutBtn" class="share-btn">Sair</button>
       </div>
     </header>
@@ -115,7 +116,6 @@
 
       <nav id="sub-agenda" class="sub-tabs active" role="tablist">
         <button class="tab-btn active" data-tab="calendario">Calendário</button>
-        <button class="tab-btn" data-tab="notificacoes">Avisos</button>
       </nav>
 
       <!-- Todas as funcionalidades do Clube do Livro moram aqui -->
@@ -200,20 +200,6 @@
             <h2>Próximos rolês</h2>
             <div id="overviewRoles"></div>
           </div>
-        </div>
-      </section>
-
-      <section id="tab-notificacoes" class="tab-panel single-col">
-        <div class="panel-card">
-          <h2>Nova notificação</h2>
-          <form id="notifForm" class="inline-form">
-            <input type="text" id="notifText" placeholder="Aviso..." required>
-            <button type="submit" class="primary-btn">Publicar</button>
-          </form>
-        </div>
-        <div class="panel-card">
-          <h2>Avisos</h2>
-          <div id="notificationsList"></div>
         </div>
       </section>
 
@@ -320,9 +306,10 @@
           <h2>Planejados</h2>
           <div id="rolesPlannedList"></div>
         </div>
-        <div class="panel-card">
-          <h2>Ranking de locais</h2>
-          <div id="rolesRankingList"></div>
+        <div class="panel-card full-width-card">
+          <h2>Álbum de rolês</h2>
+          <p class="empty-hint">Cada rolê que a gente já fez, com fotos, nota e a história por trás.</p>
+          <div id="rolesRankingList" class="album-grid"></div>
         </div>
       </section>
 
@@ -374,6 +361,32 @@
 
       <section id="tab-config" class="tab-panel single-col">
         <div id="configContent"></div>
+
+        <div class="panel-card">
+          <h2>Datas especiais</h2>
+          <p class="empty-hint">Aniversário de namoro, viagens marcadas, o que for — marque aqui e acompanhe a contagem.</p>
+          <form id="dataEspecialForm" class="inline-form">
+            <input type="text" id="dataEspecialNome" placeholder="Ex: Aniversário de namoro" required>
+            <input type="date" id="dataEspecialData" required>
+            <label class="chip"><input type="checkbox" id="dataEspecialAnual" checked><span>Repete todo ano</span></label>
+            <button type="submit" class="primary-btn">Adicionar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div id="datasEspeciaisList"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Nova notificação</h2>
+          <form id="notifForm" class="inline-form">
+            <input type="text" id="notifText" placeholder="Aviso..." required>
+            <button type="submit" class="primary-btn">Publicar</button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <h2>Avisos</h2>
+          <div id="notificationsList"></div>
+        </div>
       </section>
 
     </main>

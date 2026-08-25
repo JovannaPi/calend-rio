@@ -134,3 +134,39 @@ export async function removerFotoMemoria(livroId, url) {
   const urls = snap.exists() ? snap.data().urls || [] : [];
   await setDoc(ref, { urls: urls.filter((u) => u !== url) }, { merge: true });
 }
+
+// ── Álbum de rolês (fotos extras por rolê, além da foto de capa) ────────
+export const fotosRoleRef = (roleId) => doc(db, "roles_fotos", roleId);
+
+export function listenFotosRole(roleId, cb) {
+  return onSnapshot(fotosRoleRef(roleId), (snap) => cb(snap.exists() ? snap.data().urls || [] : []));
+}
+
+export async function adicionarFotoRole(roleId, url) {
+  const ref = fotosRoleRef(roleId);
+  const snap = await getDoc(ref);
+  const urls = snap.exists() ? snap.data().urls || [] : [];
+  await setDoc(ref, { urls: [...urls, url] }, { merge: true });
+}
+
+export async function removerFotoRole(roleId, url) {
+  const ref = fotosRoleRef(roleId);
+  const snap = await getDoc(ref);
+  const urls = snap.exists() ? snap.data().urls || [] : [];
+  await setDoc(ref, { urls: urls.filter((u) => u !== url) }, { merge: true });
+}
+
+// ── Datas especiais (aniversário de namoro, etc.) ────────────────────────
+export const datasEspeciaisCol = () => collection(db, "datasEspeciais");
+
+export function listenDatasEspeciais(cb) {
+  return onSnapshot(datasEspeciaisCol(), (snap) => cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+}
+
+export async function salvarDataEspecial(data) {
+  await addDoc(datasEspeciaisCol(), data);
+}
+
+export async function excluirDataEspecial(id) {
+  await deleteDoc(doc(db, "datasEspeciais", id));
+}

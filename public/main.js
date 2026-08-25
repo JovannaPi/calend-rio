@@ -21,6 +21,7 @@ import "./js/features/relatorios.js";
 import "./js/features/chat.js";
 import "./js/features/notificacoes.js";
 import "./js/features/config.js";
+import "./js/features/datas-especiais.js";
 import "./js/features/sino.js";
 import "./js/features/fundo-frases.js";
 

@@ -3,6 +3,7 @@ import { onAuth, signUp, logIn, logOut } from "./auth.js";
 const authScreen = document.getElementById("authScreen");
 const dashboard = document.getElementById("dashboard");
 const userBadge = document.getElementById("userBadge");
+const userAvatar = document.getElementById("userAvatar");
 
 const tabLogin = document.getElementById("tabLogin");
 const tabSignup = document.getElementById("tabSignup");
@@ -60,7 +61,9 @@ onAuth((user) => {
   if (user) {
     authScreen.classList.add("hidden");
     dashboard.classList.remove("hidden");
-    userBadge.textContent = user.name || user.email;
+    const nome = user.name || user.email;
+    userBadge.textContent = `Olá, ${nome.split(" ")[0]}`;
+    userAvatar.textContent = nome.trim().charAt(0).toUpperCase();
   } else {
     dashboard.classList.add("hidden");
     authScreen.classList.remove("hidden");
