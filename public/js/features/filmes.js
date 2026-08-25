@@ -13,6 +13,13 @@ const listEl = document.getElementById("moviesList");
 const form = document.getElementById("movieForm");
 const titleInput = document.getElementById("movieTitle");
 const typeSelect = document.getElementById("movieType");
+const capaInput = document.getElementById("movieCapaUrl");
+const sinopseInput = document.getElementById("movieSinopse");
+const anoInput = document.getElementById("movieAno");
+
+const onlineSearch = document.getElementById("movieOnlineSearch");
+const onlineSearchBtn = document.getElementById("movieOnlineSearchBtn");
+const onlineResults = document.getElementById("movieOnlineResults");
 
 const STATUS_LABELS = { assistir: "Para assistir", assistindo: "Assistindo", assistido: "Assistido" };
 const STATUS_ORDER = ["assistindo", "assistir", "assistido"];
@@ -33,15 +40,37 @@ function render(items) {
     const card = document.createElement("div");
     card.className = "event-card";
 
+    const row0 = document.createElement("div");
+    row0.className = "book-card-row";
+    if (item.capaUrl) {
+      const img = document.createElement("img");
+      img.src = item.capaUrl;
+      img.alt = item.title;
+      img.className = "book-cover-sm";
+      row0.appendChild(img);
+    }
+    const info = document.createElement("div");
+    info.className = "book-card-info";
     const title = document.createElement("div");
     title.className = "event-title";
     title.textContent = item.title;
-    card.appendChild(title);
+    info.appendChild(title);
 
     const meta = document.createElement("div");
     meta.className = "event-meta";
-    meta.textContent = `${item.type === "serie" ? "Série" : "Filme"} · adicionado por ${item.addedByName || "alguém"}`;
-    card.appendChild(meta);
+    const partes = [item.type === "serie" ? "Série" : "Filme"];
+    if (item.ano) partes.push(item.ano);
+    partes.push(`adicionado por ${item.addedByName || "alguém"}`);
+    meta.textContent = partes.join(" · ");
+    info.appendChild(meta);
+    if (item.sinopse) {
+      const sin = document.createElement("div");
+      sin.className = "event-meta";
+      sin.textContent = item.sinopse.length > 140 ? item.sinopse.slice(0, 140) + "…" : item.sinopse;
+      info.appendChild(sin);
+    }
+    row0.appendChild(info);
+    card.appendChild(row0);
 
     const row = document.createElement("div");
     row.className = "status-row";
@@ -76,12 +105,84 @@ form.addEventListener("submit", async (e) => {
   await addDoc(moviesRef, {
     title,
     type: typeSelect.value,
+    capaUrl: capaInput.value,
+    sinopse: sinopseInput.value,
+    ano: anoInput.value,
     status: "assistir",
     addedByUid: me.uid,
     addedByName: me.name,
     createdAt: Date.now(),
   });
-  titleInput.value = "";
+  form.reset();
+  capaInput.value = "";
+  sinopseInput.value = "";
+  anoInput.value = "";
+});
+
+// ── Busca online (iTunes Search API — sem chave, filmes e séries) ───────
+async function buscarNoItunes(busca, media) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(busca)}&media=${media}&entity=${media}&country=BR&limit=6`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("itunes");
+  const data = await res.json();
+  return (data.results || []).map((it) => ({
+    titulo: it.trackName || it.collectionName || "",
+    capaUrl: (it.artworkUrl100 || "").replace("100x100", "300x300"),
+    sinopse: it.longDescription || it.shortDescription || "",
+    ano: it.releaseDate ? it.releaseDate.slice(0, 4) : "",
+    tipo: media === "tvShow" ? "serie" : "filme",
+  }));
+}
+
+onlineSearchBtn.addEventListener("click", async () => {
+  const termo = onlineSearch.value.trim();
+  if (!termo) return;
+  onlineResults.innerHTML = '<p class="empty-hint">Buscando...</p>';
+  let resultados = [];
+  try {
+    const [filmes, series] = await Promise.all([
+      buscarNoItunes(termo, "movie").catch(() => []),
+      buscarNoItunes(termo, "tvShow").catch(() => []),
+    ]);
+    resultados = [...filmes, ...series];
+  } catch {
+    resultados = [];
+  }
+  onlineResults.innerHTML = "";
+  if (resultados.length === 0) {
+    onlineResults.innerHTML = '<p class="empty-hint">Nenhum resultado. Preencha manualmente abaixo.</p>';
+    return;
+  }
+  resultados.forEach((item) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "book-search-result";
+    if (item.capaUrl) {
+      const img = document.createElement("img");
+      img.src = item.capaUrl;
+      btn.appendChild(img);
+    }
+    const info = document.createElement("div");
+    const t = document.createElement("div");
+    t.className = "event-title";
+    t.textContent = item.titulo || "Sem título";
+    const m = document.createElement("div");
+    m.className = "event-meta";
+    m.textContent = `${item.tipo === "serie" ? "Série" : "Filme"}${item.ano ? " · " + item.ano : ""}`;
+    info.appendChild(t);
+    info.appendChild(m);
+    btn.appendChild(info);
+    btn.addEventListener("click", () => {
+      titleInput.value = item.titulo;
+      typeSelect.value = item.tipo;
+      capaInput.value = item.capaUrl;
+      sinopseInput.value = item.sinopse;
+      anoInput.value = item.ano;
+      onlineResults.innerHTML = "";
+      onlineSearch.value = "";
+    });
+    onlineResults.appendChild(btn);
+  });
 });
 
 onAuth((user) => {

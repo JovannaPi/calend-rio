@@ -265,9 +265,21 @@
       </section>
 
       <section id="tab-filmes" class="tab-panel grid-container">
+        <div class="panel-card full-width-card">
+          <h2>Buscar filme ou série</h2>
+          <div class="inline-form">
+            <input type="text" id="movieOnlineSearch" placeholder="Nome do filme ou série...">
+            <button type="button" id="movieOnlineSearchBtn" class="primary-btn">Buscar</button>
+          </div>
+          <div id="movieOnlineResults"></div>
+        </div>
+
         <div class="panel-card">
           <h2>Adicionar filme/série</h2>
-          <form id="movieForm" class="inline-form">
+          <form id="movieForm" class="stacked-form">
+            <input type="hidden" id="movieCapaUrl">
+            <input type="hidden" id="movieSinopse">
+            <input type="hidden" id="movieAno">
             <input type="text" id="movieTitle" placeholder="Título" required>
             <select id="movieType">
               <option value="filme">Filme</option>
