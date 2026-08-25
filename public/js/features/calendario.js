@@ -115,7 +115,9 @@ function renderCalendar() {
     dayEvents.slice(0, 2).forEach((ev) => {
       const dot = document.createElement("div");
       dot.className = "day-event-dot";
-      dot.style.background = ev.color || TYPE_COLORS[ev.type];
+      const corEvento = ev.color || TYPE_COLORS[ev.type];
+      dot.style.color = corEvento;
+      dot.style.background = `color-mix(in srgb, ${corEvento} 16%, white)`;
       dot.textContent = ev.title;
       cell.appendChild(dot);
     });
