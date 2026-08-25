@@ -76,7 +76,9 @@ function render() {
     content.appendChild(cartaStatus(livro));
   }
 
-  content.appendChild(notasFinais(livro));
+  if (livro.totalCapitulos && capNum >= livro.totalCapitulos) {
+    content.appendChild(notasFinais(livro));
+  }
 
   renderCapitulo(livro);
 }

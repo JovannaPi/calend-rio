@@ -320,39 +320,24 @@
            ========================================================= -->
       <section id="tab-roles" class="tab-panel single-col">
         <div class="panel-card">
-          <h2 id="roleFormTitle">Marcar rolê</h2>
-          <form id="roleForm" class="stacked-form">
-            <input type="hidden" id="roleId">
-            <input type="text" id="roleTitle" placeholder="O que vamos fazer?" required>
-            <div class="inline-form">
-              <input type="date" id="roleDate">
-              <input type="text" id="roleLocal" placeholder="Local">
-            </div>
-            <div class="inline-form">
-              <input type="url" id="roleMapaUrl" placeholder="Link do mapa (opcional)">
-              <input type="url" id="roleFotoUrl" placeholder="Link de uma foto (opcional)">
-            </div>
-            <button type="button" id="roleFotoUploadBtn" class="status-chip">Ou enviar uma foto do dispositivo</button>
-            <input type="file" id="roleFotoUploadInput" accept="image/*" class="hidden">
-            <textarea id="roleNotas" rows="2" placeholder="Notas..."></textarea>
-            <label class="chip"><input type="checkbox" id="roleIsIdeia"><span>É só uma ideia (sem data ainda, pra sortear depois)</span></label>
-            <div class="form-actions">
-              <button type="button" id="roleCancelEditBtn" class="danger-btn hidden">Cancelar edição</button>
-              <button type="submit" id="roleSubmitBtn" class="primary-btn">Adicionar</button>
-            </div>
-          </form>
-        </div>
-        <div class="panel-card">
-          <h2>Banco de ideias</h2>
-          <p class="empty-hint">Rolês sem data marcada ainda — sorteie um quando quiser decidir.</p>
-          <button id="roleRouletteBtn" type="button" class="status-chip active">Sortear um rolê</button>
-          <div id="roleRouletteResult" class="roulette-result"></div>
-          <div id="rolesIdeiasList" class="book-grid"></div>
-        </div>
-        <div class="panel-card">
           <h2>Planejados</h2>
           <div id="rolesPlannedList" class="book-grid"></div>
         </div>
+
+        <div class="panel-card">
+          <h2>Banco de ideias</h2>
+          <p class="empty-hint">Rolês sem data marcada ainda.</p>
+          <div id="rolesIdeiasList" class="book-grid"></div>
+        </div>
+
+        <div class="panel-card roulette-card">
+          <h2>Sorteio</h2>
+          <p class="empty-hint">Sorteie um rolê entre as ideias do banco.</p>
+          <button id="roleRouletteBtn" type="button" class="primary-btn full-width">Sortear um rolê</button>
+          <div id="roleRouletteResult" class="roulette-result"></div>
+        </div>
+
+        <button id="openRoleFormBtn" type="button" class="add-book-btn">+ Adicionar rolê</button>
       </section>
 
       <section id="tab-album-roles" class="tab-panel single-col">
@@ -579,6 +564,33 @@
 
   <div id="photoViewerModal" class="modal hidden" role="dialog" aria-modal="true">
     <img id="photoViewerImg" src="" alt="Foto ampliada" class="photo-viewer-img">
+  </div>
+
+  <div id="roleFormModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeRoleForm" class="close-btn" aria-label="Fechar">×</button>
+      <h2 id="roleFormTitle">Marcar rolê</h2>
+      <form id="roleForm" class="stacked-form">
+        <input type="hidden" id="roleId">
+        <input type="text" id="roleTitle" placeholder="O que vamos fazer?" required>
+        <div class="inline-form">
+          <input type="date" id="roleDate">
+          <input type="text" id="roleLocal" placeholder="Local">
+        </div>
+        <div class="inline-form">
+          <input type="url" id="roleMapaUrl" placeholder="Link do mapa (opcional)">
+          <input type="url" id="roleFotoUrl" placeholder="Link de uma foto (opcional)">
+        </div>
+        <button type="button" id="roleFotoUploadBtn" class="status-chip">Ou enviar uma foto do dispositivo</button>
+        <input type="file" id="roleFotoUploadInput" accept="image/*" class="hidden">
+        <textarea id="roleNotas" rows="2" placeholder="Notas..."></textarea>
+        <label class="chip"><input type="checkbox" id="roleIsIdeia"><span>É só uma ideia (sem data ainda, pra sortear depois)</span></label>
+        <div class="form-actions">
+          <button type="button" id="roleCancelEditBtn" class="danger-btn hidden">Cancelar edição</button>
+          <button type="submit" id="roleSubmitBtn" class="primary-btn">Adicionar</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>

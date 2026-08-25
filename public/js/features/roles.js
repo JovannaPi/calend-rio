@@ -37,6 +37,10 @@ const rouletteResult = document.getElementById("roleRouletteResult");
 const photoViewerModal = document.getElementById("photoViewerModal");
 const photoViewerImg = document.getElementById("photoViewerImg");
 
+const formModal = document.getElementById("roleFormModal");
+const openFormBtn = document.getElementById("openRoleFormBtn");
+const closeFormBtn = document.getElementById("closeRoleForm");
+
 const rolesRef = collection(db, "roles");
 let roles = [];
 let started = false;
@@ -365,7 +369,7 @@ function entrarModoEdicao(role) {
   formTitle.textContent = "Editar rolê";
   submitBtn.textContent = "Salvar alterações";
   cancelEditBtn.classList.remove("hidden");
-  form.scrollIntoView({ behavior: "smooth", block: "start" });
+  formModal.classList.remove("hidden");
 }
 
 function sairModoEdicao() {
@@ -374,9 +378,18 @@ function sairModoEdicao() {
   formTitle.textContent = "Marcar rolê";
   submitBtn.textContent = "Adicionar";
   cancelEditBtn.classList.add("hidden");
+  formModal.classList.add("hidden");
 }
 
 cancelEditBtn.addEventListener("click", sairModoEdicao);
+openFormBtn.addEventListener("click", () => {
+  formTitle.textContent = "Marcar rolê";
+  formModal.classList.remove("hidden");
+});
+closeFormBtn.addEventListener("click", sairModoEdicao);
+formModal.addEventListener("click", (e) => {
+  if (e.target === formModal) sairModoEdicao();
+});
 
 fotoUploadBtn.addEventListener("click", () => fotoUploadInput.click());
 fotoUploadInput.addEventListener("change", async () => {
