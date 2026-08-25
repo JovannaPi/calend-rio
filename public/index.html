@@ -225,8 +225,8 @@
       <!-- =========================================================
            GRUPO: MÍDIA E CLUBE — tudo que era do Clube do Livro
            ========================================================= -->
-      <section id="tab-biblioteca" class="tab-panel grid-container">
-        <div class="panel-card full-width-card">
+      <section id="tab-biblioteca" class="tab-panel single-col">
+        <div class="panel-card">
           <input type="text" id="bookSearch" class="search-input" placeholder="Buscar no clube por título ou autor...">
         </div>
 
@@ -239,28 +239,30 @@
 
         <div class="panel-card">
           <h2>Lendo agora</h2>
-          <div id="booksLendo"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Prontos pra trocar</h2>
-          <div id="booksTrocar"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Planejados</h2>
-          <div id="booksPlanejados"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Concluídos</h2>
-          <div id="booksConcluidos"></div>
-        </div>
-        <div class="panel-card">
-          <h2>Abandonados</h2>
-          <div id="booksAbandonados"></div>
+          <div id="booksLendo" class="book-grid book-grid-lendo"></div>
         </div>
 
-        <div class="full-width-card">
-          <button id="openBookFormBtn" type="button" class="add-book-btn">+ Adicionar livro ao Clube</button>
+        <div class="panel-card">
+          <h2>Planejados</h2>
+          <div id="booksPlanejados" class="book-grid"></div>
         </div>
+
+        <div class="panel-card">
+          <h2>Prontos pra trocar</h2>
+          <div id="booksTrocar" class="book-grid"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Abandonados</h2>
+          <div id="booksAbandonados" class="book-grid"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Concluídos</h2>
+          <div id="booksConcluidos" class="book-grid"></div>
+        </div>
+
+        <button id="openBookFormBtn" type="button" class="add-book-btn">+ Adicionar livro ao Clube</button>
       </section>
 
       <section id="tab-diario" class="tab-panel single-col">

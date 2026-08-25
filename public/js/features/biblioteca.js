@@ -239,7 +239,8 @@ function render() {
     if (livro.leitorAtualUid) {
       const tag = document.createElement("span");
       tag.className = "event-type-tag";
-      tag.style.background = "#7c5cff";
+      tag.style.color = "var(--accent)";
+      tag.style.background = "var(--accent-light)";
       tag.textContent = `${nomeCurto(livro.leituras?.[livro.leitorAtualUid]?.name)} está lendo`;
       card.insertBefore(tag, card.firstChild);
     }
@@ -490,14 +491,16 @@ function abrirDetalhe(livro) {
   if (livro.genero) {
     const t = document.createElement("span");
     t.className = "event-type-tag";
-    t.style.background = "#a78bfa";
+    t.style.color = "var(--accent)";
+    t.style.background = "var(--accent-light)";
     t.textContent = livro.genero;
     tags.appendChild(t);
   }
   if (livro.totalCapitulos) {
     const t = document.createElement("span");
     t.className = "event-type-tag";
-    t.style.background = "#4d8cff";
+    t.style.color = "var(--accent-2)";
+    t.style.background = "color-mix(in srgb, var(--accent-2) 16%, white)";
     t.textContent = `${livro.totalCapitulos} capítulos`;
     tags.appendChild(t);
   }

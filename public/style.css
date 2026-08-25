@@ -1015,6 +1015,11 @@ input:focus, select:focus, textarea:focus {
 
 /* Biblioteca */
 .search-input { border-radius: 999px; background: white; padding: 0.65rem 0.9rem; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.85rem; }
+.book-grid-lendo { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.book-grid-lendo .book-card { padding: 1rem; }
+.book-grid-lendo .book-cover-sm { width: 4.5rem; height: 6.5rem; }
+.book-grid-lendo .event-title { font-size: 1.1rem; }
 .roulette-card { text-align: center; }
 .primary-btn.spinning, .status-chip.spinning { animation: roulette-shake 0.35s ease infinite; }
 @keyframes roulette-shake {
