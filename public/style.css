@@ -125,9 +125,10 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
 .fundo-frase {
   position: absolute;
   max-width: 200px;
-  font-family: "Fredoka", sans-serif;
-  font-style: italic;
-  font-size: 0.9rem;
+  font-family: "Caveat", "Fredoka", cursive;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.3rem;
   color: var(--text);
 }
 
@@ -1062,7 +1063,7 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
-.italic { font-style: italic; }
+.italic { font-family: "Caveat", "Fredoka", cursive; font-size: 1.2em; font-weight: 600; font-style: normal; }
 .footer-note { text-align: center; }
 
 /* Diário / Secreto */
@@ -1116,7 +1117,17 @@ input:focus, select:focus, textarea:focus {
 .album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
 .ideias-list { margin-top: 0.75rem; }
 .album-card { display: flex; flex-direction: column; }
-.album-card .role-photo { max-height: 200px; }
+.album-card .role-photo {
+  max-height: 200px;
+  border: 6px solid white;
+  border-bottom-width: 22px;
+  box-shadow: 0 6px 16px rgba(45, 45, 45, 0.14);
+  transform: rotate(-1.5deg);
+  transition: transform 0.2s ease;
+}
+.album-card:nth-child(even) .role-photo { transform: rotate(1.5deg); }
+.album-card:nth-child(3n) .role-photo { transform: rotate(-0.8deg); }
+.album-card:hover .role-photo { transform: rotate(0deg) scale(1.02); }
 .album-story { background: var(--accent-light); border-radius: 10px; padding: 0.6rem 0.75rem; margin: 0.4rem 0; }
 .album-body { margin-top: 0.6rem; }
 .progress-outer { background: var(--accent-light); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 0.4rem; }
