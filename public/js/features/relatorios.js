@@ -3,6 +3,8 @@ import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   collection,
   addDoc,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
@@ -17,6 +19,7 @@ const reportsRef = collection(db, "reports");
 let started = false;
 
 function render(items) {
+  const me = getCurrentUser();
   listEl.innerHTML = "";
   if (items.length === 0) {
     listEl.innerHTML = '<p class="empty-hint">Nenhum relatório ainda.</p>';
@@ -41,6 +44,19 @@ function render(items) {
     content.className = "event-meta";
     content.textContent = r.content;
     card.appendChild(content);
+
+    if (r.authorUid === me?.uid) {
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "status-chip danger";
+      delBtn.style.marginTop = "0.5rem";
+      delBtn.textContent = "Remover relatório";
+      delBtn.addEventListener("click", () => {
+        card.classList.add("removing");
+        setTimeout(() => deleteDoc(doc(db, "reports", r.id)), 250);
+      });
+      card.appendChild(delBtn);
+    }
 
     listEl.appendChild(card);
   });

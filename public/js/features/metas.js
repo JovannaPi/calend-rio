@@ -83,7 +83,10 @@ function render(goals) {
     delBtn.className = "status-chip danger";
     delBtn.style.marginTop = "0.5rem";
     delBtn.textContent = "Remover meta";
-    delBtn.addEventListener("click", () => deleteDoc(doc(db, "metas", goal.id)));
+    delBtn.addEventListener("click", () => {
+      card.classList.add("removing");
+      setTimeout(() => deleteDoc(doc(db, "metas", goal.id)), 250);
+    });
     card.appendChild(delBtn);
 
     listEl.appendChild(card);

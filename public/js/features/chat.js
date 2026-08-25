@@ -3,6 +3,8 @@ import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   collection,
   addDoc,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
@@ -17,6 +19,7 @@ let started = false;
 
 function render(messages) {
   const me = getCurrentUser();
+  const scrolledToBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 40;
   messagesEl.innerHTML = "";
   messages.forEach((m) => {
     const bubble = document.createElement("div");
@@ -28,9 +31,21 @@ function render(messages) {
     text.textContent = m.text;
     bubble.appendChild(author);
     bubble.appendChild(text);
+    if (m.uid === me?.uid) {
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "mini-delete-btn";
+      delBtn.textContent = "×";
+      delBtn.title = "Apagar mensagem";
+      delBtn.addEventListener("click", () => {
+        bubble.classList.add("removing");
+        setTimeout(() => deleteDoc(doc(db, "messages", m.id)), 250);
+      });
+      bubble.appendChild(delBtn);
+    }
     messagesEl.appendChild(bubble);
   });
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  if (scrolledToBottom) messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
 form.addEventListener("submit", async (e) => {

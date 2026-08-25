@@ -3,6 +3,8 @@ import { onAuth, getCurrentUser } from "../core/auth.js";
 import {
   collection,
   addDoc,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
@@ -17,7 +19,8 @@ const textInput = document.getElementById("notifText");
 const notificationsRef = collection(db, "notifications");
 let started = false;
 
-function buildCard(n) {
+function buildCard(n, { withDelete } = { withDelete: true }) {
+  const me = getCurrentUser();
   const card = document.createElement("div");
   card.className = "event-card";
   const title = document.createElement("div");
@@ -29,6 +32,18 @@ function buildCard(n) {
   const d = new Date(n.createdAt);
   meta.textContent = `${n.authorName || "alguém"} · ${d.toLocaleDateString("pt-BR")}`;
   card.appendChild(meta);
+  if (withDelete && n.authorUid === me?.uid) {
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "status-chip danger";
+    delBtn.style.marginTop = "0.5rem";
+    delBtn.textContent = "Remover aviso";
+    delBtn.addEventListener("click", () => {
+      card.classList.add("removing");
+      setTimeout(() => deleteDoc(doc(db, "notifications", n.id)), 250);
+    });
+    card.appendChild(delBtn);
+  }
   return card;
 }
 
@@ -44,7 +59,7 @@ function render(items) {
   if (items.length === 0) {
     overviewEl.innerHTML = '<p class="empty-hint">Nenhum aviso ainda.</p>';
   } else {
-    items.slice(0, 3).forEach((n) => overviewEl.appendChild(buildCard(n)));
+    items.slice(0, 3).forEach((n) => overviewEl.appendChild(buildCard(n, { withDelete: false })));
   }
 }
 

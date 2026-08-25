@@ -99,6 +99,7 @@ Cada arquivo em `features/` só conversa com o Firestore através de `js/core/db
        match /messages/{id} {
          allow read: if isSignedIn();
          allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+         allow delete: if isSignedIn() && resource.data.uid == request.auth.uid;
        }
 
        match /watchlist/{id} {
@@ -108,11 +109,13 @@ Cada arquivo em `features/` só conversa com o Firestore através de `js/core/db
        match /reports/{id} {
          allow read: if isSignedIn();
          allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+         allow delete: if isSignedIn() && resource.data.authorUid == request.auth.uid;
        }
 
        match /notifications/{id} {
          allow read: if isSignedIn();
          allow create: if isSignedIn() && request.resource.data.authorUid == request.auth.uid;
+         allow delete: if isSignedIn() && resource.data.authorUid == request.auth.uid;
        }
 
        match /roles/{id} {

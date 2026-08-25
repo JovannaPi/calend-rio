@@ -102,11 +102,24 @@ function buildCard(role, { showActions } = { showActions: true }) {
       delBtn.type = "button";
       delBtn.className = "status-chip danger";
       delBtn.textContent = "Remover";
-      delBtn.addEventListener("click", () => deleteDoc(doc(db, "roles", role.id)));
+      delBtn.addEventListener("click", () => {
+        card.classList.add("removing");
+        setTimeout(() => deleteDoc(doc(db, "roles", role.id)), 250);
+      });
       row.appendChild(delBtn);
       card.appendChild(row);
     } else {
       card.appendChild(starRow(role.id, role.nota || 0));
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "status-chip danger";
+      delBtn.style.marginTop = "0.5rem";
+      delBtn.textContent = "Remover";
+      delBtn.addEventListener("click", () => {
+        card.classList.add("removing");
+        setTimeout(() => deleteDoc(doc(db, "roles", role.id)), 250);
+      });
+      card.appendChild(delBtn);
     }
   }
 

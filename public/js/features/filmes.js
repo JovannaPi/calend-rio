@@ -57,7 +57,10 @@ function render(items) {
     delBtn.type = "button";
     delBtn.className = "status-chip danger";
     delBtn.textContent = "Remover";
-    delBtn.addEventListener("click", () => deleteDoc(doc(db, "watchlist", item.id)));
+    delBtn.addEventListener("click", () => {
+      card.classList.add("removing");
+      setTimeout(() => deleteDoc(doc(db, "watchlist", item.id)), 250);
+    });
     row.appendChild(delBtn);
     card.appendChild(row);
 

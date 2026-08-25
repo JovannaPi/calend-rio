@@ -320,6 +320,19 @@ body {
   flex-shrink: 0;
   cursor: pointer;
   pointer-events: auto; /* Força o clique a funcionar */
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  transition: all 0.15s ease;
+}
+.sub-tabs .tab-btn:hover { background: rgba(124, 92, 255, 0.08); color: var(--accent); transform: translateY(-1px); }
+.sub-tabs .tab-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.25);
 }
 
 /* IMPEDE QUE ELEMENTOS DE FUNDO BLOQUEiem OS CLIQUES */
@@ -614,7 +627,7 @@ input:focus, select:focus, textarea:focus {
   font-weight: 700;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
-.danger-btn:hover { background: #ff6fa5; color: white; }
+.danger-btn:hover { background: #ff6fa5; color: white; transform: translateY(-2px); }
 
 /* =========================================================
    8. AUTENTICAÇÃO (LOGIN / CADASTRO)
@@ -776,15 +789,20 @@ input:focus, select:focus, textarea:focus {
 .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; }
 .chat-messages.small { height: 160px; flex: none; }
 .chat-bubble {
+  position: relative;
   align-self: flex-start;
   background: white;
   border-radius: 12px;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 1.75rem 0.5rem 0.75rem;
   max-width: 80%;
   box-shadow: 0 2px 6px rgba(90,70,160,0.08);
+  transition: box-shadow 0.15s ease;
 }
+.chat-bubble:hover { box-shadow: 0 4px 12px rgba(90,70,160,0.16); }
 .chat-bubble.mine { align-self: flex-end; background: var(--accent-light); }
 .chat-author { font-size: 0.72rem; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+.chat-bubble .mini-delete-btn { position: absolute; top: 2px; right: 2px; opacity: 0; }
+.chat-bubble:hover .mini-delete-btn { opacity: 0.55; }
 .chat-form { display: flex; gap: 0.6rem; }
 
 /* Status Chips */
@@ -801,9 +819,36 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   transition: all 0.15s ease;
 }
+.status-chip:hover { transform: scale(1.06); }
 .status-chip.active { background: var(--accent); color: white; border-color: transparent; }
+.status-chip.active:hover { transform: scale(1.06); box-shadow: 0 6px 14px rgba(124, 92, 255, 0.3); }
 .status-chip.danger { color: #d63384; border-color: #ffd3e4; }
-.status-chip.danger:hover { background: #ff6fa5; color: white; }
+.status-chip.danger:hover { background: #ff6fa5; color: white; transform: scale(1.06); }
+
+@keyframes fade-out-remove {
+  from { opacity: 1; transform: scale(1) translateX(0); max-height: 400px; }
+  to { opacity: 0; transform: scale(0.92) translateX(12px); max-height: 0; margin: 0; padding-top: 0; padding-bottom: 0; }
+}
+.removing {
+  animation: fade-out-remove 0.28s ease forwards;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Botão de apagar discreto (cantinho de cards/bolhas) */
+.mini-delete-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  opacity: 0.55;
+  transition: all 0.15s ease;
+}
+.mini-delete-btn:hover { opacity: 1; background: #ffe3ea; color: #d63384; transform: scale(1.15); }
 
 /* Biblioteca */
 .search-input { border-radius: 999px; background: white; padding: 0.65rem 0.9rem; }
