@@ -414,16 +414,41 @@ body {
 .overview-row .panel-card h2 { margin-bottom: 0.5rem; font-size: 0.92rem; }
 .overview-row .panel-card > div { max-height: 220px; overflow-y: auto; }
 
-/* Mídia e Clube: identidade própria, mais aconchegante, tipo "clube de leitura" */
+/* Mídia e Clube: identidade própria, tipo "clube de leitura" aconchegante */
 #tab-biblioteca, #tab-diario, #tab-secreto, #tab-memorias, #tab-stats, #tab-premiacao, #tab-filmes {
-  --accent: #c97b3d;
-  --accent-2: #e0a458;
-  --accent-light: #fbead4;
+  --accent: #a8672f;
+  --accent-2: #d9a441;
+  --accent-light: #f6e6c8;
 }
 #tab-biblioteca .panel-card, #tab-diario .panel-card, #tab-secreto .panel-card,
 #tab-memorias .panel-card, #tab-stats .panel-card, #tab-premiacao .panel-card, #tab-filmes .panel-card {
-  background: rgba(255, 251, 245, 0.8);
+  background: #fdf8ef;
+  border: 1px solid #ecdcb8;
+  border-left: 4px solid var(--accent-2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 6px 20px rgba(120, 85, 30, 0.1);
 }
+#tab-biblioteca h2, #tab-diario h2, #tab-secreto h2, #tab-memorias h2,
+#tab-stats h2, #tab-premiacao h2, #tab-filmes h2,
+#tab-biblioteca .event-title, #tab-diario .event-title, #tab-secreto .event-title,
+#tab-memorias .event-title, #tab-stats .event-title, #tab-premiacao .event-title, #tab-filmes .event-title {
+  font-family: "Lora", "Fredoka", serif;
+}
+#tab-biblioteca h2::before, #tab-diario h2::before, #tab-secreto h2::before,
+#tab-memorias h2::before, #tab-stats h2::before, #tab-premiacao h2::before, #tab-filmes h2::before {
+  width: 3px;
+  border-radius: 2px;
+}
+
+/* Fundo animado exclusivo dessa aba, só aparece com body.media-theme */
+.media-doodles { display: none; }
+body.media-theme .media-doodles { display: block; }
+.doodle-media-1 { top: 15%; left: 12%; width: 16px; height: 16px; background: #d9a441; animation-delay: 0.3s; }
+.doodle-media-2 { top: 65%; left: 8%; width: 22px; height: 22px; color: #c97b3d; animation-delay: 1.5s; }
+.doodle-media-3 { top: 10%; left: 82%; width: 12px; height: 12px; background: #a8672f; animation-delay: 2.4s; }
+.doodle-media-4 { top: 75%; left: 85%; width: 20px; height: 20px; color: #d9a441; animation-delay: 0.8s; }
+.doodle-media-5 { top: 42%; left: 50%; width: 10px; height: 10px; background: #c97b3d; animation-delay: 3.2s; }
 
 /* Cards com Glassmorphism */
 .panel-card, .calendar-panel, .side-panel {

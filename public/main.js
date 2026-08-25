@@ -43,6 +43,7 @@ mainTabBtns.forEach(btn => {
     btn.classList.add('active');
 
     const group = btn.getAttribute('data-group'); // ex: 'midia'
+    document.body.classList.toggle('media-theme', group === 'midia');
 
     // Esconde todos os containers de sub-abas e mostra apenas o do grupo selecionado
     subTabsContainers.forEach(container => {
