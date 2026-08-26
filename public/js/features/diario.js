@@ -11,6 +11,16 @@ import { capituloLembrado, lembrarCapitulo, confetti, el } from "../core/util.js
 
 const EMOCOES = ["❤", "😭", "😲", "😡", "🤔", "😂", "😰", "🥰", "😤", "🤯"];
 
+// Se a escrita no Firestore ficar pendurada sem nunca resolver nem falhar
+// (conexão travada), isso evita o botão ficar preso em "Salvando..." pra
+// sempre sem avisar nada.
+function comTimeout(promise, ms = 8000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("tempo esgotado, sem resposta do servidor")), ms)),
+  ]);
+}
+
 const content = document.getElementById("diarioContent");
 let config = {};
 let livros = [];
@@ -175,14 +185,17 @@ function renderCapitulo(livro) {
     const saveBtn = el("button", "primary-btn full-width", "Salvar diário");
     saveBtn.type = "button";
     saveBtn.addEventListener("click", async () => {
+      saveBtn.textContent = "Salvando...";
       saveBtn.disabled = true;
       try {
-        await salvarCapitulo(livro.id, capNum, {
-          [`entradas.${me.uid}.impressao`]: impressaoInput.value,
-          [`entradas.${me.uid}.emocoes`]: emocoesSelecionadas,
-          [`entradas.${me.uid}.frase`]: fraseInput.value,
-          [`entradas.${me.uid}.name`]: me.name,
-        });
+        await comTimeout(
+          salvarCapitulo(livro.id, capNum, {
+            [`entradas.${me.uid}.impressao`]: impressaoInput.value,
+            [`entradas.${me.uid}.emocoes`]: emocoesSelecionadas,
+            [`entradas.${me.uid}.frase`]: fraseInput.value,
+            [`entradas.${me.uid}.name`]: me.name,
+          })
+        );
         await registrarAtividade({
           tipo: "diario",
           uid: me.uid,
