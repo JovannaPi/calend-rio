@@ -175,22 +175,35 @@ function renderCapitulo(livro) {
     const saveBtn = el("button", "primary-btn full-width", "Salvar diário");
     saveBtn.type = "button";
     saveBtn.addEventListener("click", async () => {
-      await salvarCapitulo(livro.id, capNum, {
-        [`entradas.${me.uid}.impressao`]: impressaoInput.value,
-        [`entradas.${me.uid}.emocoes`]: emocoesSelecionadas,
-        [`entradas.${me.uid}.frase`]: fraseInput.value,
-        [`entradas.${me.uid}.name`]: me.name,
-      });
-      await registrarAtividade({
-        tipo: "diario",
-        uid: me.uid,
-        name: me.name,
-        livroId: livro.id,
-        livroTitulo: livro.titulo,
-        capitulo: capNum,
-      });
-      saveBtn.textContent = "✓ Salvo!";
-      setTimeout(() => (saveBtn.textContent = "Salvar diário"), 1800);
+      saveBtn.disabled = true;
+      try {
+        await salvarCapitulo(livro.id, capNum, {
+          [`entradas.${me.uid}.impressao`]: impressaoInput.value,
+          [`entradas.${me.uid}.emocoes`]: emocoesSelecionadas,
+          [`entradas.${me.uid}.frase`]: fraseInput.value,
+          [`entradas.${me.uid}.name`]: me.name,
+        });
+        await registrarAtividade({
+          tipo: "diario",
+          uid: me.uid,
+          name: me.name,
+          livroId: livro.id,
+          livroTitulo: livro.titulo,
+          capitulo: capNum,
+        });
+        saveBtn.textContent = "✓ Salvo!";
+        setTimeout(() => (saveBtn.textContent = "Salvar diário"), 1800);
+      } catch (err) {
+        console.error("Falha ao salvar diário:", err);
+        alert(
+          "Não consegui salvar (" +
+            (err?.code || err?.message || "erro desconhecido") +
+            "). Se isso continuar acontecendo, pode ser que as regras do Firestore ainda não foram publicadas no console do Firebase."
+        );
+        saveBtn.textContent = "Salvar diário";
+      } finally {
+        saveBtn.disabled = false;
+      }
     });
     capForm.appendChild(saveBtn);
   });
@@ -210,10 +223,17 @@ function cartaFormulario(livro) {
   btn.type = "button";
   btn.addEventListener("click", async () => {
     if (!textarea.value.trim()) return;
-    const cartas = { ...(livro.cartas || {}) };
-    cartas[me.uid] = { texto: textarea.value.trim(), enviada: true, name: me.name };
-    await atualizarLivro(livro.id, { cartas });
-    await registrarAtividade({ tipo: "carta", uid: me.uid, name: me.name, livroId: livro.id, livroTitulo: livro.titulo });
+    btn.disabled = true;
+    try {
+      const cartas = { ...(livro.cartas || {}) };
+      cartas[me.uid] = { texto: textarea.value.trim(), enviada: true, name: me.name };
+      await atualizarLivro(livro.id, { cartas });
+      await registrarAtividade({ tipo: "carta", uid: me.uid, name: me.name, livroId: livro.id, livroTitulo: livro.titulo });
+    } catch (err) {
+      console.error("Falha ao selar carta:", err);
+      alert("Não consegui salvar a carta (" + (err?.code || err?.message || "erro desconhecido") + ").");
+      btn.disabled = false;
+    }
   });
   card.appendChild(btn);
   return card;
@@ -277,18 +297,25 @@ function notasFinais(livro) {
   const btn = el("button", "primary-btn full-width", "Terminei — salvar nota");
   btn.type = "button";
   btn.addEventListener("click", async () => {
-    const hoje = new Date().toISOString().split("T")[0];
-    const leituras = { ...(livro.leituras || {}) };
-    leituras[me.uid] = { ...(leituras[me.uid] || {}), nota: Number(slider.value), dataFim: hoje, name: me.name };
-    const outrasNotas = Object.entries(leituras).filter(([uid]) => uid !== me.uid && leituras[uid].nota != null);
-    const outraJaLeu = outrasNotas.length > 0;
-    await atualizarLivro(livro.id, {
-      leituras,
-      status: outraJaLeu ? "concluido" : "trocar",
-      leitorAtualUid: null,
-    });
-    await registrarAtividade({ tipo: "nota", uid: me.uid, name: me.name, livroId: livro.id, livroTitulo: livro.titulo });
-    if (outraJaLeu) confetti();
+    btn.disabled = true;
+    try {
+      const hoje = new Date().toISOString().split("T")[0];
+      const leituras = { ...(livro.leituras || {}) };
+      leituras[me.uid] = { ...(leituras[me.uid] || {}), nota: Number(slider.value), dataFim: hoje, name: me.name };
+      const outrasNotas = Object.entries(leituras).filter(([uid]) => uid !== me.uid && leituras[uid].nota != null);
+      const outraJaLeu = outrasNotas.length > 0;
+      await atualizarLivro(livro.id, {
+        leituras,
+        status: outraJaLeu ? "concluido" : "trocar",
+        leitorAtualUid: null,
+      });
+      await registrarAtividade({ tipo: "nota", uid: me.uid, name: me.name, livroId: livro.id, livroTitulo: livro.titulo });
+      if (outraJaLeu) confetti();
+    } catch (err) {
+      console.error("Falha ao salvar nota final:", err);
+      alert("Não consegui salvar a nota (" + (err?.code || err?.message || "erro desconhecido") + ").");
+      btn.disabled = false;
+    }
   });
   card.appendChild(btn);
   return card;

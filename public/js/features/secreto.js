@@ -137,19 +137,26 @@ function renderCapitulo(livro) {
       btn.type = "button";
       btn.addEventListener("click", async () => {
         if (!textarea.value.trim()) return;
-        await salvarCapitulo(livro.id, capNum, {
-          [`entradas.${me.uid}.teoria`]: textarea.value.trim(),
-          [`entradas.${me.uid}.teoriaEnviada`]: true,
-          [`entradas.${me.uid}.name`]: me.name,
-        });
-        await registrarAtividade({
-          tipo: "secreto",
-          uid: me.uid,
-          name: me.name,
-          livroId: livro.id,
-          livroTitulo: livro.titulo,
-          capitulo: capNum,
-        });
+        btn.disabled = true;
+        try {
+          await salvarCapitulo(livro.id, capNum, {
+            [`entradas.${me.uid}.teoria`]: textarea.value.trim(),
+            [`entradas.${me.uid}.teoriaEnviada`]: true,
+            [`entradas.${me.uid}.name`]: me.name,
+          });
+          await registrarAtividade({
+            tipo: "secreto",
+            uid: me.uid,
+            name: me.name,
+            livroId: livro.id,
+            livroTitulo: livro.titulo,
+            capitulo: capNum,
+          });
+        } catch (err) {
+          console.error("Falha ao travar teoria:", err);
+          alert("Não consegui salvar a teoria (" + (err?.code || err?.message || "erro desconhecido") + ").");
+          btn.disabled = false;
+        }
       });
       card.appendChild(btn);
       body.appendChild(card);
