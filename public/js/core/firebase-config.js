@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { initializeFirestore } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -12,5 +12,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+
+// Algumas redes/navegadores (bloqueador de anúncios, navegador embutido do
+// WhatsApp/Instagram, rede de operadora restritiva) atrapalham a conexão de
+// tempo real "normal" do Firestore e geram um monte de erro 400 no canal
+// dele. auto-detect faz o Firestore perceber isso sozinho e trocar pra um
+// jeito de conexão mais compatível, sem precisar forçar sempre (o que
+// deixaria mais lento em redes que não têm esse problema).
+export const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
 export const auth = getAuth(app);
