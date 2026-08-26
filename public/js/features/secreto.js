@@ -16,6 +16,7 @@ let livros = [];
 let capNum = 1;
 let unsubCap = null;
 let started = false;
+let livroAtualId = null;
 
 function livroAtual() {
   const me = getCurrentUser();
@@ -27,17 +28,27 @@ function isRevelado(entradas) {
   return Object.values(entradas || {}).filter((e) => e.teoriaEnviada).length >= 2;
 }
 
+// Só reconstrói a página quando o livro atual muda de verdade — senão,
+// qualquer mudança em livros/config (que são coleções compartilhadas,
+// mudam por um monte de motivo alheio) reabre a assinatura do capítulo e
+// apaga a teoria que a pessoa está no meio de digitar.
 function render() {
   const me = getCurrentUser();
   const livro = livroAtual();
-  content.innerHTML = "";
 
   if (!livro) {
+    livroAtualId = null;
+    content.innerHTML = "";
     content.appendChild(el("p", "empty-hint", "Nenhum livro em leitura."));
     return;
   }
+
+  if (livro.id === livroAtualId) return;
+  livroAtualId = livro.id;
+
   capNum = capituloLembrado(livro.id, me.uid);
   const maxCap = livro.totalCapitulos || 99;
+  content.innerHTML = "";
 
   const nav = el("div", "panel-card chapter-nav-row");
   const prevBtn = el("button", "nav-btn", "‹");
@@ -45,11 +56,13 @@ function render() {
   const nextBtn = el("button", "nav-btn", "›");
   nextBtn.type = "button";
   const center = el("div", "chapter-nav-center");
-  center.appendChild(el("p", "event-title", `Capítulo ${capNum}`));
+  const capLabel = el("p", "event-title", `Capítulo ${capNum}`);
+  center.appendChild(capLabel);
   center.appendChild(el("p", "empty-hint", livro.titulo));
   prevBtn.addEventListener("click", () => {
     if (capNum > 1) {
       capNum--;
+      capLabel.textContent = `Capítulo ${capNum}`;
       lembrarCapitulo(livro.id, me.uid, capNum);
       renderCapitulo(livro);
     }
@@ -57,6 +70,7 @@ function render() {
   nextBtn.addEventListener("click", () => {
     if (capNum < maxCap) {
       capNum++;
+      capLabel.textContent = `Capítulo ${capNum}`;
       lembrarCapitulo(livro.id, me.uid, capNum);
       renderCapitulo(livro);
     }

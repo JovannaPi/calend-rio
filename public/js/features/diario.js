@@ -17,6 +17,7 @@ let livros = [];
 let capNum = 1;
 let unsubCap = null;
 let started = false;
+let livroAtualId = null;
 
 function livroAtual() {
   const me = getCurrentUser();
@@ -24,22 +25,36 @@ function livroAtual() {
   return livros.find((l) => l.id === id) || null;
 }
 
+// Só reconstrói a página inteira quando o livro atual muda (ou na primeira
+// vez). Fora isso, atualiza só a carta/nota final — nunca mexe no formulário
+// do capítulo, senão apaga o que a pessoa está digitando toda vez que
+// qualquer outro dado do app mudar em segundo plano (o livros/config são
+// coleções compartilhadas, mudam por qualquer motivo, não só por causa
+// deste livro).
 function render() {
   const me = getCurrentUser();
   const livro = livroAtual();
-  content.innerHTML = "";
 
   if (!livro) {
+    livroAtualId = null;
+    content.innerHTML = "";
     content.appendChild(el("p", "empty-hint", "Nenhum livro em leitura. Defina o livro atual na Biblioteca."));
     return;
   }
+
+  if (livro.id === livroAtualId) {
+    atualizarExtras(livro);
+    return;
+  }
+
+  livroAtualId = livro.id;
   capNum = capituloLembrado(livro.id, me.uid);
   const maxCap = livro.totalCapitulos || 99;
+  content.innerHTML = "";
 
-  const cartaMinha = livro.cartas?.[me.uid];
-  if (!cartaMinha?.enviada) {
-    content.appendChild(cartaFormulario(livro));
-  }
+  const cartaArea = el("div");
+  cartaArea.id = "diarioCartaArea";
+  content.appendChild(cartaArea);
 
   const nav = el("div", "panel-card chapter-nav-row");
   const prevBtn = el("button", "nav-btn", "‹");
@@ -47,20 +62,25 @@ function render() {
   const nextBtn = el("button", "nav-btn", "›");
   nextBtn.type = "button";
   const center = el("div", "chapter-nav-center");
-  center.appendChild(el("p", "event-title", `Capítulo ${capNum}`));
+  const capLabel = el("p", "event-title", `Capítulo ${capNum}`);
+  center.appendChild(capLabel);
   center.appendChild(el("p", "empty-hint", livro.titulo));
   prevBtn.addEventListener("click", () => {
     if (capNum > 1) {
       capNum--;
+      capLabel.textContent = `Capítulo ${capNum}`;
       lembrarCapitulo(livro.id, me.uid, capNum);
       renderCapitulo(livro);
+      atualizarExtras(livro);
     }
   });
   nextBtn.addEventListener("click", () => {
     if (capNum < maxCap) {
       capNum++;
+      capLabel.textContent = `Capítulo ${capNum}`;
       lembrarCapitulo(livro.id, me.uid, capNum);
       renderCapitulo(livro);
+      atualizarExtras(livro);
     }
   });
   nav.appendChild(prevBtn);
@@ -72,15 +92,32 @@ function render() {
   capForm.id = "diarioCapForm";
   content.appendChild(capForm);
 
-  if (cartaMinha?.enviada) {
-    content.appendChild(cartaStatus(livro));
-  }
+  const notasArea = el("div");
+  notasArea.id = "diarioNotasArea";
+  content.appendChild(notasArea);
 
-  if (livro.totalCapitulos && capNum >= livro.totalCapitulos) {
-    content.appendChild(notasFinais(livro));
-  }
-
+  atualizarExtras(livro);
   renderCapitulo(livro);
+}
+
+function atualizarExtras(livro) {
+  const me = getCurrentUser();
+  const cartaArea = document.getElementById("diarioCartaArea");
+  const notasArea = document.getElementById("diarioNotasArea");
+  if (!cartaArea || !notasArea) return;
+
+  const cartaMinha = livro.cartas?.[me.uid];
+  cartaArea.innerHTML = "";
+  if (!cartaMinha?.enviada) {
+    cartaArea.appendChild(cartaFormulario(livro));
+  } else {
+    cartaArea.appendChild(cartaStatus(livro));
+  }
+
+  notasArea.innerHTML = "";
+  if (livro.totalCapitulos && capNum >= livro.totalCapitulos) {
+    notasArea.appendChild(notasFinais(livro));
+  }
 }
 
 function renderCapitulo(livro) {
