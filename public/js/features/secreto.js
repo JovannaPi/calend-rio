@@ -93,7 +93,15 @@ function renderCapitulo(livro) {
   if (!body) return;
   if (unsubCap) unsubCap();
 
-  unsubCap = listenCapitulo(livro.id, capNum, (cap) => {
+  // Ignora a confirmação instantânea (hasPendingWrites) da própria escrita.
+  // Como diário e secreto escrevem no mesmo documento (capitulos/{num}), uma
+  // gravação de qualquer um dos dois dispara um eco quase imediato do
+  // onSnapshot que reconstruiria isso tudo de novo — apagando o que a
+  // pessoa está digitando ou trocando o botão em que ela acabou de clicar
+  // sem feedback nenhum. Ainda reconstrói normalmente quando o servidor
+  // confirma ou quando é a outra pessoa mudando o documento (ex: revelação).
+  unsubCap = listenCapitulo(livro.id, capNum, (cap, pendente) => {
+    if (pendente) return;
     body.innerHTML = "";
     const entradas = cap.entradas || {};
     const minha = entradas[me.uid] || {};

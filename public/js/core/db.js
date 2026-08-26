@@ -79,9 +79,14 @@ export async function restaurarLivro(id, data) {
 export const capituloRef = (livroId, num) => doc(db, "livros", livroId, "capitulos", String(num));
 export const capitulosCol = (livroId) => collection(db, "livros", livroId, "capitulos");
 
+// O segundo argumento do callback diz se essa é a confirmação instantânea
+// de uma escrita local (hasPendingWrites), antes de bater no servidor —
+// útil pra quem escuta não reconstruir a tela nesse instante (ver
+// diario.js/secreto.js), só quando o servidor realmente confirma ou quando
+// é outra pessoa mudando o documento.
 export function listenCapitulo(livroId, num, cb) {
   return onSnapshot(capituloRef(livroId, num), (snap) => {
-    cb(snap.exists() ? snap.data() : { numero: num, entradas: {} });
+    cb(snap.exists() ? snap.data() : { numero: num, entradas: {} }, snap.metadata.hasPendingWrites);
   });
 }
 

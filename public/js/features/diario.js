@@ -137,7 +137,14 @@ function renderCapitulo(livro) {
   capForm.innerHTML = "";
   if (unsubCap) unsubCap();
 
-  unsubCap = listenCapitulo(livro.id, capNum, (cap) => {
+  // Ignora a confirmação instantânea (hasPendingWrites) da própria escrita —
+  // sem essa trava, o "Salvar" dispara um eco quase imediato do onSnapshot
+  // (o Firestore confirma local antes de ir pro servidor) que reconstruiria
+  // o formulário inteiro, trocando o botão em que a pessoa acabou de clicar
+  // por um novo, sem nenhum feedback visível, dando a impressão de que não
+  // salvou nada.
+  unsubCap = listenCapitulo(livro.id, capNum, (cap, pendente) => {
+    if (pendente) return;
     const minha = cap.entradas?.[me.uid] || {};
     capForm.innerHTML = "";
 
