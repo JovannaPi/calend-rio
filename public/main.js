@@ -6,6 +6,7 @@
 // abas na tela, pra ficar fácil de achar cada coisa.
 
 import "./js/core/auth-ui.js";
+import "./js/core/app-nativo.js";
 
 import "./js/features/calendario.js";
 import "./js/features/timeline.js";
@@ -102,8 +103,12 @@ subTabBtns.forEach(btn => {
   });
 });
 
-// 3. Restaura a aba de quando a pessoa saiu (em vez de sempre voltar pro início)
+// 3. Restaura a aba de quando a pessoa saiu (em vez de sempre voltar pro início).
+// No app instalado (Android), isso fica desligado de propósito: abre sempre
+// no Calendário de hoje, já com o login de quem é dono daquele celular.
 (function restaurarUltimaAba() {
+  if (window.Capacitor?.isNativePlatform?.()) return;
+
   let salvo = null;
   try {
     salvo = JSON.parse(localStorage.getItem(ABA_STORAGE_KEY) || 'null');

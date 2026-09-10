@@ -5,5 +5,12 @@
   "server": {
     "url": "https://calend-rio.onrender.com/?c=bz2mK-fs",
     "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#fdf8f5",
+      "androidSplashResourceName": "splash"
+    }
   }
 }
