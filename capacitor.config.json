@@ -1,5 +1,9 @@
 {
   "appId": "com.calendrio.app",
   "appName": "Calend.rio",
-  "webDir": "public"
+  "webDir": "public",
+  "server": {
+    "url": "https://calend-rio.onrender.com/?c=bz2mK-fs",
+    "cleartext": false
+  }
 }
