@@ -3,12 +3,51 @@
 // existe, então tudo aqui simplesmente não faz nada — o mesmo código serve
 // pros dois casos sem precisar de duas versões do site.
 import { onAuth } from "./auth.js";
+import { BiometricAuth } from "../vendor/biometric-auth.bundle.js";
 
 const Capacitor = window.Capacitor;
 const nativo = !!Capacitor?.isNativePlatform?.();
 
 if (nativo) {
   const { App, SplashScreen, LocalNotifications } = Capacitor.Plugins;
+
+  // Trava por digital/rosto ao entrar em Diário ou Secreto — são as abas
+  // pessoais, que cada uma escreve sem a outra ver antes da hora. Se o
+  // aparelho não tem biometria configurada, entra direto sem travar (nunca
+  // bloqueia quem não tem como desbloquear).
+  const ABAS_PRIVADAS = ["diario", "secreto"];
+  const desbloqueadasNestaSessao = new Set();
+  let biometriaDisponivel = false;
+
+  BiometricAuth.checkBiometry()
+    .then((r) => (biometriaDisponivel = r.isAvailable))
+    .catch(() => (biometriaDisponivel = false));
+
+  document.addEventListener(
+    "click",
+    async (e) => {
+      const btn = e.target.closest('.sub-tabs .tab-btn');
+      if (!btn) return;
+      const tab = btn.getAttribute("data-tab");
+      if (!ABAS_PRIVADAS.includes(tab)) return;
+      if (!biometriaDisponivel || desbloqueadasNestaSessao.has(tab)) return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      try {
+        await BiometricAuth.authenticate({
+          reason: tab === "diario" ? "Confirme sua digital pra abrir o Diário" : "Confirme sua digital pra abrir o Secreto",
+          cancelTitle: "Cancelar",
+          allowDeviceCredentials: true,
+        });
+        desbloqueadasNestaSessao.add(tab);
+        btn.click();
+      } catch {
+        // Cancelou ou falhou a autenticação — fica onde estava, sem entrar.
+      }
+    },
+    true
+  );
 
   // Esconde a splash assim que a primeira tela estiver pronta (em vez de
   // ficar um tempo fixo, que ou é curto demais numa conexão ruim, ou

@@ -7,7 +7,15 @@ import {
   atualizarLivro,
   registrarAtividade,
 } from "../core/db.js";
-import { capituloLembrado, lembrarCapitulo, confetti, el } from "../core/util.js";
+import { capituloLembrado, lembrarCapitulo, confetti, el, rascunho, barraEscritaRapida } from "../core/util.js";
+
+const SUGESTOES_IMPRESSAO = [
+  "📖 Adorei esse capítulo",
+  "😢 Me emocionei muito",
+  "🤔 Não esperava essa reviravolta",
+  "💬 Preciso comentar isso com você",
+  "⭐ Um dos melhores até agora",
+];
 
 const EMOCOES = ["❤", "😭", "😲", "😡", "🤔", "😂", "😰", "🥰", "😤", "🤯"];
 
@@ -148,12 +156,17 @@ function renderCapitulo(livro) {
     const minha = cap.entradas?.[me.uid] || {};
     capForm.innerHTML = "";
 
+    const rascunhoImpressao = rascunho(`diario_${livro.id}_${capNum}_impressao_${me.uid}`);
+    const rascunhoFrase = rascunho(`diario_${livro.id}_${capNum}_frase_${me.uid}`);
+
     const impressaoCard = el("div", "panel-card");
     impressaoCard.appendChild(el("label", null, "Impressão geral"));
     const impressaoInput = document.createElement("textarea");
     impressaoInput.rows = 4;
     impressaoInput.placeholder = "O que você achou deste capítulo?";
-    impressaoInput.value = minha.impressao || "";
+    impressaoInput.value = rascunhoImpressao.get() || minha.impressao || "";
+    impressaoInput.addEventListener("input", () => rascunhoImpressao.set(impressaoInput.value));
+    impressaoCard.appendChild(barraEscritaRapida(impressaoInput, SUGESTOES_IMPRESSAO));
     impressaoCard.appendChild(impressaoInput);
     capForm.appendChild(impressaoCard);
 
@@ -185,7 +198,8 @@ function renderCapitulo(livro) {
     const fraseInput = document.createElement("textarea");
     fraseInput.rows = 2;
     fraseInput.placeholder = "A frase que mais te marcou neste capítulo...";
-    fraseInput.value = minha.frase || "";
+    fraseInput.value = rascunhoFrase.get() || minha.frase || "";
+    fraseInput.addEventListener("input", () => rascunhoFrase.set(fraseInput.value));
     fraseCard.appendChild(fraseInput);
     capForm.appendChild(fraseCard);
 
@@ -211,6 +225,8 @@ function renderCapitulo(livro) {
           livroTitulo: livro.titulo,
           capitulo: capNum,
         });
+        rascunhoImpressao.clear();
+        rascunhoFrase.clear();
         saveBtn.textContent = "✓ Salvo!";
         setTimeout(() => (saveBtn.textContent = "Salvar diário"), 1800);
       } catch (err) {

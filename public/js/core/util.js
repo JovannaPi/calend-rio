@@ -130,6 +130,65 @@ export function girarRoleta({ itens, container, obterTitulo, obterCapa, aoParar,
   passo();
 }
 
+// Rascunho automático: salva o que a pessoa está digitando no localStorage
+// enquanto ela escreve, pra não perder nada se fechar o app/aba sem salvar
+// de propósito. Some sozinho assim que o salvamento de verdade dá certo.
+export function rascunho(chave) {
+  const key = `cr_rascunho_${chave}`;
+  return {
+    get() {
+      try {
+        return localStorage.getItem(key) || "";
+      } catch {
+        return "";
+      }
+    },
+    set(valor) {
+      try {
+        if (valor) localStorage.setItem(key, valor);
+        else localStorage.removeItem(key);
+      } catch {
+        // sem persistência disponível (modo privado, etc.) — sem problema
+      }
+    },
+    clear() {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // idem
+      }
+    },
+  };
+}
+
+function inserirNoTextarea(textarea, texto) {
+  const start = textarea.selectionStart ?? textarea.value.length;
+  const end = textarea.selectionEnd ?? textarea.value.length;
+  const antes = textarea.value.slice(0, start);
+  const depois = textarea.value.slice(end);
+  const precisaEspaco = antes && !/[\s\n]$/.test(antes);
+  const inserir = (precisaEspaco ? " " : "") + texto;
+  textarea.value = antes + inserir + depois;
+  const novaPos = (antes + inserir).length;
+  textarea.focus();
+  textarea.setSelectionRange(novaPos, novaPos);
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+// Uma fileira de "atalhos" pra clicar e já inserir uma frase pronta no
+// cursor — tipo um teclado personalizado pra quem trava na hora de começar
+// a escrever a impressão/teoria do capítulo.
+export function barraEscritaRapida(textarea, frases) {
+  const barra = el("div", "escrita-toolbar");
+  frases.forEach((texto) => {
+    const chip = el("button", "escrita-chip", texto);
+    chip.type = "button";
+    chip.addEventListener("click", () => inserirNoTextarea(textarea, texto));
+    barra.appendChild(chip);
+  });
+  return barra;
+}
+
 export function personTag(nome, uid) {
   const cor = corPessoa(uid);
   const span = document.createElement("span");

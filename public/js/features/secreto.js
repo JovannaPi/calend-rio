@@ -8,7 +8,15 @@ import {
   listarComentarios,
   enviarComentario,
 } from "../core/db.js";
-import { capituloLembrado, lembrarCapitulo, el } from "../core/util.js";
+import { capituloLembrado, lembrarCapitulo, el, rascunho, barraEscritaRapida } from "../core/util.js";
+
+const SUGESTOES_TEORIA = [
+  "Eu acho que...",
+  "A reviravolta vai ser...",
+  "Aposto que o culpado é...",
+  "Isso vai terminar em tragédia",
+  "Tenho certeza que vai dar tudo certo",
+];
 
 const content = document.getElementById("secretoContent");
 let config = {};
@@ -138,7 +146,10 @@ function renderCapitulo(livro) {
       const textarea = document.createElement("textarea");
       textarea.rows = 5;
       textarea.placeholder = "O que você acha que vai acontecer? Quem é o culpado? Qual a reviravolta?";
-      textarea.value = minha.teoria || "";
+      const rascunhoTeoria = rascunho(`secreto_${livro.id}_${capNum}_teoria_${me.uid}`);
+      textarea.value = rascunhoTeoria.get() || minha.teoria || "";
+      textarea.addEventListener("input", () => rascunhoTeoria.set(textarea.value));
+      card.appendChild(barraEscritaRapida(textarea, SUGESTOES_TEORIA));
       card.appendChild(textarea);
       card.appendChild(el("p", "empty-hint", "Sua resposta fica bloqueada até a outra pessoa também enviar a dela."));
       const btn = el("button", "primary-btn full-width", "Travar resposta");
@@ -160,6 +171,7 @@ function renderCapitulo(livro) {
             livroTitulo: livro.titulo,
             capitulo: capNum,
           });
+          rascunhoTeoria.clear();
         } catch (err) {
           console.error("Falha ao travar teoria:", err);
           alert("Não consegui salvar a teoria (" + (err?.code || err?.message || "erro desconhecido") + ").");

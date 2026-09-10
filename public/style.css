@@ -49,6 +49,13 @@ body {
   position: relative;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* No app instalado (Android com tela sem borda), evita que o conteúdo
+     fique embaixo da barra de status ou da barra de gestos. No navegador
+     normal essas variáveis são 0, então não muda nada. */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", serif; }
@@ -696,8 +703,8 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
    ========================================================= */
 input, select, textarea {
   font-family: inherit;
-  font-size: 0.95rem;
-  padding: 0.55rem 0.65rem;
+  font-size: 1rem;
+  padding: 0.6rem 0.7rem;
   border: 1.5px solid var(--border);
   border-radius: 10px;
   color: var(--text);
@@ -710,6 +717,22 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   background: #ffffff;
 }
+textarea { line-height: 1.5; }
+
+.escrita-toolbar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.5rem; }
+.escrita-chip {
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.escrita-chip:hover, .escrita-chip:active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, white); }
 
 /* Espaço entre campos soltos direto num panel-card (fora de <form>),
    tipo Personalização/Meu perfil em Configurações */
