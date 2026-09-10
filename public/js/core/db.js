@@ -177,6 +177,13 @@ export async function removerFotoRole(roleId, url) {
   await setDoc(ref, { urls: urls.filter((u) => u !== url) }, { merge: true });
 }
 
+// ── Eventos do calendário (usado pelo importador de datas em lote) ──────
+export const eventosCol = () => collection(db, "events");
+
+export async function criarEvento(data) {
+  await addDoc(eventosCol(), data);
+}
+
 // ── Datas especiais (aniversário de namoro, etc.) ────────────────────────
 export const datasEspeciaisCol = () => collection(db, "datasEspeciais");
 

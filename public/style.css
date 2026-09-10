@@ -652,6 +652,22 @@ h1, h2, h3, .brand-title, .event-title { font-family: "Fraunces", "Fredoka", ser
 }
 .event-card:hover { transform: translateX(3px); box-shadow: 0 6px 14px rgba(45, 45, 45, 0.1); }
 .event-card-compact { padding: 0.55rem 0.75rem; margin-bottom: 0.4rem; }
+
+.import-datas-lista { display: flex; flex-direction: column; gap: 0.4rem; margin: 0.8rem 0; max-height: 320px; overflow-y: auto; }
+.import-data-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-left: 3px solid var(--accent);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.import-data-linha input[type="checkbox"] { flex-shrink: 0; }
 .event-card-compact .event-title { font-family: "Inter", "Quicksand", sans-serif; font-size: 0.85rem; font-weight: 600; }
 .event-card .event-title { font-weight: 700; font-family: "Fraunces", "Fredoka", serif; }
 .event-card .event-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }

@@ -9,6 +9,7 @@ import {
   salvarCapitulo,
   salvarPremiacao,
   listarUsuarios,
+  criarEvento,
 } from "../core/db.js";
 import { enviarFoto } from "../core/upload.js";
 import { el } from "../core/util.js";
@@ -250,6 +251,97 @@ function render() {
   content.appendChild(backupCard);
 
   content.appendChild(cardImportarClubeAntigo());
+  content.appendChild(cardImportarDatasAcademicas());
+}
+
+// ── Importar datas acadêmicas (provas/trabalhos/entregas) em lote ───────
+const DATAS_ACADEMICAS = [
+  // PCP II (TK0267)
+  { date: "2026-09-03", title: "Prazo p/ escolher tema da apresentação (Sigaa)", type: "trabalho", theme: "PCP II (TK0267)", color: "#e07a5f" },
+  { date: "2026-11-17", title: "Apresentação: Teoria das Restrições", type: "trabalho", theme: "PCP II (TK0267)", color: "#e07a5f" },
+  { date: "2026-12-08", title: "2ª Chamada (individual, toda matéria)", type: "prova", theme: "PCP II (TK0267)", color: "#e07a5f" },
+  { date: "2026-12-15", title: "Avaliação Final (AF)", type: "prova", theme: "PCP II (TK0267)", color: "#e07a5f" },
+
+  // Sistema de Informação Gerencial (TK0231)
+  { date: "2026-09-02", title: "Apresentação projeto SIG (MS Access)", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-09-09", title: "Apresentação projeto SIG (MS Access) — cont.", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-10-14", title: "Apresentação projeto BI (Power BI)", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-10-19", title: "Apresentação projeto BI (Power BI) — cont.", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-11-18", title: "Apresentação projeto ML (Orange Canvas)", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-11-23", title: "Apresentação projeto ML (Orange Canvas) — cont.", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-11-30", title: "Entrega do artigo (AP2)", type: "trabalho", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+  { date: "2026-12-14", title: "Avaliação Final (AF)", type: "prova", theme: "Sistema de Informação Gerencial (TK0231)", color: "#4d8cff" },
+
+  // Pesquisa Operacional II
+  { date: "2026-09-21", title: "AP1 — 1ª chamada", type: "prova", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-09-23", title: "AP1 — 2ª chamada", type: "prova", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-11-25", title: "Apresentação dos projetos", type: "trabalho", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-11-30", title: "Apresentação dos projetos", type: "trabalho", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-12-02", title: "Apresentação dos projetos", type: "trabalho", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-12-07", title: "Apresentação dos projetos", type: "trabalho", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-12-09", title: "Apresentação dos projetos", type: "trabalho", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+  { date: "2026-12-14", title: "Reserva (reposição/encerramento)", type: "atividade", theme: "Pesquisa Operacional II", color: "#06b6a4" },
+
+  // Métodos e Sistemas de Trabalho (TK0266)
+  { date: "2026-09-08", title: "Entrega/apresentação de propostas comerciais e alocação de projetos", type: "trabalho", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-11-19", title: "1ª Avaliação da disciplina", type: "prova", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-11-24", title: "2ª chamada da 1ª Avaliação", type: "prova", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-12-01", title: "2ª Avaliação: apresentação dos projetos (sala de aula)", type: "trabalho", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-12-03", title: "2ª Avaliação: apresentação dos projetos (Hospital Universitário)", type: "trabalho", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-12-08", title: "Rodada de apresentação final dos projetos", type: "trabalho", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+  { date: "2026-12-15", title: "Avaliação Final (AF)", type: "prova", theme: "Métodos e Sistemas de Trabalho (TK0266)", color: "#a78bfa" },
+];
+
+function cardImportarDatasAcademicas() {
+  const card = el("div", "panel-card");
+  card.appendChild(el("h2", null, "Importar datas acadêmicas"));
+  card.appendChild(
+    el(
+      "p",
+      "empty-hint",
+      "Provas, trabalhos e entregas do semestre, uma cor por disciplina. Desmarque o que não quiser trazer e clique em importar."
+    )
+  );
+
+  const lista = el("div", "import-datas-lista");
+  const checks = DATAS_ACADEMICAS.map((ev) => {
+    const linha = el("label", "import-data-linha");
+    linha.style.borderLeftColor = ev.color;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = true;
+    const d = new Date(ev.date + "T00:00:00");
+    const dataFmt = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    linha.appendChild(checkbox);
+    linha.appendChild(el("span", null, `${dataFmt} — ${ev.title} (${ev.theme})`));
+    lista.appendChild(linha);
+    return checkbox;
+  });
+  card.appendChild(lista);
+
+  const importBtn = el("button", "primary-btn full-width", "Importar selecionadas");
+  importBtn.type = "button";
+  importBtn.addEventListener("click", async () => {
+    const selecionadas = DATAS_ACADEMICAS.filter((_, i) => checks[i].checked);
+    if (selecionadas.length === 0) return;
+    importBtn.disabled = true;
+    importBtn.textContent = "Importando...";
+    try {
+      for (const ev of selecionadas) {
+        await criarEvento({ ...ev, updatedAt: Date.now() });
+      }
+      importBtn.textContent = `✓ ${selecionadas.length} datas importadas!`;
+      checks.forEach((c) => (c.disabled = true));
+    } catch (err) {
+      console.error("Falha ao importar datas acadêmicas:", err);
+      alert("Não consegui importar (" + (err?.code || err?.message || "erro desconhecido") + "). Tente de novo.");
+      importBtn.disabled = false;
+      importBtn.textContent = "Importar selecionadas";
+    }
+  });
+  card.appendChild(importBtn);
+
+  return card;
 }
 
 // ── Importar o backup do Clube do Livro antigo (formato diferente) ──────
