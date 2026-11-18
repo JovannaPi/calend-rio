@@ -122,8 +122,9 @@
     <!-- Nível 1: Grupos Principais -->
     <nav class="main-tabs" role="tablist" aria-label="Grupos Principais">
       <button class="main-tab-btn active" data-group="agenda">Agenda e Início</button>
-      <button class="main-tab-btn" data-group="midia">Mídia e Clube</button>
-      <button class="main-tab-btn" data-group="pessoal">Rolês</button>
+      <button class="main-tab-btn" data-group="livro">Livro do Mês</button>
+      <button class="main-tab-btn" data-group="historico">Nosso Histórico</button>
+      <button class="main-tab-btn" data-group="pessoal">Rolês e Filmes</button>
       <button class="main-tab-btn" data-group="progresso">Progresso e Metas</button>
       <button class="main-tab-btn" data-group="comunidade">Social e Ajustes</button>
     </nav>
@@ -133,24 +134,28 @@
 
       <nav id="sub-agenda" class="sub-tabs active" role="tablist">
         <button class="tab-btn active" data-tab="calendario">Calendário</button>
-        <button class="tab-btn" data-tab="timeline">Nossa Timeline</button>
       </nav>
 
-      <!-- Todas as funcionalidades do Clube do Livro moram aqui -->
-      <nav id="sub-midia" class="sub-tabs hidden" role="tablist">
+      <!-- O que vocês duas fazem toda semana no clube -->
+      <nav id="sub-livro" class="sub-tabs hidden" role="tablist">
         <button class="tab-btn" data-tab="biblioteca">Biblioteca</button>
         <button class="tab-btn" data-tab="diario">Diário</button>
         <button class="tab-btn" data-tab="secreto">Secreto</button>
         <button class="tab-btn" data-tab="memorias">Memórias</button>
+      </nav>
+
+      <!-- Coisas pra olhar de vez em quando, não pra mexer toda hora -->
+      <nav id="sub-historico" class="sub-tabs hidden" role="tablist">
+        <button class="tab-btn" data-tab="timeline">Nossa Timeline</button>
         <button class="tab-btn" data-tab="stats">Estatísticas</button>
         <button class="tab-btn" data-tab="premiacao">Premiações</button>
         <button class="tab-btn" data-tab="relatorios">Relatórios</button>
-        <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       </nav>
 
       <nav id="sub-pessoal" class="sub-tabs hidden" role="tablist">
         <button class="tab-btn" data-tab="roles">Rolês</button>
         <button class="tab-btn" data-tab="album-roles">Álbum</button>
+        <button class="tab-btn" data-tab="filmes">Filmes/Séries</button>
       </nav>
 
       <nav id="sub-progresso" class="sub-tabs hidden" role="tablist">

@@ -435,9 +435,12 @@ async function buscarLivrosOnline(busca) {
   return [...porChave.values()].slice(0, 10);
 }
 
-bookOnlineSearchBtn.addEventListener("click", async () => {
+async function executarBuscaOnline() {
   const termo = bookOnlineSearch.value.trim();
-  if (!termo) return;
+  if (!termo) {
+    bookOnlineResults.innerHTML = "";
+    return;
+  }
   bookOnlineResults.innerHTML = '<p class="empty-hint">Buscando...</p>';
   let resultados = [];
   try {
@@ -482,7 +485,18 @@ bookOnlineSearchBtn.addEventListener("click", async () => {
     });
     bookOnlineResults.appendChild(row);
   });
+}
+
+let buscaOnlineTimer = null;
+bookOnlineSearch.addEventListener("input", () => {
+  clearTimeout(buscaOnlineTimer);
+  if (bookOnlineSearch.value.trim().length < 3) {
+    bookOnlineResults.innerHTML = "";
+    return;
+  }
+  buscaOnlineTimer = setTimeout(executarBuscaOnline, 450);
 });
+bookOnlineSearchBtn.addEventListener("click", executarBuscaOnline);
 
 // ── Modal: detalhes ──────────────────────────────────────────────────────
 function abrirDetalhe(livro) {
