@@ -123,7 +123,9 @@ export async function enviarComentario(livroId, num, data) {
 export const premiacaoRef = (livroId) => doc(db, "premiacoes", livroId);
 
 export function listenPremiacao(livroId, cb) {
-  return onSnapshot(premiacaoRef(livroId), (snap) => cb(snap.exists() ? snap.data() : {}));
+  return onSnapshot(premiacaoRef(livroId), (snap) => {
+    cb(snap.exists() ? snap.data() : {}, snap.metadata.hasPendingWrites);
+  });
 }
 
 export async function salvarPremiacao(livroId, data) {

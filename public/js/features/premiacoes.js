@@ -14,6 +14,7 @@ let config = {};
 let livros = [];
 let unsubPremiacao = null;
 let started = false;
+let livroAtualId = null;
 
 function livroAtual() {
   const me = getCurrentUser();
@@ -21,18 +22,28 @@ function livroAtual() {
   return livros.find((l) => l.id === id) || null;
 }
 
+// Mesma trava do diário/secreto: só reconstrói quando o livro muda de
+// verdade (não a cada mudança alheia em config/livros) e ignora o eco
+// instantâneo da própria escrita — senão apaga o que a pessoa está
+// digitando e troca o botão "Salvar" assim que ela clica nele.
 function render() {
   const me = getCurrentUser();
   const livro = livroAtual();
-  content.innerHTML = "";
 
   if (!livro) {
+    livroAtualId = null;
+    content.innerHTML = "";
     content.appendChild(el("p", "empty-hint", "Nenhum livro em leitura."));
     return;
   }
 
+  if (livro.id === livroAtualId) return;
+  livroAtualId = livro.id;
+  content.innerHTML = "";
+
   if (unsubPremiacao) unsubPremiacao();
-  unsubPremiacao = listenPremiacao(livro.id, (premiacao) => {
+  unsubPremiacao = listenPremiacao(livro.id, (premiacao, pendente) => {
+    if (pendente) return;
     content.innerHTML = "";
     const header = el("div", "panel-card");
     header.appendChild(el("div", "event-title", livro.titulo));
@@ -69,13 +80,22 @@ function render() {
     const saveBtn = el("button", "primary-btn full-width", "Salvar premiações");
     saveBtn.type = "button";
     saveBtn.addEventListener("click", async () => {
-      const data = {};
-      CATEGORIAS.forEach(({ key }) => {
-        data[key] = { ...(premiacao[key] || {}), [me.uid]: valores[key].value };
-      });
-      await salvarPremiacao(livro.id, data);
-      saveBtn.textContent = "✓ Salvo!";
-      setTimeout(() => (saveBtn.textContent = "Salvar premiações"), 1800);
+      saveBtn.disabled = true;
+      try {
+        const data = {};
+        CATEGORIAS.forEach(({ key }) => {
+          data[key] = { ...(premiacao[key] || {}), [me.uid]: valores[key].value };
+        });
+        await salvarPremiacao(livro.id, data);
+        saveBtn.textContent = "✓ Salvo!";
+        setTimeout(() => (saveBtn.textContent = "Salvar premiações"), 1800);
+      } catch (err) {
+        console.error("Falha ao salvar premiações:", err);
+        alert("Não consegui salvar (" + (err?.code || err?.message || "erro desconhecido") + ").");
+        saveBtn.textContent = "Salvar premiações";
+      } finally {
+        saveBtn.disabled = false;
+      }
     });
     content.appendChild(saveBtn);
   });

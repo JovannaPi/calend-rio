@@ -94,6 +94,12 @@ function cardMeuPerfil() {
 }
 
 function render() {
+  // Evita reconstruir a tela (e apagar o que a pessoa está digitando no
+  // perfil/personalização) toda vez que livros ou config mudam por outro
+  // motivo qualquer — essas são coleções compartilhadas, mudam o tempo
+  // todo por ações que não têm nada a ver com esta tela.
+  if (content.contains(document.activeElement) && document.activeElement !== document.body) return;
+
   atualizarHeader();
   content.innerHTML = "";
   content.appendChild(cardMeuPerfil());
