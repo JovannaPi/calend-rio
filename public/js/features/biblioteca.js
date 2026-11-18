@@ -371,16 +371,16 @@ deleteBookBtn.addEventListener("click", async () => {
   fecharFormLivro();
 });
 
-// ── Busca online (Google Books / Open Library) ───────────────────────────
+// ── Busca online (Google Books + Open Library, combinadas) ──────────────
 async function buscarGoogleBooks(busca) {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(busca)}&country=BR&maxResults=6`;
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(busca)}&maxResults=8`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("google books");
   const data = await res.json();
   return (data.items || []).map((item) => {
     const info = item.volumeInfo || {};
     return {
-      id: item.id,
+      id: `gb-${item.id}`,
       titulo: info.title || "",
       autor: (info.authors || []).join(", "),
       capaUrl: (info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "").replace("http://", "https://"),
@@ -391,12 +391,12 @@ async function buscarGoogleBooks(busca) {
 }
 
 async function buscarOpenLibrary(busca) {
-  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(busca)}&language=por&limit=6`;
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(busca)}&limit=8`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("open library");
   const data = await res.json();
   return (data.docs || []).map((d) => ({
-    id: d.key,
+    id: `ol-${d.key}`,
     titulo: d.title || "",
     autor: (d.author_name || []).join(", "),
     capaUrl: d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg` : "",
@@ -405,20 +405,46 @@ async function buscarOpenLibrary(busca) {
   }));
 }
 
+// Normaliza "título + autor" pra detectar a mesma edição vinda das duas
+// fontes (cada API tem seu próprio id, não dá pra comparar isso).
+function chaveDuplicata(item) {
+  return `${item.titulo}|${item.autor}`.toLowerCase().replace(/[^a-z0-9|]/g, "");
+}
+
+async function buscarLivrosOnline(busca) {
+  const [google, openLibrary] = await Promise.allSettled([buscarGoogleBooks(busca), buscarOpenLibrary(busca)]);
+  const combinados = [
+    ...(google.status === "fulfilled" ? google.value : []),
+    ...(openLibrary.status === "fulfilled" ? openLibrary.value : []),
+  ].filter((item) => item.titulo);
+
+  if (google.status === "rejected" && openLibrary.status === "rejected") {
+    throw new Error("busca de livros indisponível");
+  }
+
+  // Junta duplicatas (mesmo livro nas duas fontes), preferindo a versão que
+  // já vem com capa.
+  const porChave = new Map();
+  for (const item of combinados) {
+    const chave = chaveDuplicata(item);
+    const atual = porChave.get(chave);
+    if (!atual || (!atual.capaUrl && item.capaUrl)) {
+      porChave.set(chave, item);
+    }
+  }
+  return [...porChave.values()].slice(0, 10);
+}
+
 bookOnlineSearchBtn.addEventListener("click", async () => {
   const termo = bookOnlineSearch.value.trim();
   if (!termo) return;
   bookOnlineResults.innerHTML = '<p class="empty-hint">Buscando...</p>';
   let resultados = [];
   try {
-    resultados = await buscarGoogleBooks(termo);
+    resultados = await buscarLivrosOnline(termo);
   } catch {
-    try {
-      resultados = await buscarOpenLibrary(termo);
-    } catch {
-      bookOnlineResults.innerHTML = '<p class="empty-hint">Não consegui buscar agora. Preencha manualmente.</p>';
-      return;
-    }
+    bookOnlineResults.innerHTML = '<p class="empty-hint">Não consegui buscar agora. Preencha manualmente.</p>';
+    return;
   }
   bookOnlineResults.innerHTML = "";
   if (resultados.length === 0) {
